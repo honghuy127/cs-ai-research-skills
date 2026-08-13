@@ -1,0 +1,5 @@
+interface:
+  display_name: "Conduct CS and AI Research"
+  short_description: "Rigorous CS and AI research workflows"
+  default_prompt: "Use $conduct-cs-ai-research to develop a rigorous, evidence-grounded research project."
+

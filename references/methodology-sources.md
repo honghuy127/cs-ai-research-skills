@@ -1,0 +1,130 @@
+# Methodology Sources and Design Provenance
+
+Use this register to verify the principles and live rules behind the research skill. URLs were checked on 2026-08-14. Re-open every source before relying on it, record the access date, and prefer the current official version over this snapshot.
+
+## Table of contents
+
+- [Apply the source hierarchy](#apply-the-source-hierarchy)
+- [Separate stable principles from volatile rules](#separate-stable-principles-from-volatile-rules)
+- [Use official standards and policies](#use-official-standards-and-policies)
+- [Use scholarly discovery services](#use-scholarly-discovery-services)
+- [Verify proposal rules at the source](#verify-proposal-rules-at-the-source)
+- [Record public-skill design provenance](#record-public-skill-design-provenance)
+- [Reject unsafe defaults](#reject-unsafe-defaults)
+- [Record and refresh a methodology source](#record-and-refresh-a-methodology-source)
+
+## Apply the source hierarchy
+
+Use sources in this order:
+
+1. exact current solicitation, venue instructions, law, policy, or standard governing the project;
+2. current official agency, standards-body, society, or repository documentation;
+3. primary research papers, registered protocols, datasets, and official code or artifacts;
+4. high-quality public skills and workflow repositories for procedural inspiration only;
+5. informal explanations only as discovery aids.
+
+Never let a public skill override a governing policy or substitute for primary scientific evidence. Treat repository popularity as a discovery signal, not proof of methodological validity.
+
+## Separate stable principles from volatile rules
+
+| Treat as relatively stable | Treat as volatile and re-fetch for every project |
+|---|---|
+| Trace claims to evidence and exact locators | Deadlines, time zones, eligibility, tracks, and award ranges |
+| State hypotheses and proposed work as uncertain | Page limits, templates, fonts, attachments, and portal fields |
+| Match the design and evaluation to the contribution type | Anonymity, authorship, AI-use, disclosure, and review policies |
+| Map claims to experiments, rivals, and falsifiers | Budget, salary, indirect-cost, travel, and cost-share rules |
+| Preserve raw inputs, versions, run manifests, and decisions | Models, APIs, datasets, benchmarks, leaderboards, and prices |
+| Keep humans at authority, ethics, cost, and release gates | Licenses, terms of use, data-access, privacy, and security rules |
+| Protect confidential submissions and participant data | Standards under revision, jurisdictional law, and institutional policy |
+| Use a lean router with progressively loaded references | State of the art, novelty landscape, and current accepted work |
+
+When a stable principle conflicts with a current governing rule, stop and resolve the conflict rather than silently choosing one.
+
+## Use official standards and policies
+
+| Source | Current official URL | Use |
+|---|---|---|
+| Agent Skills specification | https://agentskills.io/specification | Keep metadata concise, load SKILL.md on trigger, and load focused references on demand |
+| ACM SIGSOFT Empirical Standards | https://www2.sigsoft.org/EmpiricalStandards/ | Select method-specific quality criteria for empirical software-engineering work |
+| SIGSOFT standards catalog | https://www2.sigsoft.org/EmpiricalStandards/docs/standards | Open the standard matching the actual study design; do not apply every checklist indiscriminately |
+| PRISMA 2020 | https://www.prisma-statement.org/prisma-2020 | Report a qualifying systematic review transparently |
+| PRISMA 2020 checklist | https://www.prisma-statement.org/prisma-2020-checklist | Verify the current checklist and extensions appropriate to the review type |
+| NeurIPS paper checklist | https://neurips.cc/public/guides/PaperChecklist | Check claims, reproducibility, experiments, uncertainty, compute, ethics, assets, and impacts; re-open the target year's venue instructions |
+| ACL Rolling Review form | https://aclrollingreview.org/reviewform | Understand current review dimensions for relevant NLP submissions; treat the form as venue-volatile |
+| ACM artifact review and badging | https://www.acm.org/publications/policies/artifact-review-and-badging-current | Plan availability, functionality, reproducibility, and reuse claims for research artifacts |
+| ACM research involving human participants | https://www.acm.org/publications/policies/research-involving-human-participants-and-subjects | Check disclosure and ethical expectations for human-participant research |
+| NIST AI Risk Management Framework | https://www.nist.gov/itl/ai-risk-management-framework | Structure voluntary AI-risk analysis where applicable; verify the current revision because NIST announced revision activity in 2026 |
+| CRediT taxonomy | https://credit.niso.org/ | Describe contributor roles without treating the taxonomy as an authorship decision rule |
+
+Use these as starting points, not a universal bundle. Select only the standards that match the jurisdiction, venue, study method, and deliverable.
+
+## Use scholarly discovery services
+
+| Service | Official documentation | Proper role |
+|---|---|---|
+| Crossref REST API | https://www.crossref.org/documentation/retrieve-metadata/rest-api/ | Verify DOI metadata and discover linked records |
+| OpenAlex | https://help.openalex.org/ | Discover works, authors, institutions, concepts, and citation relationships |
+| Semantic Scholar API | https://api.semanticscholar.org/api-docs/ | Discover papers and citation links subject to documented coverage and rate limits |
+| arXiv API | https://info.arxiv.org/help/api/ | Discover and track preprint records and versions |
+| DBLP search API | https://dblp.org/faq/How+to+use+the+dblp+search+API.html | Discover computer-science bibliographic records |
+
+Use discovery metadata to locate sources. Open the primary paper, proceedings record, dataset, or artifact before supporting a substantive claim. Record platform coverage, query, filters, date, cursor or pages, and deduplication decisions.
+
+## Verify proposal rules at the source
+
+| Source | Current official URL | Use |
+|---|---|---|
+| NSF Proposal & Award Policies & Procedures Guide landing page | https://www.nsf.gov/policies/pappg | Locate the currently effective guide and supplements, then pair them with the exact solicitation and amendments |
+| NIH application guide | https://grants.nih.gov/grants-process/write-application/how-to-apply-application-guide | Locate the current form and instruction set, then pair it with the notice of funding opportunity and policy notices |
+
+Do not encode agency rules from these landing pages into a reusable skill. Parse the exact live call, incorporated documents, amendments, FAQs, and institutional policy for each proposal.
+
+## Record public-skill design provenance
+
+The following public repositories informed workflow design. Reuse principles after independent verification; do not copy their numeric thresholds or domain assumptions.
+
+| Public source | URL | Adopt | Guard or reject |
+|---|---|---|---|
+| Anthropic skill creator | https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md | Lean routing, imperative instructions, progressive disclosure, validation | Avoid copying templates without adapting them to this state model |
+| K-Dense Scientific Agent Skills | https://github.com/K-Dense-AI/scientific-agent-skills | Evidence boundaries, hypothesis alternatives, experimental design checks, grant and review decomposition | Verify every cited rule; avoid treating a broad collection as one mandatory workflow |
+| luwill research proposal skill | https://github.com/luwill/research-skills/blob/main/research-proposal/SKILL.md | Requirements-first drafting, verified literature, outline approval, section-level audit | Preserve its rejection of hard citation quotas and one-shot proposal drafting |
+| Hermes research paper writing skill | https://github.com/NousResearch/hermes-agent/blob/main/skills/research/research-paper-writing/SKILL.md | Claim-to-experiment mapping, strong and compute-matched baselines, ablations, uncertainty, and experiment logs | Do not copy a monolithic workflow; load only the relevant phase |
+| AutoResearchClaw | https://github.com/aiming-lab/AutoResearchClaw | Gated state transitions, rollback, cost guardrails, checksums, and versioned artifacts | Do not default to unattended end-to-end research or bypass human authority gates |
+| AI4S Skills | https://github.com/ai4s-research/ai4s-skills | Resumable runs, provenance, explicit handoffs, and reusable scientific procedures | Reject fixed citation-volume requirements and simulated-results defaults |
+| Academic Research Agent Skill | https://github.com/ngtiendong/Academic-Research-Agent-Skill/blob/main/SKILL.md | Lean lifecycle routing, categorical gates, cheapest falsifier, minimum informative artifact | Do not replace evidence-backed judgment with automatic numeric ranking |
+| BESSER research paper review | https://github.com/BESSER-PEARL/research-agent-skills/blob/main/research-paper-review/SKILL.md | Paper-type calibration, structured review dimensions, and numeric consistency checks | Narrow the trigger, preserve confidentiality, and follow the current venue's verdict policy |
+
+## Reject unsafe defaults
+
+Never import these patterns into the skill:
+
+- a minimum citation count, fixed recent-citation percentage, prestige filter, or paper-count stopping rule;
+- simulated, plausible, illustrative, or synthetic scientific results presented as evidence;
+- an automatic novelty score or a ranking that hides unresolved evidence;
+- static venue, funder, API, model, dataset, benchmark, price, or legal rules;
+- memory-only citations, invented identifiers, or substantive claims supported only by metadata;
+- unattended costly runs, data collection, submission, disclosure, or release;
+- a single universal checklist applied regardless of contribution and study design.
+
+Synthetic data may test software plumbing when clearly labeled, isolated from scientific conclusions, and permitted by the research contract. It must never satisfy an empirical gate or become a reported result.
+
+## Record and refresh a methodology source
+
+For every governing methodology source, record:
+
+- title, authority, canonical URL, version or effective date, and access date;
+- project, phase, method, venue, or jurisdiction to which it applies;
+- exact section, page, checklist item, or locator used;
+- whether the item is stable guidance or a volatile rule;
+- the decision or artifact it changed;
+- conflicts, superseding documents, and next refresh date.
+
+Before a gate or deliverable:
+
+1. re-open volatile sources and inspect amendments or revision notices;
+2. compare the source's scope with the actual method and submission regime;
+3. update the compliance or evidence record with an exact locator;
+4. record any changed interpretation in decisions.md;
+5. mark the affected gate BLOCKED when authority or current text cannot be verified.
+
+This register documents provenance. It does not freeze the internet, replace professional ethics review, or confer compliance by itself.
