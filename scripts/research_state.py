@@ -15,7 +15,6 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-
 SCHEMA_VERSION = "1.0"
 VALID_STAGES = {
     "scoping",
@@ -44,7 +43,18 @@ VALID_STATUSES = {
     "dropped",
 }
 VALID_EVIDENTIAL_STATUSES = {"not_assessed", "insufficient", "supported", "mixed", "contradicted"}
-VALID_CLAIM_TYPES = {"contextual", "novelty", "theoretical", "empirical", "causal", "descriptive", "normative", "performance", "efficiency", "human-evaluation"}
+VALID_CLAIM_TYPES = {
+    "contextual",
+    "novelty",
+    "theoretical",
+    "empirical",
+    "causal",
+    "descriptive",
+    "normative",
+    "performance",
+    "efficiency",
+    "human-evaluation",
+}
 VALID_EVIDENCE_VERIFICATIONS = {"metadata-only", "abstract-checked", "full-text-checked", "artifact-checked"}
 VALID_PUBLICATION_STATUSES = {"published", "accepted", "preprint", "unpublished", "unknown"}
 VALID_PEER_REVIEW_STATUSES = {"peer-reviewed", "not-peer-reviewed", "unknown"}
@@ -188,7 +198,9 @@ def require_string(record: dict, field: str, prefix: str, errors: list[str]) -> 
         errors.append(f"{prefix} requires non-empty string {field}")
 
 
-def require_string_list(record: dict, field: str, prefix: str, errors: list[str], required: bool = True) -> None:
+def require_string_list(
+    record: dict, field: str, prefix: str, errors: list[str], required: bool = True
+) -> None:
     value = record.get(field)
     if value is None and not required:
         return
@@ -205,17 +217,46 @@ def validate_ledger_record(name: str, record: dict, index: int, errors: list[str
             errors.append(f"{prefix} has invalid verification: {record.get('verification')!r}")
         for field in ("supports", "challenges", "contextualizes"):
             require_string_list(record, field, prefix, errors, required=False)
-        for field in ("url", "doi", "artifact_path", "citation_key", "locator", "source_type", "publication_status", "peer_review_status", "notes"):
-            if record.get(field) is not None and (not isinstance(record.get(field), str) or not record[field].strip()):
+        for field in (
+            "url",
+            "doi",
+            "artifact_path",
+            "citation_key",
+            "locator",
+            "source_type",
+            "publication_status",
+            "peer_review_status",
+            "notes",
+        ):
+            if record.get(field) is not None and (
+                not isinstance(record.get(field), str) or not record[field].strip()
+            ):
                 errors.append(f"{prefix} {field} must be null or a non-empty string")
-        if not any(isinstance(record.get(field), str) and record[field].strip() for field in ("url", "doi", "artifact_path")):
+        if not any(
+            isinstance(record.get(field), str) and record[field].strip()
+            for field in ("url", "doi", "artifact_path")
+        ):
             errors.append(f"{prefix} requires url, doi, or artifact_path")
-        if record.get("publication_status") is not None and record.get("publication_status") not in VALID_PUBLICATION_STATUSES:
+        if (
+            record.get("publication_status") is not None
+            and record.get("publication_status") not in VALID_PUBLICATION_STATUSES
+        ):
             errors.append(f"{prefix} has invalid publication_status: {record.get('publication_status')!r}")
-        if record.get("peer_review_status") is not None and record.get("peer_review_status") not in VALID_PEER_REVIEW_STATUSES:
+        if (
+            record.get("peer_review_status") is not None
+            and record.get("peer_review_status") not in VALID_PEER_REVIEW_STATUSES
+        ):
             errors.append(f"{prefix} has invalid peer_review_status: {record.get('peer_review_status')!r}")
     elif name == "claims.jsonl":
-        for field in ("id", "text", "claim_type", "lifecycle_state", "evidential_status", "scope", "updated_at"):
+        for field in (
+            "id",
+            "text",
+            "claim_type",
+            "lifecycle_state",
+            "evidential_status",
+            "scope",
+            "updated_at",
+        ):
             require_string(record, field, prefix, errors)
         if record.get("lifecycle_state") not in VALID_STATUSES:
             errors.append(f"{prefix} has invalid lifecycle_state: {record.get('lifecycle_state')!r}")
@@ -228,7 +269,18 @@ def validate_ledger_record(name: str, record: dict, index: int, errors: list[str
         for field in ("verification_run_ids", "verification_artifact_paths"):
             require_string_list(record, field, prefix, errors, required=False)
     elif name == "experiments.jsonl":
-        for field in ("run_id", "experiment_id", "manifest_path", "phase", "status", "result_kind", "evidence_eligibility", "started_at", "ended_at", "recorded_at"):
+        for field in (
+            "run_id",
+            "experiment_id",
+            "manifest_path",
+            "phase",
+            "status",
+            "result_kind",
+            "evidence_eligibility",
+            "started_at",
+            "ended_at",
+            "recorded_at",
+        ):
             require_string(record, field, prefix, errors)
         enum_fields = {
             "phase": VALID_RUN_PHASES,
@@ -248,7 +300,9 @@ def validate(root: Path) -> list[str]:
         return [f"refusing symlinked dossier path: {base}"]
     if not base.is_dir():
         return [f"missing dossier directory: {base}"]
-    protected_paths = [base / "state.json", base / "decisions.md", base / "runs"] + [base / name for name in LEDGERS]
+    protected_paths = [base / "state.json", base / "decisions.md", base / "runs"] + [
+        base / name for name in LEDGERS
+    ]
     symlinked = [str(path) for path in protected_paths if path.is_symlink()]
     if symlinked:
         return [f"refusing symlinked canonical dossier path: {path}" for path in symlinked]
@@ -288,7 +342,14 @@ def validate(root: Path) -> list[str]:
     for field in ("schema_version", "project_id", "title", "created_at", "updated_at"):
         if not isinstance(state.get(field), str) or not state[field].strip():
             errors.append(f"state.json requires non-empty string {field}")
-    for field in ("research_questions", "deliverables", "open_risks", "blockers", "decision_index", "next_actions"):
+    for field in (
+        "research_questions",
+        "deliverables",
+        "open_risks",
+        "blockers",
+        "decision_index",
+        "next_actions",
+    ):
         if not isinstance(state.get(field), list):
             errors.append(f"state.json requires list {field}")
     for field in ("constraints", "artifact_index"):
@@ -299,7 +360,10 @@ def validate(root: Path) -> list[str]:
             errors.append(f"state.json {field} must be null or a string")
     if isinstance(state.get("decision_index"), list):
         for index, item in enumerate(state["decision_index"], start=1):
-            if not isinstance(item, dict) or any(not isinstance(item.get(field), str) or not item[field].strip() for field in ("id", "recorded_at", "summary")):
+            if not isinstance(item, dict) or any(
+                not isinstance(item.get(field), str) or not item[field].strip()
+                for field in ("id", "recorded_at", "summary")
+            ):
                 errors.append(f"state.json decision_index entry {index} is invalid")
 
     for name in LEDGERS:
@@ -324,9 +388,13 @@ def validate(root: Path) -> list[str]:
                 elif supersedes == identifier:
                     errors.append(f"{name} record {index} supersedes itself: {supersedes}")
                 elif supersedes not in seen:
-                    errors.append(f"{name} record {index} supersedes a missing or later same-ledger record: {supersedes}")
+                    errors.append(
+                        f"{name} record {index} supersedes a missing or later same-ledger record: {supersedes}"
+                    )
                 elif supersedes in superseded:
-                    errors.append(f"{name} record {index} creates a second supersession branch for: {supersedes}")
+                    errors.append(
+                        f"{name} record {index} creates a second supersession branch for: {supersedes}"
+                    )
                 else:
                     superseded.add(supersedes)
     if not (base / "decisions.md").exists():
@@ -409,7 +477,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    init_parser = subparsers.add_parser("init", help="initialize .research without overwriting existing state")
+    init_parser = subparsers.add_parser(
+        "init", help="initialize .research without overwriting existing state"
+    )
     init_parser.add_argument("--root", default=".")
     init_parser.add_argument("--title", required=True)
     init_parser.add_argument("--owner", required=True)

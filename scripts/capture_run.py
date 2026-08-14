@@ -9,6 +9,7 @@ are independently checked.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import os
@@ -23,8 +24,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from research_state import validate as validate_dossier
-
+from research_state import validate as validate_dossier  # noqa: E402
 
 MAX_HASH_BYTES = 64 * 1024 * 1024
 RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
@@ -70,7 +70,9 @@ def file_record(raw_path: str, root: Path, external_version: str | None = None) 
     if external_version:
         record["external_version"] = external_version
     if stat.st_size > MAX_HASH_BYTES:
-        record.update({"sha256": None, "hash_note": "skipped: file exceeds 64 MiB; immutable external version recorded"})
+        record.update(
+            {"sha256": None, "hash_note": "skipped: file exceeds 64 MiB; immutable external version recorded"}
+        )
         return record
     record["sha256"] = hash_file(path)
     return record
@@ -130,7 +132,12 @@ def git_record(root: Path) -> dict:
             if size <= MAX_HASH_BYTES:
                 record["sha256"] = hash_file(path)
             else:
-                record.update({"sha256": None, "hash_note": "dirty file exceeds 64 MiB; preserve a separate source or data snapshot"})
+                record.update(
+                    {
+                        "sha256": None,
+                        "hash_note": "dirty file exceeds 64 MiB; preserve a separate source or data snapshot",
+                    }
+                )
         else:
             record["kind"] = "deleted-or-unavailable"
         dirty_files.append(record)
@@ -158,7 +165,11 @@ def parse_existing_run_ids(path: Path) -> set[str]:
             record = json.loads(raw)
         except json.JSONDecodeError as exc:
             raise ValueError(f"invalid experiments ledger at line {line_number}: {exc}") from exc
-        if not isinstance(record, dict) or not isinstance(record.get("run_id"), str) or not record["run_id"].strip():
+        if (
+            not isinstance(record, dict)
+            or not isinstance(record.get("run_id"), str)
+            or not record["run_id"].strip()
+        ):
             raise ValueError(f"invalid experiments ledger record at line {line_number}")
         values.add(record["run_id"])
     return values
@@ -179,7 +190,9 @@ def validate_run_storage(root: Path, runs_dir: Path, ledger_path: Path, run_ids:
         manifest_is_symlink = manifest_value.is_symlink()
         actual = manifest_value.resolve()
         if actual != expected:
-            errors.append(f"experiments ledger line {line_number} does not use the canonical manifest path for {run_id}")
+            errors.append(
+                f"experiments ledger line {line_number} does not use the canonical manifest path for {run_id}"
+            )
         elif not actual.is_file() or manifest_is_symlink:
             errors.append(f"missing or symlinked manifest for {run_id}: {actual}")
         expected_manifests.add(expected)
@@ -204,13 +217,26 @@ def main() -> int:
     parser.add_argument("--phase", choices=("smoke", "pilot", "full"), required=True)
     parser.add_argument("--status", choices=("completed", "failed", "aborted"), required=True)
     parser.add_argument("--result-kind", choices=("none", "measured", "synthetic-plumbing"), required=True)
-    parser.add_argument("--command", required=True, help="exact command that was or will be run; it is not executed")
+    parser.add_argument(
+        "--command", required=True, help="exact command that was or will be run; it is not executed"
+    )
     parser.add_argument("--seed", action="append", default=[])
     parser.add_argument("--config", action="append", default=[])
     parser.add_argument("--input", action="append", default=[])
     parser.add_argument("--output", action="append", default=[])
-    parser.add_argument("--file-version", action="append", default=[], metavar="PATH=IMMUTABLE_ID", help="required for any recorded file larger than 64 MiB")
-    parser.add_argument("--resource", action="append", default=[], help="resource, service, hardware, duration, token, or cost fact")
+    parser.add_argument(
+        "--file-version",
+        action="append",
+        default=[],
+        metavar="PATH=IMMUTABLE_ID",
+        help="required for any recorded file larger than 64 MiB",
+    )
+    parser.add_argument(
+        "--resource",
+        action="append",
+        default=[],
+        help="resource, service, hardware, duration, token, or cost fact",
+    )
     parser.add_argument("--failure-reason", default="")
     parser.add_argument("--note", default="")
     args = parser.parse_args()
@@ -276,14 +302,30 @@ def main() -> int:
     referenced_paths = {str(resolve_file(path, root)) for path in args.config + args.input + args.output}
     unknown_versions = sorted(set(versions) - referenced_paths)
     if unknown_versions:
-        print(f"error: --file-version path is not listed as config, input, or output: {unknown_versions[0]}", file=sys.stderr)
+        print(
+            f"error: --file-version path is not listed as config, input, or output: {unknown_versions[0]}",
+            file=sys.stderr,
+        )
         return 2
-    config_records = [file_record(path, root, versions.get(str(resolve_file(path, root)))) for path in args.config]
-    input_records = [file_record(path, root, versions.get(str(resolve_file(path, root)))) for path in args.input]
-    output_records = [file_record(path, root, versions.get(str(resolve_file(path, root)))) for path in args.output]
+    config_records = [
+        file_record(path, root, versions.get(str(resolve_file(path, root)))) for path in args.config
+    ]
+    input_records = [
+        file_record(path, root, versions.get(str(resolve_file(path, root)))) for path in args.input
+    ]
+    output_records = [
+        file_record(path, root, versions.get(str(resolve_file(path, root)))) for path in args.output
+    ]
     for record in config_records + input_records + output_records:
-        if record.get("exists") and record.get("size_bytes", 0) > MAX_HASH_BYTES and not record.get("external_version"):
-            print(f"error: file exceeds 64 MiB; provide --file-version PATH=IMMUTABLE_ID for {record['path']}", file=sys.stderr)
+        if (
+            record.get("exists")
+            and record.get("size_bytes", 0) > MAX_HASH_BYTES
+            and not record.get("external_version")
+        ):
+            print(
+                f"error: file exceeds 64 MiB; provide --file-version PATH=IMMUTABLE_ID for {record['path']}",
+                file=sys.stderr,
+            )
             return 2
     if args.status == "completed":
         for record in config_records + input_records:
@@ -293,7 +335,9 @@ def main() -> int:
     candidate_evidence = (
         args.phase == "full" and args.status == "completed" and args.result_kind == "measured"
     )
-    if candidate_evidence and (not output_records or any(not record.get("exists") for record in output_records)):
+    if candidate_evidence and (
+        not output_records or any(not record.get("exists") for record in output_records)
+    ):
         print("error: a completed full measured run requires at least one existing output", file=sys.stderr)
         return 2
 
@@ -313,7 +357,9 @@ def main() -> int:
         "phase": args.phase,
         "status": args.status,
         "result_kind": args.result_kind,
-        "evidence_eligibility": "candidate_pending_verification" if candidate_evidence else "not_scientific_evidence",
+        "evidence_eligibility": "candidate_pending_verification"
+        if candidate_evidence
+        else "not_scientific_evidence",
         "command": args.command,
         "seeds": args.seed,
         "root": str(root),
@@ -351,25 +397,21 @@ def main() -> int:
         prior_ledger = ledger_path.read_text(encoding="utf-8")
         if prior_ledger and not prior_ledger.endswith("\n"):
             prior_ledger += "\n"
-        ledger_temp.write_text(prior_ledger + json.dumps(ledger_record, ensure_ascii=False) + "\n", encoding="utf-8")
+        ledger_temp.write_text(
+            prior_ledger + json.dumps(ledger_record, ensure_ascii=False) + "\n", encoding="utf-8"
+        )
         os.replace(manifest_temp, manifest_path)
         manifest_committed = True
         os.replace(ledger_temp, ledger_path)
     except OSError as exc:
         for path in (manifest_temp, ledger_temp):
-            try:
+            with contextlib.suppress(FileNotFoundError):
                 path.unlink()
-            except FileNotFoundError:
-                pass
         if manifest_committed:
-            try:
+            with contextlib.suppress(FileNotFoundError):
                 manifest_path.unlink()
-            except FileNotFoundError:
-                pass
-        try:
+        with contextlib.suppress(OSError):
             run_dir.rmdir()
-        except OSError:
-            pass
         print(f"error: failed to commit run manifest and ledger together: {exc}", file=sys.stderr)
         return 2
     print(manifest_path)

@@ -53,4 +53,3 @@ Separate expected artifacts from unearned predicted results. State what success 
 ## References
 
 Include only verified sources and conform to the required format.
-

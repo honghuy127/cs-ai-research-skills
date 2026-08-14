@@ -18,14 +18,15 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from research_state import (
+from research_state import (  # noqa: E402
     VALID_EVIDENCE_ELIGIBILITY,
     VALID_RESULT_KINDS,
     VALID_RUN_PHASES,
     VALID_RUN_STATUSES,
+)
+from research_state import (  # noqa: E402
     validate as validate_dossier,
 )
-
 
 PLACEHOLDERS = ("[CITATION NEEDED]", "[EVIDENCE NEEDED]", "[RESULT PENDING]")
 EVIDENCE_BEARING_STATUSES = {"supported", "mixed", "contradicted"}
@@ -48,10 +49,18 @@ def load_jsonl(path: Path) -> tuple[list[dict], list[dict]]:
         try:
             value = json.loads(raw)
         except json.JSONDecodeError as exc:
-            findings.append({"severity": "error", "code": "invalid-jsonl", "message": f"{path}:{line_number}: {exc}"})
+            findings.append(
+                {"severity": "error", "code": "invalid-jsonl", "message": f"{path}:{line_number}: {exc}"}
+            )
             continue
         if not isinstance(value, dict):
-            findings.append({"severity": "error", "code": "invalid-record", "message": f"{path}:{line_number}: expected object"})
+            findings.append(
+                {
+                    "severity": "error",
+                    "code": "invalid-record",
+                    "message": f"{path}:{line_number}: expected object",
+                }
+            )
             continue
         records.append(value)
     return records, findings
@@ -108,7 +117,9 @@ def audit_artifact_paths(
             add(findings, "error", code, f"invalid artifact path: {raw_path!r}", record_id)
             continue
         if not raw_path.split("#", 1)[0]:
-            add(findings, "error", code, f"artifact path has no filesystem component: {raw_path!r}", record_id)
+            add(
+                findings, "error", code, f"artifact path has no filesystem component: {raw_path!r}", record_id
+            )
             continue
         path = artifact_path(raw_path, root)
         if path.is_symlink() or not path.exists() or (require_file and not path.is_file()):
@@ -167,7 +178,9 @@ def audit_file_records(
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", default=".")
-    parser.add_argument("--scan", action="append", default=[], help="manuscript or proposal text file to scan")
+    parser.add_argument(
+        "--scan", action="append", default=[], help="manuscript or proposal text file to scan"
+    )
     parser.add_argument("--json", action="store_true", dest="as_json")
     args = parser.parse_args()
 
@@ -197,13 +210,33 @@ def main() -> int:
             if not item.get(field):
                 add(findings, "error", "incomplete-evidence", f"missing {field}", identifier)
         if not any(item.get(field) for field in ("url", "doi", "artifact_path")):
-            add(findings, "error", "incomplete-evidence", "missing authoritative source or artifact locator", identifier)
+            add(
+                findings,
+                "error",
+                "incomplete-evidence",
+                "missing authoritative source or artifact locator",
+                identifier,
+            )
         if item.get("verification") == "metadata-only" and (item.get("supports") or item.get("challenges")):
-            add(findings, "error", "metadata-used-substantively", "metadata-only source is linked as substantive evidence", identifier)
+            add(
+                findings,
+                "error",
+                "metadata-used-substantively",
+                "metadata-only source is linked as substantive evidence",
+                identifier,
+            )
         if item.get("verification") in {"full-text-checked", "artifact-checked"} and not item.get("locator"):
-            add(findings, "error", "verified-evidence-without-locator", "verified source lacks a passage, section, theorem, table, or artifact locator", identifier)
+            add(
+                findings,
+                "error",
+                "verified-evidence-without-locator",
+                "verified source lacks a passage, section, theorem, table, or artifact locator",
+                identifier,
+            )
         if isinstance(item.get("artifact_path"), str):
-            audit_artifact_paths([item["artifact_path"]], root, findings, "missing-evidence-artifact", identifier)
+            audit_artifact_paths(
+                [item["artifact_path"]], root, findings, "missing-evidence-artifact", identifier
+            )
         for relation in ("supports", "challenges", "contextualizes"):
             targets = item.get(relation) if isinstance(item.get(relation), list) else []
             for claim_id in targets:
@@ -212,7 +245,13 @@ def main() -> int:
                     continue
                 linked_sources = claim_by_id[claim_id].get("evidence_ids")
                 if not isinstance(linked_sources, list) or identifier not in linked_sources:
-                    add(findings, "error", "missing-claim-evidence-backlink", f"{claim_id} does not link {identifier}", identifier)
+                    add(
+                        findings,
+                        "error",
+                        "missing-claim-evidence-backlink",
+                        f"{claim_id} does not link {identifier}",
+                        identifier,
+                    )
 
     runs_dir = base / "runs"
     runs_root = None if runs_dir.is_symlink() else runs_dir.resolve()
@@ -255,15 +294,46 @@ def main() -> int:
         if not isinstance(manifest, dict):
             add(findings, "error", "invalid-manifest", f"{manifest_path}: expected JSON object", run_id)
             continue
-        for field in ("schema_version", "run_id", "experiment_id", "operator", "started_at", "ended_at", "recorded_at", "phase", "status", "result_kind", "evidence_eligibility", "command"):
+        for field in (
+            "schema_version",
+            "run_id",
+            "experiment_id",
+            "operator",
+            "started_at",
+            "ended_at",
+            "recorded_at",
+            "phase",
+            "status",
+            "result_kind",
+            "evidence_eligibility",
+            "command",
+        ):
             if not isinstance(manifest.get(field), str) or not manifest[field].strip():
-                add(findings, "error", "incomplete-manifest", f"missing or invalid {field}: {manifest_path}", run_id)
+                add(
+                    findings,
+                    "error",
+                    "incomplete-manifest",
+                    f"missing or invalid {field}: {manifest_path}",
+                    run_id,
+                )
         for field in ("seeds", "configs", "inputs", "outputs", "resources"):
             if not isinstance(manifest.get(field), list):
-                add(findings, "error", "incomplete-manifest", f"{field} must be a list: {manifest_path}", run_id)
+                add(
+                    findings,
+                    "error",
+                    "incomplete-manifest",
+                    f"{field} must be a list: {manifest_path}",
+                    run_id,
+                )
         for field in ("git", "environment"):
             if not isinstance(manifest.get(field), dict):
-                add(findings, "error", "incomplete-manifest", f"{field} must be an object: {manifest_path}", run_id)
+                add(
+                    findings,
+                    "error",
+                    "incomplete-manifest",
+                    f"{field} must be an object: {manifest_path}",
+                    run_id,
+                )
         if manifest.get("schema_version") != "1.0":
             add(findings, "error", "unsupported-manifest-schema", str(manifest.get("schema_version")), run_id)
         enum_fields = {
@@ -277,9 +347,23 @@ def main() -> int:
                 add(findings, "error", "invalid-manifest-enum", f"{field}: {manifest.get(field)!r}", run_id)
         if manifest.get("run_id") != run_id:
             add(findings, "error", "manifest-run-mismatch", str(manifest_path), run_id)
-        for field in ("experiment_id", "started_at", "ended_at", "phase", "status", "result_kind", "evidence_eligibility"):
+        for field in (
+            "experiment_id",
+            "started_at",
+            "ended_at",
+            "phase",
+            "status",
+            "result_kind",
+            "evidence_eligibility",
+        ):
             if item.get(field) != manifest.get(field):
-                add(findings, "error", "ledger-manifest-mismatch", f"{field}: ledger={item.get(field)!r}, manifest={manifest.get(field)!r}", run_id)
+                add(
+                    findings,
+                    "error",
+                    "ledger-manifest-mismatch",
+                    f"{field}: ledger={item.get(field)!r}, manifest={manifest.get(field)!r}",
+                    run_id,
+                )
         try:
             started_at = datetime.fromisoformat(str(manifest.get("started_at", "")).replace("Z", "+00:00"))
             ended_at = datetime.fromisoformat(str(manifest.get("ended_at", "")).replace("Z", "+00:00"))
@@ -289,15 +373,26 @@ def main() -> int:
             add(findings, "error", "invalid-run-timestamps", str(manifest_path), run_id)
         if manifest.get("status") in {"failed", "aborted"} and not manifest.get("failure_reason"):
             add(findings, "error", "run-failure-without-reason", str(manifest_path), run_id)
-        if manifest.get("result_kind") == "synthetic-plumbing" and manifest.get("evidence_eligibility") != "not_scientific_evidence":
+        if (
+            manifest.get("result_kind") == "synthetic-plumbing"
+            and manifest.get("evidence_eligibility") != "not_scientific_evidence"
+        ):
             add(findings, "error", "synthetic-evidence-promotion", str(manifest_path), run_id)
         expected_eligibility = (
             "candidate_pending_verification"
-            if manifest.get("phase") == "full" and manifest.get("status") == "completed" and manifest.get("result_kind") == "measured"
+            if manifest.get("phase") == "full"
+            and manifest.get("status") == "completed"
+            and manifest.get("result_kind") == "measured"
             else "not_scientific_evidence"
         )
         if manifest.get("evidence_eligibility") != expected_eligibility:
-            add(findings, "error", "invalid-evidence-eligibility", f"expected {expected_eligibility}: {manifest_path}", run_id)
+            add(
+                findings,
+                "error",
+                "invalid-evidence-eligibility",
+                f"expected {expected_eligibility}: {manifest_path}",
+                run_id,
+            )
         elif isinstance(run_id, str) and manifest.get("run_id") == run_id:
             run_eligibility[run_id] = expected_eligibility
         completed = manifest.get("status") == "completed"
@@ -315,17 +410,47 @@ def main() -> int:
                 add(findings, "error", "dirty-git-without-content-snapshot", str(manifest_path), run_id)
             else:
                 for dirty_file in dirty_files:
-                    if not isinstance(dirty_file, dict) or not isinstance(dirty_file.get("path"), str) or dirty_file.get("kind") not in {"file", "symlink", "deleted-or-unavailable"}:
+                    if (
+                        not isinstance(dirty_file, dict)
+                        or not isinstance(dirty_file.get("path"), str)
+                        or dirty_file.get("kind") not in {"file", "symlink", "deleted-or-unavailable"}
+                    ):
                         add(findings, "error", "invalid-dirty-git-record", repr(dirty_file), run_id)
-                    elif dirty_file.get("kind") == "file" and not isinstance(dirty_file.get("size_bytes"), int):
+                    elif dirty_file.get("kind") == "file" and not isinstance(
+                        dirty_file.get("size_bytes"), int
+                    ):
                         add(findings, "error", "dirty-git-file-without-size", repr(dirty_file), run_id)
-                    elif dirty_file.get("kind") == "file" and dirty_file.get("size_bytes", 0) <= MAX_HASH_BYTES and not isinstance(dirty_file.get("sha256"), str):
+                    elif (
+                        dirty_file.get("kind") == "file"
+                        and dirty_file.get("size_bytes", 0) <= MAX_HASH_BYTES
+                        and not isinstance(dirty_file.get("sha256"), str)
+                    ):
                         add(findings, "error", "dirty-git-file-without-hash", repr(dirty_file), run_id)
-                    elif dirty_file.get("kind") == "file" and dirty_file.get("size_bytes", 0) > MAX_HASH_BYTES and not dirty_file.get("hash_note"):
-                        add(findings, "error", "dirty-large-file-without-provenance-note", repr(dirty_file), run_id)
-                    elif dirty_file.get("kind") == "file" and dirty_file.get("size_bytes", 0) > MAX_HASH_BYTES:
-                        add(findings, "warning", "dirty-large-file-not-content-hashed", str(dirty_file.get("path")), run_id)
-                    elif dirty_file.get("kind") == "symlink" and not isinstance(dirty_file.get("target"), str):
+                    elif (
+                        dirty_file.get("kind") == "file"
+                        and dirty_file.get("size_bytes", 0) > MAX_HASH_BYTES
+                        and not dirty_file.get("hash_note")
+                    ):
+                        add(
+                            findings,
+                            "error",
+                            "dirty-large-file-without-provenance-note",
+                            repr(dirty_file),
+                            run_id,
+                        )
+                    elif (
+                        dirty_file.get("kind") == "file" and dirty_file.get("size_bytes", 0) > MAX_HASH_BYTES
+                    ):
+                        add(
+                            findings,
+                            "warning",
+                            "dirty-large-file-not-content-hashed",
+                            str(dirty_file.get("path")),
+                            run_id,
+                        )
+                    elif dirty_file.get("kind") == "symlink" and not isinstance(
+                        dirty_file.get("target"), str
+                    ):
                         add(findings, "error", "dirty-git-symlink-without-target", repr(dirty_file), run_id)
 
     if runs_root is not None and runs_dir.is_dir():
@@ -357,9 +482,17 @@ def main() -> int:
         linked_evidence = item.get("evidence_ids") if isinstance(item.get("evidence_ids"), list) else []
         linked_runs = item.get("run_ids") if isinstance(item.get("run_ids"), list) else []
         artifact_paths = item.get("artifact_paths") if isinstance(item.get("artifact_paths"), list) else []
-        evidence_bearing = evidential_status in EVIDENCE_BEARING_STATUSES or lifecycle_state in EXECUTION_BEARING_STATES
+        evidence_bearing = (
+            evidential_status in EVIDENCE_BEARING_STATUSES or lifecycle_state in EXECUTION_BEARING_STATES
+        )
         if evidence_bearing and not linked_evidence and not linked_runs and not artifact_paths:
-            add(findings, "error", "untraced-evidence-bearing-claim", "claim has no linked evidence, run, or artifact", identifier)
+            add(
+                findings,
+                "error",
+                "untraced-evidence-bearing-claim",
+                "claim has no linked evidence, run, or artifact",
+                identifier,
+            )
         for source_id in linked_evidence:
             if source_id not in evidence_ids:
                 add(findings, "error", "unknown-evidence-id", str(source_id), identifier)
@@ -373,7 +506,13 @@ def main() -> int:
                 if isinstance(values, list):
                     relations.extend(values)
             if identifier not in relations:
-                add(findings, "error", "missing-evidence-claim-relation", f"{source_id} does not classify its relation to {identifier}", identifier)
+                add(
+                    findings,
+                    "error",
+                    "missing-evidence-claim-relation",
+                    f"{source_id} does not classify its relation to {identifier}",
+                    identifier,
+                )
         for linked_run_id in linked_runs:
             if linked_run_id not in run_ids:
                 add(findings, "error", "unknown-run-id", str(linked_run_id), identifier)
@@ -381,28 +520,76 @@ def main() -> int:
         requires_internal_runs = lifecycle_state in EXECUTION_BEARING_STATES
         if item.get("claim_type") in EMPIRICAL_TYPES and evidence_bearing and requires_internal_runs:
             if not linked_runs:
-                add(findings, "error", "empirical-claim-without-run", "evidence-bearing empirical claim lacks a run ID", identifier)
+                add(
+                    findings,
+                    "error",
+                    "empirical-claim-without-run",
+                    "evidence-bearing empirical claim lacks a run ID",
+                    identifier,
+                )
             for linked_run_id in linked_runs:
                 if run_eligibility.get(linked_run_id) != "candidate_pending_verification":
-                    add(findings, "error", "ineligible-run-supports-claim", f"run is not a complete measured full-run candidate: {linked_run_id}", identifier)
+                    add(
+                        findings,
+                        "error",
+                        "ineligible-run-supports-claim",
+                        f"run is not a complete measured full-run candidate: {linked_run_id}",
+                        identifier,
+                    )
         if item.get("claim_type") in EMPIRICAL_TYPES and lifecycle_state in INDEPENDENT_CHECK_STATES:
-            verification_runs = item.get("verification_run_ids") if isinstance(item.get("verification_run_ids"), list) else []
-            verification_artifacts = item.get("verification_artifact_paths") if isinstance(item.get("verification_artifact_paths"), list) else []
+            verification_runs = (
+                item.get("verification_run_ids") if isinstance(item.get("verification_run_ids"), list) else []
+            )
+            verification_artifacts = (
+                item.get("verification_artifact_paths")
+                if isinstance(item.get("verification_artifact_paths"), list)
+                else []
+            )
             if not verification_runs and not verification_artifacts:
-                add(findings, "error", "verified-claim-without-independent-check", "verified empirical claim lacks a distinct verification run or verification artifact", identifier)
+                add(
+                    findings,
+                    "error",
+                    "verified-claim-without-independent-check",
+                    "verified empirical claim lacks a distinct verification run or verification artifact",
+                    identifier,
+                )
             for verification_run_id in verification_runs:
                 if verification_run_id in linked_runs:
-                    add(findings, "error", "verification-run-not-independent", str(verification_run_id), identifier)
+                    add(
+                        findings,
+                        "error",
+                        "verification-run-not-independent",
+                        str(verification_run_id),
+                        identifier,
+                    )
                 elif run_eligibility.get(verification_run_id) != "candidate_pending_verification":
                     add(findings, "error", "invalid-verification-run", str(verification_run_id), identifier)
             for raw_path in verification_artifacts:
-                audit_artifact_paths([raw_path], root, findings, "missing-verification-artifact", identifier, require_file=True)
+                audit_artifact_paths(
+                    [raw_path], root, findings, "missing-verification-artifact", identifier, require_file=True
+                )
         if lifecycle_state == "reported" and not artifact_paths:
-            add(findings, "error", "reported-claim-without-location", "reported claim has no manuscript or artifact path", identifier)
+            add(
+                findings,
+                "error",
+                "reported-claim-without-location",
+                "reported claim has no manuscript or artifact path",
+                identifier,
+            )
         elif lifecycle_state == "reported":
-            reported_files = [artifact_path(path, root) for path in artifact_paths if isinstance(path, str) and path.split("#", 1)[0]]
+            reported_files = [
+                artifact_path(path, root)
+                for path in artifact_paths
+                if isinstance(path, str) and path.split("#", 1)[0]
+            ]
             if not any(path.is_file() and not path.is_symlink() for path in reported_files):
-                add(findings, "error", "reported-claim-without-file-location", "reported claim lacks a concrete manuscript or deliverable file", identifier)
+                add(
+                    findings,
+                    "error",
+                    "reported-claim-without-file-location",
+                    "reported claim lacks a concrete manuscript or deliverable file",
+                    identifier,
+                )
 
     for raw_path in args.scan:
         path = Path(raw_path)
@@ -410,7 +597,10 @@ def main() -> int:
             path = root / path
         scan_file(path.resolve(), findings)
 
-    counts = {severity: sum(1 for item in findings if item["severity"] == severity) for severity in ("error", "warning")}
+    counts = {
+        severity: sum(1 for item in findings if item["severity"] == severity)
+        for severity in ("error", "warning")
+    }
     report = {
         "root": str(root),
         "scope": "structural traceability only",

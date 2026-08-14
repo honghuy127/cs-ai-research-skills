@@ -60,4 +60,3 @@
 ## Deviations
 
 Append every post-freeze change with date, reason, affected inference, and whether analysis becomes exploratory.
-
