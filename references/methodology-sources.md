@@ -2,18 +2,18 @@
 
 Use this register to verify the principles and live rules behind the research skill. URLs were checked on 2026-08-14. Re-open every source before relying on it, record the access date, and prefer the current official version over this snapshot.
 
-## Table of contents
+## Contents
 
-- [Apply the source hierarchy](#apply-the-source-hierarchy)
-- [Separate stable principles from volatile rules](#separate-stable-principles-from-volatile-rules)
-- [Use official standards and policies](#use-official-standards-and-policies)
-- [Use scholarly discovery services](#use-scholarly-discovery-services)
-- [Verify proposal rules at the source](#verify-proposal-rules-at-the-source)
-- [Record public-skill design provenance](#record-public-skill-design-provenance)
-- [Reject unsafe defaults](#reject-unsafe-defaults)
-- [Record and refresh a methodology source](#record-and-refresh-a-methodology-source)
+1. Apply the source hierarchy
+2. Separate stable principles from volatile rules
+3. Use official standards and policies
+4. Use scholarly discovery services
+5. Verify proposal rules at the source
+6. Record public-skill design provenance
+7. Reject unsafe defaults
+8. Record and refresh a methodology source
 
-## Apply the source hierarchy
+## 1. Apply the source hierarchy
 
 Use sources in this order:
 
@@ -25,7 +25,7 @@ Use sources in this order:
 
 Never let a public skill override a governing policy or substitute for primary scientific evidence. Treat repository popularity as a discovery signal, not proof of methodological validity.
 
-## Separate stable principles from volatile rules
+## 2. Separate stable principles from volatile rules
 
 | Treat as relatively stable | Treat as volatile and re-fetch for every project |
 |---|---|
@@ -40,7 +40,7 @@ Never let a public skill override a governing policy or substitute for primary s
 
 When a stable principle conflicts with a current governing rule, stop and resolve the conflict rather than silently choosing one.
 
-## Use official standards and policies
+## 3. Use official standards and policies
 
 | Source | Current official URL | Use |
 |---|---|---|
@@ -58,7 +58,7 @@ When a stable principle conflicts with a current governing rule, stop and resolv
 
 Use these as starting points, not a universal bundle. Select only the standards that match the jurisdiction, venue, study method, and deliverable.
 
-## Use scholarly discovery services
+## 4. Use scholarly discovery services
 
 | Service | Official documentation | Proper role |
 |---|---|---|
@@ -70,7 +70,7 @@ Use these as starting points, not a universal bundle. Select only the standards 
 
 Use discovery metadata to locate sources. Open the primary paper, proceedings record, dataset, or artifact before supporting a substantive claim. Record platform coverage, query, filters, date, cursor or pages, and deduplication decisions.
 
-## Verify proposal rules at the source
+## 5. Verify proposal rules at the source
 
 | Source | Current official URL | Use |
 |---|---|---|
@@ -79,7 +79,7 @@ Use discovery metadata to locate sources. Open the primary paper, proceedings re
 
 Do not encode agency rules from these landing pages into a reusable skill. Parse the exact live call, incorporated documents, amendments, FAQs, and institutional policy for each proposal.
 
-## Record public-skill design provenance
+## 6. Record public-skill design provenance
 
 The following public repositories informed workflow design. Reuse principles after independent verification; do not copy their numeric thresholds or domain assumptions.
 
@@ -94,7 +94,7 @@ The following public repositories informed workflow design. Reuse principles aft
 | Academic Research Agent Skill | https://github.com/ngtiendong/Academic-Research-Agent-Skill/blob/main/SKILL.md | Lean lifecycle routing, categorical gates, cheapest falsifier, minimum informative artifact | Do not replace evidence-backed judgment with automatic numeric ranking |
 | BESSER research paper review | https://github.com/BESSER-PEARL/research-agent-skills/blob/main/research-paper-review/SKILL.md | Paper-type calibration, structured review dimensions, and numeric consistency checks | Narrow the trigger, preserve confidentiality, and follow the current venue's verdict policy |
 
-## Reject unsafe defaults
+## 7. Reject unsafe defaults
 
 Never import these patterns into the skill:
 
@@ -108,7 +108,7 @@ Never import these patterns into the skill:
 
 Synthetic data may test software plumbing when clearly labeled, isolated from scientific conclusions, and permitted by the research contract. It must never satisfy an empirical gate or become a reported result.
 
-## Record and refresh a methodology source
+## 8. Record and refresh a methodology source
 
 For every governing methodology source, record:
 

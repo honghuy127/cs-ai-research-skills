@@ -5,18 +5,14 @@
 1. Apply the gate protocol
 2. Assign gate status
 3. Calibrate mandatory checks
-4. Gate the research contract and problem
-5. Gate literature, gap, and idea selection
+4. Route phase-specific gates to their references
+5. Gate the research contract and problem
 6. Gate a proposal
 7. Gate feasibility, ethics, and policy
-8. Gate experimental design
-9. Gate implementation
-10. Gate execution and evidence eligibility
-11. Gate analysis and interpretation
-12. Gate paper writing
-13. Gate review and rebuttal
-14. Gate submission or release
-15. Report and reconcile gate outcomes
+8. Gate execution and evidence eligibility
+9. Gate paper writing
+10. Gate submission or release
+11. Report and reconcile gate outcomes
 
 ## 1. Apply the gate protocol
 
@@ -84,7 +80,23 @@ Require an equivalent burden of proof rather than deleting an inapplicable crite
 
 Treat automated audits as structural evidence only. Do not let a passing script determine novelty, construct validity, ethics, policy compliance, or scientific soundness.
 
-## 4. Gate the research contract and problem
+## 4. Route phase-specific gates to their references
+
+Each phase reference owns the detailed criteria for its gate. Load the reference and apply its gate section with the protocol above; do not maintain a second criteria list here.
+
+| Gate | Canonical criteria |
+|---|---|
+| Literature, novelty, and feasibility | [literature-and-ideas.md](literature-and-ideas.md), section "Run novelty and feasibility gates" |
+| Experimental design | [experimental-design.md](experimental-design.md), section "Pass the design gate" |
+| AI and ML evaluation | [cs-ai-evaluation.md](cs-ai-evaluation.md), section "Pass the AI evaluation gate" |
+| Implementation and reproducibility | [implementation-and-reproducibility.md](implementation-and-reproducibility.md), section "Pass the implementation gate" |
+| Analysis and interpretation | [analysis-and-statistics.md](analysis-and-statistics.md), section "Preserve analysis provenance and pass the gate" |
+| Review and rebuttal | [paper-review-and-rebuttal.md](paper-review-and-rebuttal.md), section "Complete the review or rebuttal gate" |
+| Ethics and policy response | [ethics-integrity-and-policy.md](ethics-integrity-and-policy.md), section "Respond to concerns and record the gate" |
+
+The gates below have no phase reference of their own and remain canonical here.
+
+## 5. Gate the research contract and problem
 
 Control whether substantive planning should proceed.
 
@@ -106,26 +118,6 @@ Set:
 - CONDITIONAL when safe assumptions permit bounded progress.
 - FAIL when the question is incoherent, unfalsifiable despite claiming empirical proof, trivial under the stated objective, or mismatched to the proposed evidence.
 - BLOCKED when a material decision owner, artifact, access permission, or noninferable requirement is absent.
-
-## 5. Gate literature, gap, and idea selection
-
-Control whether a novelty, gap, or idea claim may guide a proposal or paper.
-
-Require:
-
-- A dated and scoped search protocol proportionate to the claim.
-- Current primary and authoritative sources.
-- Verified identity and substantive inspection for nearest work.
-- Search terms, databases or venues, backward and forward tracing where practical, and inclusion rationale.
-- A comparison matrix using dimensions relevant to the contribution.
-- Evidence that distinguishes an unsolved problem from an unsearched one.
-- Rival interpretations and disconfirming prior work.
-- A scoped novelty statement and explicit coverage limits.
-- Feasibility, impact, evaluability, ethical risk, and kill criteria for shortlisted ideas.
-
-Set FAIL when verified nearest work already establishes the same contribution under the claimed scope or when the proposed gap does not matter to the research question. Narrow or reframe rather than hide the conflict.
-
-Never use “first,” “only,” “unprecedented,” or “no prior work” from an informal search. Use NOT_ASSESSED when novelty was not investigated.
 
 ## 6. Gate a proposal
 
@@ -166,48 +158,7 @@ Treat missing mandatory ethics approval, consent, legal authority, confidentiali
 
 Do not waive law, consent, confidentiality, or a nonwaivable safety control.
 
-## 8. Gate experimental design
-
-Control whether implementation or claim-eligible execution should begin.
-
-Require:
-
-- A mapping from research questions and claims to constructs, interventions or conditions, outcomes, and analyses.
-- A defensible unit of analysis and sampling frame.
-- Dataset, split, duplicate, leakage, and contamination controls.
-- Fair baselines, comparators, tuning budgets, and compute accounting.
-- Metrics aligned to constructs and deployment costs.
-- Randomization, blocking, pairing, seeds, repeats, power or precision rationale as applicable.
-- Ablations, robustness, sensitivity, error analysis, and rival explanations proportionate to the claims.
-- Human-evaluation protocol, annotator plan, judge calibration, or qualitative rigor where applicable.
-- Frozen primary outcomes, analysis choices, failure criteria, and deviation process.
-- A pilot that informs feasibility without becoming silent confirmatory evidence.
-
-Set FAIL when the design cannot distinguish the claimed effect from leakage, confounding, unfair comparison, measurement failure, or stochastic noise at the required level.
-
-Use CONDITIONAL when a named pilot or calibration step is part of the approved design and cannot itself support the final claim.
-
-## 9. Gate implementation
-
-Control whether the pipeline may perform claim-eligible runs.
-
-Require:
-
-- Versioned code, configuration, dependencies, and environment.
-- Validated data acquisition, checksums or fingerprints, preprocessing, and split reproduction.
-- Deterministic or appropriately stochastic behavior with recorded seeds.
-- Unit, integration, and smoke tests for central transformations and metrics.
-- Baseline parity in preprocessing, tuning, resource budget, and evaluation.
-- Logging of commands, errors, configuration, hardware, timing, cost, and raw outputs.
-- Separation of immutable raw outputs from derived analysis artifacts.
-- Safe handling of credentials, personal data, untrusted artifacts, and external services.
-- A run manifest linked to the approved experiment plan.
-
-Do not treat successful execution on a toy or synthetic case as scientific evidence. Set PASS only for readiness within the tested scope.
-
-Set FAIL when a central metric, split, baseline, or data path is incorrect. Set BLOCKED when required data, infrastructure, credentials, or authorization is unavailable.
-
-## 10. Gate execution and evidence eligibility
+## 8. Gate execution and evidence eligibility
 
 Control whether a run may support a scientific claim.
 
@@ -225,27 +176,7 @@ Set FAIL for corrupted provenance, undisclosed selective reporting, invalid spli
 
 Use CONDITIONAL when evidence remains eligible only for a narrowed claim or explicitly exploratory conclusion.
 
-## 11. Gate analysis and interpretation
-
-Control whether analyzed results may become verified claims.
-
-Require:
-
-- A trace from raw outputs through versioned analysis to every reported value.
-- Correct unit of analysis and treatment of pairing, clustering, repeated measures, and dependence.
-- Effect sizes and uncertainty appropriate to the design.
-- Assumption checks, sensitivity analyses, and multiplicity handling where needed.
-- Missingness, exclusions, outliers, and failed-run treatment.
-- Comparison with prespecified outcomes and transparent labeling of exploratory analyses.
-- Robustness, subgroup, error, or qualitative analysis needed to interpret the contribution.
-- Rival explanations and limitations.
-- Numerical consistency across tables, figures, text, abstract, and conclusion.
-
-Set FAIL when the analysis cannot support the claim, uses an invalid denominator or unit, hides material outcomes, or overstates association as causation.
-
-Do not equate lack of statistical significance with evidence of equivalence or no effect without an appropriate design.
-
-## 12. Gate paper writing
+## 9. Gate paper writing
 
 Control whether the manuscript may be described as internally complete or ready for the next authorized submission step.
 
@@ -265,32 +196,7 @@ Set FAIL for fabricated or unsupported claims, material numerical inconsistency,
 
 Use CONDITIONAL for bounded presentation work that does not affect validity or compliance and has an owner. Use BLOCKED for an unresolved venue policy, authorship decision, required approval, or missing central artifact.
 
-## 13. Gate review and rebuttal
-
-Control whether a review or response may be delivered to the authorized human.
-
-For a review, require:
-
-- Authorization, confidentiality, current AI-use policy, and conflict assessment.
-- Calibration to contribution type and methodology.
-- Independent reconstruction of claims and evidence.
-- Location-specific findings with proportional severity.
-- Clear impact, actionable remedy, and reviewer uncertainty.
-- Separation of soundness, significance, novelty, clarity, venue fit, and recommendation.
-- Current official rubric before assigning scores.
-
-For a rebuttal, require:
-
-- A disposition for every material reviewer comment.
-- Direct, evidence-backed answers.
-- Exact locations for completed changes.
-- Honest labels for new, pilot, pending, or unavailable evidence.
-- Respectful disagreement and bounded commitments.
-- Current official response and disclosure rules.
-
-Set BLOCKED when confidential-artifact processing is not authorized or current policy prohibits AI assistance. Do not replace artifact-specific review with inferred content.
-
-## 14. Gate submission or release
+## 10. Gate submission or release
 
 Control any externally consequential submission, publication, artifact release, or communication.
 
@@ -307,7 +213,7 @@ Require:
 
 Do not submit, upload, publish, accept terms, attest compliance, or contact third parties without explicit authority. Use BLOCKED when that authority is absent.
 
-## 15. Report and reconcile gate outcomes
+## 11. Report and reconcile gate outcomes
 
 Report the gate outcome with the requested artifact. Lead with the decision and the evidence supporting it.
 

@@ -182,6 +182,8 @@ Capture at minimum:
 
 Assign the run ID in the frozen plan before execution, then use `scripts/capture_run.py` immediately after the attempt when the project uses the bundled dossier. It records an immutable run manifest and ledger entry; it neither executes the command nor represents a merely planned run. Supply the experiment ID, operator, timezone-aware start and end timestamps, actual status, resource facts, and a reason for a failed or aborted attempt. A completed full measured run is only `candidate_pending_verification` until outputs and analysis are checked.
 
+The manifest's `capture_environment` field records where the manifest was captured, not where the run executed. Record the run's own hardware, runtime, driver, and service facts through `--resource` entries so the environment row above is satisfied for the actual execution.
+
 The helper hashes recorded files up to 64 MiB. For a larger config, input, or output, pass a repeatable `--file-version PATH=IMMUTABLE_ID` backed by a versioned data manifest, object-store version, dataset revision, or equivalent immutable identifier; the helper refuses an unversioned large file.
 
 When Git is available and dirty, the helper records content hashes for changed tracked files and non-ignored untracked files outside `.research/`. For a claim-eligible run, also preserve a reconstructable commit, authorized patch, or archived source snapshot; hashes establish identity but cannot recreate missing content. Treat a dirty run without that reconstruction path as a reproducibility deficiency even if the structural audit passes.

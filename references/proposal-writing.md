@@ -2,21 +2,21 @@
 
 Use this playbook for a funding proposal, thesis proposal, internal research plan, or concept note. Load literature-and-ideas.md first when the novelty or evidence basis is not already gated. Use the shared research contract and state records; do not invent applicant facts, institutional commitments, preliminary results, costs, or approvals.
 
-## Table of contents
+## Contents
 
-- [Identify the proposal regime](#identify-the-proposal-regime)
-- [Parse the current official instructions](#parse-the-current-official-instructions)
-- [Build a compliance matrix](#build-a-compliance-matrix)
-- [Construct the proposal logic](#construct-the-proposal-logic)
-- [Define objectives and work packages](#define-objectives-and-work-packages)
-- [Design the evaluation plan](#design-the-evaluation-plan)
-- [Build the schedule, team, and resources](#build-the-schedule-team-and-resources)
-- [Manage risks, ethics, and impacts](#manage-risks-ethics-and-impacts)
-- [Draft and substantiate the narrative](#draft-and-substantiate-the-narrative)
-- [Run internal review](#run-internal-review)
-- [Hand off the proposal](#hand-off-the-proposal)
+1. Identify the proposal regime
+2. Parse the current official instructions
+3. Build a compliance matrix
+4. Construct the proposal logic
+5. Define objectives and work packages
+6. Design the evaluation plan
+7. Build the schedule, team, and resources
+8. Manage risks, ethics, and impacts
+9. Draft and substantiate the narrative
+10. Run internal review
+11. Hand off the proposal
 
-## Identify the proposal regime
+## 1. Identify the proposal regime
 
 First classify the deliverable:
 
@@ -27,7 +27,7 @@ First classify the deliverable:
 
 Do not force grant headings onto a thesis proposal or assume a generic agency format. Record the proposal regime, official source set, deadline, time zone, evidence cutoff, and responsible owner in the research contract.
 
-## Parse the current official instructions
+## 2. Parse the current official instructions
 
 Open the current official solicitation and every incorporated document. Do not rely on remembered rules, prior-year templates, blog summaries, or another applicant's proposal.
 
@@ -55,7 +55,7 @@ Apply this precedence unless the official text says otherwise:
 
 Record the exact locator for each rule. If official sources conflict, stop the affected drafting, preserve both sources, and obtain an authoritative clarification. If the source cannot be accessed, mark the rule BLOCKED and ask for the official document; do not fill gaps from memory.
 
-## Build a compliance matrix
+## 3. Build a compliance matrix
 
 Create the matrix before drafting. Use one row per atomic requirement.
 
@@ -74,7 +74,7 @@ Create the matrix before drafting. Use one row per atomic requirement.
 
 Separate scientific content from applicant-specific administrative facts. Use explicit placeholders for unknown registrations, budgets, personnel, facilities, and commitments. Never manufacture an institutional detail to make the matrix look complete.
 
-## Construct the proposal logic
+## 4. Construct the proposal logic
 
 Build one traceable chain:
 
@@ -84,7 +84,7 @@ For every link, ask what evidence supports it and what would break it. Map each 
 
 Write a one-page logic summary before expanding the narrative. If an objective does not contribute to the central claim or a mandatory program outcome, remove it or justify it as enabling work.
 
-## Define objectives and work packages
+## 5. Define objectives and work packages
 
 Use a small coherent set of objectives. Make each objective specific enough to evaluate without pretending that an uncertain research outcome is guaranteed.
 
@@ -102,7 +102,7 @@ For each objective or work package, record:
 
 Show how the packages integrate. Avoid a chain in which one early failure makes every later package worthless; add independent learning, staged validation, or a viable fallback where scientifically honest.
 
-## Design the evaluation plan
+## 6. Design the evaluation plan
 
 Map each proposed claim and objective to:
 
@@ -117,7 +117,7 @@ Map each proposed claim and objective to:
 
 Load experimental-design.md and any relevant CS/AI evaluation reference for detailed empirical planning. Separate verified preliminary evidence from proposed work. Label pilot-only evidence accurately, and explain how negative or null outcomes will still produce knowledge. Do not transform an aspiration into a guaranteed effect size.
 
-## Build the schedule, team, and resources
+## 7. Build the schedule, team, and resources
 
 Construct a dependency-aware schedule, not a list of dates. Show work packages, approval lead times, procurement, data access, integration, evaluation, dissemination, critical-path dependencies, decision gates, and realistic slack.
 
@@ -133,7 +133,7 @@ Build the resource and budget case from auditable assumptions:
 
 Follow the live solicitation and institutional budget policy. Do not invent a rate, quote, facility, commitment, or in-kind contribution. Confirm that the work fits the duration and that the budget buys every critical resource.
 
-## Manage risks, ethics, and impacts
+## 8. Manage risks, ethics, and impacts
 
 Maintain a risk register with the risk, cause, likelihood, impact, early indicator, prevention, contingency, owner, trigger, and residual risk. Cover scientific, technical, operational, schedule, budget, access, partnership, security, and adoption risks.
 
@@ -149,7 +149,7 @@ Assess at least:
 
 Treat approvals and access agreements as preconditions, not narrative formalities. State positive, negative, uncertain, and indirect impacts. Pair credible harms with mitigation, monitoring, accountable owners, and release or stop conditions.
 
-## Draft and substantiate the narrative
+## 9. Draft and substantiate the narrative
 
 Use assets/proposal-outline.md as a starting scaffold, then conform it to the official required order. Obtain alignment on the one-page logic and compliance matrix before writing long sections.
 
@@ -164,7 +164,7 @@ Draft section by section:
 
 Use future tense for proposed work and the shared truth states for existing work. Use [CITATION NEEDED], [EVIDENCE NEEDED], and [RESULT PENDING] instead of plausible filler. Allocate the page budget by review importance and compliance, not equal section length. Cite official instructions by locator in working notes even if the final proposal does not show them.
 
-## Run internal review
+## 10. Run internal review
 
 Run distinct passes so one reviewer is not asked to catch everything at once:
 
@@ -178,7 +178,7 @@ Run distinct passes so one reviewer is not asked to catch everything at once:
 
 Track findings in a response matrix with severity, source criterion, location, owner, resolution, and recheck status. Re-open the official solicitation and amendment page before final sign-off because rules and FAQs can change during drafting.
 
-## Hand off the proposal
+## 11. Hand off the proposal
 
 Deliver:
 

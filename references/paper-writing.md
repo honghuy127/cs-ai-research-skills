@@ -39,7 +39,7 @@ For each claim, record:
 |---|---|
 | Claim ID | Stable identifier such as CLM-001 |
 | Exact claim | One scoped, testable or defensible statement |
-| Claim type | Contextual, novelty, theoretical, empirical, causal, descriptive, or normative |
+| Claim type | Contextual, novelty, theoretical, empirical, causal, descriptive, normative, performance, efficiency, or human-evaluation |
 | Evidence | Source, proof, run, analysis, table, or figure IDs |
 | Lifecycle state | Proposed, analyzed, verified, reported, dropped, or another controlled truth state |
 | Evidential status | Not assessed, insufficient, supported, mixed, or contradicted |

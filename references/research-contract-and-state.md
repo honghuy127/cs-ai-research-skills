@@ -64,7 +64,7 @@ Identify one primary contribution and any supporting contributions:
 | Negative result | The tested expectation is credible; the test has power and coverage; failure modes are explained. |
 | Position or conceptual | Thesis, assumptions, argument, counterarguments, and implications are coherent and grounded. |
 
-Then select the methodology-specific standard. Do not apply a controlled-experiment checklist to a proof, a systematic-review claim to ordinary related work, or a novelty rubric to a replication whose value is reliability.
+Then select the methodology-specific standard. Common methodologies include controlled experiment, observational or repository-mining study, benchmark study, simulation, systems measurement, human experiment, survey or interview, qualitative study, systematic review, case study, formal analysis, engineering or design science, and mixed methods; experimental-design.md routes each to its validity burden. Do not apply a controlled-experiment checklist to a proof, a systematic-review claim to ordinary related work, or a novelty rubric to a replication whose value is reliability.
 
 ## 4. Project dossier
 
@@ -106,6 +106,8 @@ An internal claim record should contain:
 ```json
 {"id":"CLM-001","text":"...","claim_type":"empirical","lifecycle_state":"proposed","evidential_status":"not_assessed","evidence_ids":[],"run_ids":[],"verification_run_ids":[],"verification_artifact_paths":[],"artifact_paths":[],"scope":"...","caveats":[],"updated_at":"..."}
 ```
+
+`claim_type` is one of `contextual`, `novelty`, `theoretical`, `empirical`, `causal`, `descriptive`, `normative`, `performance`, `efficiency`, or `human-evaluation`. The audit treats `empirical`, `causal`, `performance`, `efficiency`, and `human-evaluation` claims as empirical: when evidence-bearing and execution-bearing they require linked claim-eligible runs, and at `verified` or `reported` they require the independent verification described below.
 
 Keep two independent fields:
 

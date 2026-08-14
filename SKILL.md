@@ -39,11 +39,7 @@ Read [quality-gates.md](references/quality-gates.md) before declaring any phase 
 
 ## Classify before evaluating
 
-Select the contribution type and methodology before imposing a rubric. Allow combinations, but identify one primary type.
-
-Common contribution types include algorithm or method, theory, empirical finding, system, dataset or benchmark, measurement or evaluation, application, human-centered study, survey or taxonomy, replication or reproducibility study, negative result, and position or conceptual work.
-
-Common methodologies include controlled experiment, observational or repository-mining study, benchmark study, simulation, systems measurement, human experiment, survey or interview, qualitative study, systematic review, case study, formal analysis, engineering or design science, and mixed methods.
+Select the contribution type and methodology before imposing a rubric, using the contribution and methodology tables in [research-contract-and-state.md](references/research-contract-and-state.md). Allow combinations, but identify one primary type.
 
 Do not require SOTA gains, experiments for self-contained theory, novelty for a replication, positive findings for a negative-results study, or statistical tests that do not match the design.
 
