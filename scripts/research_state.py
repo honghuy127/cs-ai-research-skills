@@ -441,6 +441,56 @@ def cmd_status(args: argparse.Namespace) -> int:
     return 0
 
 
+UPDATE_LIST_FIELDS = {
+    "research_question": "research_questions",
+    "deliverable": "deliverables",
+    "open_risk": "open_risks",
+    "blocker": "blockers",
+    "next_action": "next_actions",
+}
+
+
+def cmd_update(args: argparse.Namespace) -> int:
+    root = Path(args.root)
+    errors = validate(root)
+    if errors:
+        for error in errors:
+            print(f"ERROR: {error}")
+        return 1
+    base = dossier(root)
+    state = load_json(base / "state.json")
+    changed: list[str] = []
+    if args.title is not None:
+        if not args.title.strip():
+            print("error: title must be non-empty", file=sys.stderr)
+            return 2
+        state["title"] = args.title
+        changed.append("title")
+    for option in ("contribution_type", "methodology"):
+        value = getattr(args, option)
+        if value is not None:
+            state[option] = value.strip() or None
+            changed.append(option)
+    for option, field in UPDATE_LIST_FIELDS.items():
+        values = getattr(args, option)
+        if values is not None:
+            cleaned = [item for item in values if item.strip()]
+            state[field] = cleaned
+            changed.append(field)
+    if not changed:
+        print("error: no update options were provided", file=sys.stderr)
+        return 2
+    state["updated_at"] = now()
+    write_json_atomic(base / "state.json", state)
+    remaining = validate(root)
+    if remaining:
+        for error in remaining:
+            print(f"ERROR: {error}")
+        return 1
+    print(f"updated: {', '.join(changed)}")
+    return 0
+
+
 def cmd_transition(args: argparse.Namespace) -> int:
     root = Path(args.root)
     base = dossier(root)
@@ -492,6 +542,28 @@ def build_parser() -> argparse.ArgumentParser:
     status_parser = subparsers.add_parser("status", help="print a compact project summary")
     status_parser.add_argument("--root", default=".")
     status_parser.set_defaults(func=cmd_status)
+
+    update_parser = subparsers.add_parser(
+        "update",
+        help="update state.json index fields; each repeated list option replaces the whole list",
+        description=(
+            "Update common state.json index fields. Repeatable options replace the entire "
+            "stored list. Edit constraints or artifact_index directly in state.json, then "
+            "run validate."
+        ),
+    )
+    update_parser.add_argument("--root", default=".")
+    update_parser.add_argument("--title")
+    update_parser.add_argument(
+        "--contribution-type", dest="contribution_type", help="empty string clears the field"
+    )
+    update_parser.add_argument("--methodology", help="empty string clears the field")
+    update_parser.add_argument("--research-question", dest="research_question", action="append")
+    update_parser.add_argument("--deliverable", action="append")
+    update_parser.add_argument("--open-risk", dest="open_risk", action="append")
+    update_parser.add_argument("--blocker", action="append")
+    update_parser.add_argument("--next-action", dest="next_action", action="append")
+    update_parser.set_defaults(func=cmd_update)
 
     transition_parser = subparsers.add_parser("transition", help="record a justified stage transition")
     transition_parser.add_argument("--root", default=".")

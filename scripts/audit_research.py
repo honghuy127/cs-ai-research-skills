@@ -33,6 +33,7 @@ EVIDENCE_BEARING_STATUSES = {"supported", "mixed", "contradicted"}
 EXECUTION_BEARING_STATES = {"executed", "analyzed", "verified", "reported"}
 INDEPENDENT_CHECK_STATES = {"verified", "reported"}
 EMPIRICAL_TYPES = {"empirical", "causal", "performance", "efficiency", "human-evaluation"}
+SUPPORTED_MANIFEST_SCHEMAS = {"1.0", "1.1"}
 MAX_HASH_BYTES = 64 * 1024 * 1024
 
 
@@ -73,19 +74,28 @@ def add(findings: list[dict], severity: str, code: str, message: str, record_id:
     findings.append(item)
 
 
-def scan_file(path: Path, findings: list[dict]) -> None:
+def scan_file(path: Path, findings: list[dict], warn_non_text: bool = True) -> None:
     if not path.is_file():
         add(findings, "error", "missing-scan-target", str(path))
         return
     try:
         text = path.read_text(encoding="utf-8")
     except UnicodeDecodeError:
-        add(findings, "warning", "non-text-scan-target", str(path))
+        if warn_non_text:
+            add(findings, "warning", "non-text-scan-target", str(path))
         return
     for token in PLACEHOLDERS:
         for line_number, line in enumerate(text.splitlines(), start=1):
             if token in line:
                 add(findings, "error", "unresolved-placeholder", f"{path}:{line_number}: {token}")
+
+
+def superseded_ids(records: list[dict]) -> set[str]:
+    return {
+        record["supersedes"]
+        for record in records
+        if isinstance(record.get("supersedes"), str) and record["supersedes"].strip()
+    }
 
 
 def hash_file(path: Path) -> str:
@@ -203,9 +213,13 @@ def main() -> int:
     evidence_ids = set(evidence_by_id)
     claim_ids = set(claim_by_id)
     run_ids = {item.get("run_id") for item in experiments if isinstance(item.get("run_id"), str)}
+    superseded_evidence = superseded_ids(evidence)
+    superseded_claims = superseded_ids(claims)
 
     for item in evidence:
         identifier = item.get("id") if isinstance(item.get("id"), str) else None
+        if identifier in superseded_evidence:
+            continue
         for field in ("id", "title", "accessed_at", "verification"):
             if not item.get(field):
                 add(findings, "error", "incomplete-evidence", f"missing {field}", identifier)
@@ -242,6 +256,8 @@ def main() -> int:
             for claim_id in targets:
                 if claim_id not in claim_ids:
                     add(findings, "error", "unknown-claim-id", f"{relation}: {claim_id}", identifier)
+                    continue
+                if claim_id in superseded_claims:
                     continue
                 linked_sources = claim_by_id[claim_id].get("evidence_ids")
                 if not isinstance(linked_sources, list) or identifier not in linked_sources:
@@ -325,7 +341,8 @@ def main() -> int:
                     f"{field} must be a list: {manifest_path}",
                     run_id,
                 )
-        for field in ("git", "environment"):
+        environment_field = "environment" if manifest.get("schema_version") == "1.0" else "capture_environment"
+        for field in ("git", environment_field):
             if not isinstance(manifest.get(field), dict):
                 add(
                     findings,
@@ -334,7 +351,7 @@ def main() -> int:
                     f"{field} must be an object: {manifest_path}",
                     run_id,
                 )
-        if manifest.get("schema_version") != "1.0":
+        if manifest.get("schema_version") not in SUPPORTED_MANIFEST_SCHEMAS:
             add(findings, "error", "unsupported-manifest-schema", str(manifest.get("schema_version")), run_id)
         enum_fields = {
             "phase": VALID_RUN_PHASES,
@@ -475,8 +492,11 @@ def main() -> int:
             elif candidate_manifest not in ledger_manifests:
                 add(findings, "error", "unledgered-run-manifest", str(candidate_manifest))
 
+    auto_scanned: set[Path] = set()
     for item in claims:
         identifier = item.get("id") if isinstance(item.get("id"), str) else None
+        if identifier in superseded_claims:
+            continue
         lifecycle_state = item.get("lifecycle_state")
         evidential_status = item.get("evidential_status")
         linked_evidence = item.get("evidence_ids") if isinstance(item.get("evidence_ids"), list) else []
@@ -496,6 +516,15 @@ def main() -> int:
         for source_id in linked_evidence:
             if source_id not in evidence_ids:
                 add(findings, "error", "unknown-evidence-id", str(source_id), identifier)
+                continue
+            if source_id in superseded_evidence:
+                add(
+                    findings,
+                    "warning",
+                    "claim-links-superseded-evidence",
+                    f"claim links superseded evidence record: {source_id}",
+                    identifier,
+                )
                 continue
             source = evidence_by_id[source_id]
             if source.get("verification") == "metadata-only":
@@ -590,12 +619,20 @@ def main() -> int:
                     "reported claim lacks a concrete manuscript or deliverable file",
                     identifier,
                 )
+            for path in reported_files:
+                resolved = path.resolve()
+                if resolved.is_file() and not path.is_symlink() and resolved not in auto_scanned:
+                    auto_scanned.add(resolved)
+                    scan_file(resolved, findings, warn_non_text=False)
 
     for raw_path in args.scan:
         path = Path(raw_path)
         if not path.is_absolute():
             path = root / path
-        scan_file(path.resolve(), findings)
+        resolved = path.resolve()
+        if resolved in auto_scanned:
+            continue
+        scan_file(resolved, findings)
 
     counts = {
         severity: sum(1 for item in findings if item["severity"] == severity)

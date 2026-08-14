@@ -347,7 +347,7 @@ def main() -> int:
         print(f"error: immutable run directory already exists: {run_dir}", file=sys.stderr)
         return 2
     manifest = {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "run_id": args.run_id,
         "experiment_id": args.experiment_id,
         "operator": args.operator,
@@ -364,7 +364,9 @@ def main() -> int:
         "seeds": args.seed,
         "root": str(root),
         "git": git_record(root),
-        "environment": {
+        # Records where the manifest was captured, not where the run executed.
+        # Supply the run's own hardware, runtime, and service facts via --resource.
+        "capture_environment": {
             "platform": platform.platform(),
             "python": sys.version,
             "executable": sys.executable,
