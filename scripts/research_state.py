@@ -114,10 +114,9 @@ def cmd_init(args: argparse.Namespace) -> int:
     if base.is_symlink():
         print(f"error: refusing symlinked dossier path: {base}", file=sys.stderr)
         return 2
-    if base.exists():
-        if not base.is_dir() or any(base.iterdir()):
-            print(f"error: non-empty or invalid dossier path already exists: {base}", file=sys.stderr)
-            return 2
+    if base.exists() and (not base.is_dir() or any(base.iterdir())):
+        print(f"error: non-empty or invalid dossier path already exists: {base}", file=sys.stderr)
+        return 2
 
     base.mkdir(exist_ok=True)
     (base / "runs").mkdir(exist_ok=True)
