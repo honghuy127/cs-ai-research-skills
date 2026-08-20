@@ -95,6 +95,8 @@ Each phase reference owns the detailed criteria for its gate. Load the reference
 | Review and rebuttal | [paper-review-and-rebuttal.md](paper-review-and-rebuttal.md), section "Complete the review or rebuttal gate" |
 | Submission formatting | [paper-formatting.md](paper-formatting.md), section "Iterate, record, and pass the formatting gate" |
 | Office documents | [office-documents.md](office-documents.md), section "Verify and pass the office document gate" |
+| Markdown documents | [markdown-documents.md](markdown-documents.md), section "Verify and pass the markdown gate" |
+| GitHub repository and releases | [github-collaboration.md](github-collaboration.md), section "Verify and pass the github gate" |
 | Presentation slides | [presentation-slides.md](presentation-slides.md), section "Record provenance and pass the talk gate" |
 | Ethics and policy response | [ethics-integrity-and-policy.md](ethics-integrity-and-policy.md), section "Respond to concerns and record the gate" |
 
@@ -195,7 +197,7 @@ Require:
 - Limitations, validity threats, ethics, data, licensing, safety, and disclosure statements.
 - Current official venue or publisher requirements, with source and access date.
 - A rendered-format inspection per paper-formatting.md when layout compliance matters: compile log, rendered page images, page count, and file metadata.
-- No unresolved [CITATION NEEDED], [EVIDENCE NEEDED], or [RESULT PENDING] marker in submission text.
+- No unresolved `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]` marker in submission text.
 
 Set FAIL for fabricated or unsupported claims, material numerical inconsistency, hidden deviations, missing mandatory disclosure, or a methods section that misrepresents execution.
 

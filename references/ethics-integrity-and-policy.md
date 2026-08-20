@@ -72,7 +72,7 @@ For results, record:
 
 Keep synthetic or mock data visibly ineligible for scientific claims. Do not promote an implemented pipeline, smoke test, or pilot to completed evidence through prose.
 
-Use [CITATION NEEDED], [EVIDENCE NEEDED], or [RESULT PENDING] when provenance is incomplete.
+Use `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]` when provenance is incomplete.
 
 ## 4. Protect people and communities
 

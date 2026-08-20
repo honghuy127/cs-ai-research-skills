@@ -47,7 +47,7 @@ For each claim, record:
 | Caveat | Known limitation, assumption, uncertainty, or rival explanation |
 | Destination | Abstract, introduction, results, discussion, or conclusion |
 
-Require a direct path from each major claim to eligible evidence. Mark gaps with [CITATION NEEDED], [EVIDENCE NEEDED], or [RESULT PENDING]. Do not replace a marker with plausible text.
+Require a direct path from each major claim to eligible evidence. Mark gaps with `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]`. Do not replace a marker with plausible text.
 
 Draft the abstract and conclusion from the same claim map. Prevent either section from strengthening a claim beyond the evidence presented in the body.
 

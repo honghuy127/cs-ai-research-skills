@@ -721,3 +721,131 @@ class TestCheckOffice:
         code, report = office_report(tmp_path, "--json", "broken.pptx")
         assert code == 1
         assert {finding["code"] for finding in report["reports"][0]["errors"]} == {"unreadable-file"}
+
+
+def write_markdown(root: Path, name: str, text: str) -> Path:
+    path = root / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+    return path
+
+
+class TestCheckMarkdown:
+    def test_clean_document_passes(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "docs/notes.md", "# Notes\n\n## Details\n\nText.\n")
+        write_markdown(tmp_path, "README.md", "# Title\n\nSee [notes](docs/notes.md#details).\n")
+        result = run_script("check_markdown.py", "README.md", cwd=tmp_path)
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert "status: pass" in result.stdout
+
+    def test_unclosed_fence_fails(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "doc.md", "# A\n\n```python\ncode\n")
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 1
+        assert "unclosed-fence" in result.stdout
+
+    def test_closing_fence_with_info_string_stays_open(self, tmp_path: Path) -> None:
+        # Per CommonMark a closing fence is bare; "```python" inside the block
+        # is content, and the final bare fence closes it.
+        write_markdown(tmp_path, "doc.md", "# A\n\n```python\ncode\n```python\nmore\n```\n")
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 0, result.stdout + result.stderr
+
+    def test_tilde_fence_not_closed_by_backtick_fence(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "doc.md", "# A\n\n~~~\n```\n~~~\n")
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 0, result.stdout + result.stderr
+
+    def test_backtick_in_fence_info_string_is_not_a_fence(self, tmp_path: Path) -> None:
+        # A backtick fence whose info string contains a backtick is not a fence
+        # opener, so the trailing bare fence opens a block that never closes.
+        write_markdown(tmp_path, "doc.md", "# A\n\n```x `y`\ntext\n```\n")
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 1
+        assert "unclosed-fence" in result.stdout
+
+    def test_unresolved_marker_fails(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "doc.md", "# A\n\nResult: [RESULT PENDING]\n")
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 1
+        assert "unresolved-placeholder" in result.stdout
+
+    def test_marker_in_fenced_block_ignored(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "doc.md", "# A\n\n```text\n[RESULT PENDING] example\n```\n")
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 0, result.stdout + result.stderr
+
+    def test_marker_in_inline_code_ignored(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "doc.md", "# A\n\nUse `[CITATION NEEDED]` markers.\n")
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 0, result.stdout + result.stderr
+
+    def test_broken_relative_link_fails(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "doc.md", "# A\n\n[x](missing.md)\n")
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 1
+        assert "broken-link" in result.stdout
+
+    def test_missing_anchor_warns_and_strict_fails(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "doc.md", "# A\n\n[x](#nope)\n")
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 0
+        assert "missing-anchor" in result.stdout
+        strict = run_script("check_markdown.py", "--strict", "doc.md", cwd=tmp_path)
+        assert strict.returncode == 1
+
+    def test_generated_and_custom_anchors_resolve(self, tmp_path: Path) -> None:
+        text = "# A\n\n## Section Two\n\n[x](#section-two)\n\n<a name=\"manual\"></a>\n\n[y](#manual)\n"
+        write_markdown(tmp_path, "doc.md", text)
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 0, result.stdout + result.stderr
+
+    def test_duplicate_heading_anchor(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "docs/notes.md", "# Notes\n\n## Same\n\n## Same\n")
+        write_markdown(tmp_path, "README.md", "# T\n\n[a](docs/notes.md#same-1)\n")
+        result = run_script("check_markdown.py", "README.md", cwd=tmp_path)
+        assert result.returncode == 0, result.stdout + result.stderr
+
+    def test_empty_alt_text_warns(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "img.png", "")
+        write_markdown(tmp_path, "doc.md", "# A\n\n![](img.png)\n")
+        result = run_script("check_markdown.py", "--json", "doc.md", cwd=tmp_path)
+        assert result.returncode == 0
+        codes = {finding["code"] for finding in json.loads(result.stdout)["reports"][0]["warnings"]}
+        assert codes == {"empty-alt-text"}
+
+    def test_heading_structure_warnings(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "doc.md", "# A\n\n### Deep\n\n# B\n")
+        result = run_script("check_markdown.py", "--json", "doc.md", cwd=tmp_path)
+        assert result.returncode == 0
+        codes = {finding["code"] for finding in json.loads(result.stdout)["reports"][0]["warnings"]}
+        assert codes == {"heading-level-skip", "multiple-h1"}
+
+    def test_root_relative_link_warns(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "doc.md", "# A\n\n[x](/assets/file.txt)\n")
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 0
+        assert "root-relative-link" in result.stdout
+
+    def test_external_link_and_draft_marker(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "doc.md", "# A\n\n[spec](https://spec.commonmark.org/)\n\nTODO fix this.\n")
+        result = run_script("check_markdown.py", "--json", "doc.md", cwd=tmp_path)
+        assert result.returncode == 0
+        report = json.loads(result.stdout)["reports"][0]
+        assert report["status"] == "pass-with-warnings"
+        assert {finding["code"] for finding in report["warnings"]} == {"draft-marker"}
+
+    def test_json_report_structure_and_overall_status(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "a.md", "# A\n\n[x](missing.md)\n")
+        write_markdown(tmp_path, "b.md", "# B\n\nAll settled.\n")
+        result = run_script("check_markdown.py", "--json", "a.md", "b.md", cwd=tmp_path)
+        assert result.returncode == 1
+        report = json.loads(result.stdout)
+        assert report["status"] == "fail"
+        statuses = {entry["file"]: entry["status"] for entry in report["reports"]}
+        assert statuses == {"a.md": "fail", "b.md": "pass"}
+
+    def test_unreadable_file_fails(self, tmp_path: Path) -> None:
+        result = run_script("check_markdown.py", "absent.md", cwd=tmp_path)
+        assert result.returncode == 1
+        assert "unreadable-file" in result.stdout

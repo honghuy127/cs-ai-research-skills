@@ -195,4 +195,4 @@ Before proposing or experimenting, produce:
 - novelty and feasibility gate records;
 - updated CLM-* records and decision entries.
 
-Use [CITATION NEEDED], [EVIDENCE NEEDED], or [RESULT PENDING] for unresolved content. Do not advance a core claim past its supported truth state. If the gate is CONDITIONAL or BLOCKED, name the cheapest decisive next action instead of drafting around the uncertainty.
+Use `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]` for unresolved content. Do not advance a core claim past its supported truth state. If the gate is CONDITIONAL or BLOCKED, name the cheapest decisive next action instead of drafting around the uncertainty.

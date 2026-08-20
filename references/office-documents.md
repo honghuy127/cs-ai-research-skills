@@ -76,7 +76,7 @@ Office formats do not diff. Treat the generated document as a derived artifact:
 Require all of the following for an office document gate PASS:
 
 - `scripts/check_office.py` reports no errors, and `--strict` shows no placeholder markers or leftover warnings before delivery.
-- A re-extraction or conversion of the final file shows the intended content: nothing truncated, no unresolved [CITATION NEEDED], [EVIDENCE NEEDED], or [RESULT PENDING] marker, and tracked changes resolved or intentionally preserved.
+- A re-extraction or conversion of the final file shows the intended content: nothing truncated, no unresolved `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]` marker, and tracked changes resolved or intentionally preserved.
 - Every number and result statement traces to a source, run, or analysis artifact recorded in the dossier.
 - Metadata reviewed: author, editor, and hidden fields scrubbed or appropriate for the recipient, especially for anonymous or external delivery.
 - The template, format, and approval constraints from the document contract are satisfied.

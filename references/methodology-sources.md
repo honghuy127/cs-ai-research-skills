@@ -1,6 +1,6 @@
 # Methodology Sources and Design Provenance
 
-Use this register to verify the principles and live rules behind the research skill. URLs were checked on 2026-08-14. Re-open every source before relying on it, record the access date, and prefer the current official version over this snapshot.
+Use this register to verify the principles and live rules behind the research skill. URLs were checked on 2026-08-14; the Markdown and GitHub rows were added on 2026-08-21. Re-open every source before relying on it, record the access date, and prefer the current official version over this snapshot.
 
 ## Contents
 
@@ -55,6 +55,10 @@ When a stable principle conflicts with a current governing rule, stop and resolv
 | ACM research involving human participants | https://www.acm.org/publications/policies/research-involving-human-participants-and-subjects | Check disclosure and ethical expectations for human-participant research |
 | NIST AI Risk Management Framework | https://www.nist.gov/itl/ai-risk-management-framework | Structure voluntary AI-risk analysis where applicable; verify the current revision because NIST announced revision activity in 2026 |
 | CRediT taxonomy | https://credit.niso.org/ | Describe contributor roles without treating the taxonomy as an authorship decision rule |
+| CommonMark specification | https://spec.commonmark.org/ | Anchor the portable Markdown core and delimiter rules that all renderers share |
+| GitHub Flavored Markdown specification | https://github.github.com/gfm/ | Verify extension behavior (tables, task lists, autolinks, strikethrough) beyond CommonMark |
+| GitHub writing and formatting documentation | https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax | Check GitHub-only rendering rules such as alerts, math, heading anchors, relative links, and line breaks |
+| GitHub CLI manual | https://cli.github.com/manual/ | Verify gh command syntax and flags against the current manual instead of memory |
 
 Use these as starting points, not a universal bundle. Select only the standards that match the jurisdiction, venue, study method, and deliverable.
 

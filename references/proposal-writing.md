@@ -162,7 +162,7 @@ Draft section by section:
 5. connect evaluation, work plan, resources, risks, and impact;
 6. close every section against the relevant review criterion.
 
-Use future tense for proposed work and the shared truth states for existing work. Use [CITATION NEEDED], [EVIDENCE NEEDED], and [RESULT PENDING] instead of plausible filler. Allocate the page budget by review importance and compliance, not equal section length. Cite official instructions by locator in working notes even if the final proposal does not show them.
+Use future tense for proposed work and the shared truth states for existing work. Use `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, and `[RESULT PENDING]` instead of plausible filler. Allocate the page budget by review importance and compliance, not equal section length. Cite official instructions by locator in working notes even if the final proposal does not show them.
 
 ## 10. Run internal review
 

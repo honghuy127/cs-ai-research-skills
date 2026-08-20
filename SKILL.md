@@ -1,6 +1,6 @@
 ---
 name: conduct-cs-ai-research
-description: Guide rigorous computer science and AI research across idea construction, scholarly literature synthesis, novelty and feasibility checks, thesis or grant proposals, experimental design and implementation, benchmark and human evaluation, statistical analysis, reproducibility, academic paper writing and revision, paper figures and diagrams, submission formatting and format checks, office document analysis and authoring, presentation slides, rebuttals, and evidence-grounded manuscript review. Use for research questions, hypotheses, contribution framing, datasets, baselines, metrics, ablations, run plans, research code, result interpretation, LaTeX manuscripts, paper figures and diagram sources, rendered manuscript inspection, Office documents (docx, xlsx), PowerPoint and Beamer slide preparation, peer reviews, or an end-to-end research project. Do not use for a simple fact lookup, ordinary production coding or code review unrelated to a research claim, generic concept explanations, or copyediting that needs no research reasoning.
+description: Guide rigorous computer science and AI research across idea construction, literature synthesis, novelty and feasibility checks, thesis or grant proposals, experimental design and implementation, benchmark and human evaluation, statistical analysis, reproducibility, paper writing and revision, figures and diagrams, submission formatting, office documents, presentation slides, rebuttals, and evidence-grounded manuscript review. Use for research questions, hypotheses, contribution framing, datasets, baselines, metrics, ablations, run plans, research code, LaTeX manuscripts, rendered manuscript inspection, Office document content (docx, xlsx), Markdown documents and GitHub-rendered files, GitHub repositories, issues, pull requests, and research releases, PowerPoint and Beamer slide preparation, peer reviews, or an end-to-end research project. Do not use for simple fact lookup, production coding or code review unrelated to a research claim, generic concepts, or copyediting that needs no research reasoning.
 ---
 
 # Conduct CS and AI Research
@@ -34,6 +34,8 @@ Load every additional reference listed for the selected route before acting. Add
 | Create or revise paper figures and diagrams | [figures-and-diagrams.md](references/figures-and-diagrams.md), plus [paper-writing.md](references/paper-writing.md) during a manuscript pass |
 | Format or format-check a manuscript or submission | [paper-formatting.md](references/paper-formatting.md), plus [paper-writing.md](references/paper-writing.md) during a manuscript pass |
 | Analyze or author office documents | [office-documents.md](references/office-documents.md), plus [analysis-and-statistics.md](references/analysis-and-statistics.md) when numbers appear |
+| Author or check Markdown documents | [markdown-documents.md](references/markdown-documents.md), plus [github-collaboration.md](references/github-collaboration.md) when the render target or release channel is GitHub |
+| Manage a GitHub repository, issues, pull requests, reviews, or releases | [github-collaboration.md](references/github-collaboration.md), plus [markdown-documents.md](references/markdown-documents.md) when writing repository documents and the applicable phase reference for the content being shipped |
 | Create or revise presentation slides | [presentation-slides.md](references/presentation-slides.md), plus [paper-writing.md](references/paper-writing.md) when deriving the deck from a manuscript |
 | Review a paper or artifact | [paper-review-and-rebuttal.md](references/paper-review-and-rebuttal.md), [ethics-integrity-and-policy.md](references/ethics-integrity-and-policy.md) |
 | Prepare a rebuttal or revision plan | [paper-review-and-rebuttal.md](references/paper-review-and-rebuttal.md), [paper-writing.md](references/paper-writing.md) |
@@ -92,6 +94,8 @@ Typical gates are:
 10. Office document gate: the document's structure, provenance, and content satisfy the recorded document contract, with no executed macros or embedded code.
 11. Review gate: every criticism is evidence-backed, calibrated, actionable, and policy-compliant.
 12. Talk gate: the deck traces to the claim map, rendered slides are inspected, and every number agrees with its recorded source.
+13. Markdown gate: the source passes structural checks, the render target is inspected, and every number and claim traces to a recorded source.
+14. GitHub gate: repository state changes and releases carry explicit authorization, provenance, and secret or supply-chain checks.
 
 Return `PASS`, `CONDITIONAL`, `FAIL`, `BLOCKED`, or `NOT_ASSESSED`, with evidence and next action. Do not hide a waiver.
 
@@ -109,7 +113,7 @@ For substantial ongoing projects, keep the canonical dossier in the research rep
 └── runs/<run-id>/manifest.json
 ```
 
-Treat existing project artifacts as authoritative; the dossier indexes them rather than duplicating them. Initialize or inspect it with `scripts/research_state.py`. Capture immutable run provenance with `scripts/capture_run.py`. Check structural traceability with `scripts/audit_research.py`. Lint `.drawio` figure sources with `scripts/validate_drawio.py`. Check LaTeX compile logs for layout and reference defects with `scripts/check_latex_log.py`. Check Office packages for structural defects with `scripts/check_office.py`. Use the scripts only when Python is available; otherwise preserve the same contracts manually.
+Treat existing project artifacts as authoritative; the dossier indexes them rather than duplicating them. Initialize or inspect it with `scripts/research_state.py`. Capture immutable run provenance with `scripts/capture_run.py`. Check structural traceability with `scripts/audit_research.py`. Lint `.drawio` figure sources with `scripts/validate_drawio.py`. Check LaTeX compile logs for layout and reference defects with `scripts/check_latex_log.py`. Check Office packages for structural defects with `scripts/check_office.py`. Lint Markdown sources for structural defects with `scripts/check_markdown.py`. Use the scripts only when Python is available; otherwise preserve the same contracts manually.
 
 The dossier serializes lifecycle states in lowercase even though prose and gate reports use the uppercase labels above. A clean helper-script audit proves structural consistency only, never scientific validity.
 
