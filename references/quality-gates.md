@@ -190,6 +190,7 @@ Require:
 - Consistent values, terminology, notation, and artifact references.
 - Limitations, validity threats, ethics, data, licensing, safety, and disclosure statements.
 - Current official venue or publisher requirements, with source and access date.
+- A rendered-format inspection per paper-formatting.md when layout compliance matters: compile log, rendered page images, page count, and file metadata.
 - No unresolved [CITATION NEEDED], [EVIDENCE NEEDED], or [RESULT PENDING] marker in submission text.
 
 Set FAIL for fabricated or unsupported claims, material numerical inconsistency, hidden deviations, missing mandatory disclosure, or a methods section that misrepresents execution.

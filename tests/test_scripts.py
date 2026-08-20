@@ -439,3 +439,85 @@ class TestValidateDrawio:
         assert code == 1
         codes = {finding["code"] for finding in report["reports"][0]["errors"]}
         assert "parse-error" in codes
+
+
+CLEAN_LATEX_LOG = r"""This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024)
+(./main.tex [1] [2]
+Underfull \hbox (badness 10000) in paragraph at lines 30--35
+(./main.aux)
+Output written on main.pdf (2 pages, 34567 bytes).
+"""
+
+WARN_LATEX_LOG = r"""This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024)
+(./main.tex [1]
+Overfull \hbox (15.57pt too wide) in paragraph at lines 123--124
+[]\T1/lmr/m/n/10 Some very long unbreakable-identifier overflows here
+LaTeX Warning: Reference `fig:missing' on page 2 undefined on input line 55.
+[2] [3]
+LaTeX Warning: Citation `smith2020' undefined on input line 88.
+(./main.aux)
+LaTeX Warning: There were undefined references.
+Output written on main.pdf (3 pages, 123456 bytes).
+"""
+
+ERROR_LATEX_LOG = r"""This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024)
+(./main.tex
+! Undefined control sequence.
+l.42 \badcommand
+
+?
+[1]
+Output written on main.pdf (1 page, 1234 bytes).
+"""
+
+
+def latex_log_report(project: Path, *args: str) -> tuple[int, dict]:
+    result = run_script("check_latex_log.py", *args, cwd=project)
+    return result.returncode, json.loads(result.stdout)
+
+
+class TestCheckLatexLog:
+    def test_clean_log_passes_and_reports_page_count(self, tmp_path: Path) -> None:
+        (tmp_path / "main.log").write_text(CLEAN_LATEX_LOG, encoding="utf-8")
+        code, report = latex_log_report(tmp_path, "--json", "main.log")
+        assert code == 0, report
+        assert report["status"] == "pass"
+        assert report["pages"] == 2
+        assert report["output_pdf"] == "main.pdf"
+        assert report["errors"] == []
+        assert report["warnings"] == []
+        assert {finding["code"] for finding in report["info"]} == {"underfull-box"}
+
+    def test_warning_log_passes_normally_but_fails_strict(self, tmp_path: Path) -> None:
+        (tmp_path / "main.log").write_text(WARN_LATEX_LOG, encoding="utf-8")
+        code, report = latex_log_report(tmp_path, "--json", "main.log")
+        assert code == 0, report
+        assert report["status"] == "pass-with-warnings"
+        codes = {finding["code"] for finding in report["warnings"]}
+        assert {"overfull-box", "undefined-reference", "undefined-citation"} <= codes
+        strict_code, strict_report = latex_log_report(tmp_path, "--json", "--strict", "main.log")
+        assert strict_code == 1
+        assert strict_report["status"] == "fail"
+
+    def test_error_log_fails(self, tmp_path: Path) -> None:
+        (tmp_path / "main.log").write_text(ERROR_LATEX_LOG, encoding="utf-8")
+        code, report = latex_log_report(tmp_path, "--json", "main.log")
+        assert code == 1
+        assert report["status"] == "fail"
+        error = report["errors"][0]
+        assert error["code"] == "latex-error"
+        assert "source line 42" in error["message"]
+
+    def test_max_pages_enforced(self, tmp_path: Path) -> None:
+        (tmp_path / "main.log").write_text(WARN_LATEX_LOG, encoding="utf-8")
+        code, report = latex_log_report(tmp_path, "--json", "--max-pages", "2", "main.log")
+        assert code == 1
+        assert {finding["code"] for finding in report["errors"]} == {"page-limit-exceeded"}
+        ok_code, ok_report = latex_log_report(tmp_path, "--json", "--max-pages", "3", "main.log")
+        assert ok_code == 0
+        assert ok_report["errors"] == []
+
+    def test_unreadable_log_fails(self, tmp_path: Path) -> None:
+        code, report = latex_log_report(tmp_path, "--json", "missing.log")
+        assert code == 1
+        assert {finding["code"] for finding in report["errors"]} == {"unreadable-log"}

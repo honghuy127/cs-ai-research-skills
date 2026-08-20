@@ -169,6 +169,8 @@ Check, as applicable:
 
 Do not encode remembered limits as current policy. If official sources conflict or remain ambiguous, report the conflict and request a human decision before irreversible submission work.
 
+Load [paper-formatting.md](paper-formatting.md) to verify the compiled manuscript: machine-check the compile log, render pages for visual inspection, and check files and metadata. A converted-to-text read of the sources is not a format check.
+
 ## 9. Revise and audit the manuscript
 
 Revise in passes:
@@ -180,7 +182,7 @@ Revise in passes:
 5. Audit related-work comparisons and citation locators.
 6. Audit limitations, ethics, privacy, licensing, and disclosures.
 7. Audit terminology, notation, cross-references, and acronym consistency.
-8. Audit current venue compliance.
+8. Audit current venue compliance, including rendered-layout checks per paper-formatting.md.
 9. Copyedit only after substantive consistency passes.
 
 Preserve deliberate author choices and repository conventions. Do not flatten uncertainty or erase limitations for rhetorical force. Record material claim changes in the project dossier.

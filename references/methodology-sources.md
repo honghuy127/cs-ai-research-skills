@@ -95,6 +95,9 @@ The following public repositories informed workflow design. Reuse principles aft
 | BESSER research paper review | https://github.com/BESSER-PEARL/research-agent-skills/blob/main/research-paper-review/SKILL.md | Paper-type calibration, structured review dimensions, and numeric consistency checks | Narrow the trigger, preserve confidentiality, and follow the current venue's verdict policy |
 | draw.io diagram skill | https://github.com/Agents365-ai/drawio-skill | Direct `.drawio` XML authoring conventions, draw.io desktop CLI binary resolution and export flags, structural lint before rendering | Keep only what paper figures need; avoid the broad operations-diagramming script surface and its extra dependencies |
 | Research draw.io diagram builder | https://github.com/Will-hxw/drawio-diagram-builder-skill | Editable-source-first policy, style extraction from reference figures, and render-then-inspect verification loops | Do not adopt mandatory defect-count quotas, network-dependent embedded previews, or hard browser-automation requirements |
+| LaTeX document skill | https://github.com/ndpvt-web/latex-document-skill | Recorded compile commands, TeX log triage of overfull boxes and undefined references, and page-image rendering before verdicts | Do not copy its pip auto-install script behavior or broad non-research document scope |
+| PDF proof | https://github.com/metedata/pdf-proof | Locate-then-crop evidence screenshots instead of text-only claims about visual material | Keep its render-as-evidence principle without the PyMuPDF dependency or the HTML proof-page deliverable |
+| Anthropic pdf skill | https://github.com/anthropics/skills/tree/main/skills/pdf | Separation of structural PDF checks from visual review | Proprietary license: reuse concepts only, never copy code |
 
 ## 7. Reject unsafe defaults
 

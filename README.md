@@ -1,6 +1,6 @@
 # Conduct CS and AI Research
 
-An agent skill for rigorous computer science and AI research. It guides an AI agent through idea construction, literature synthesis, novelty and feasibility checks, proposals, experimental design, implementation, evaluation, statistical analysis, reproducibility, paper writing, figure and diagram preparation, peer review, and rebuttals, with evidence discipline enforced at every step.
+An agent skill for rigorous computer science and AI research. It guides an AI agent through idea construction, literature synthesis, novelty and feasibility checks, proposals, experimental design, implementation, evaluation, statistical analysis, reproducibility, paper writing, figure and diagram preparation, formatting checks, peer review, and rebuttals, with evidence discipline enforced at every step.
 
 The skill follows the [Agent Skills specification](https://agentskills.io/specification): a lean `SKILL.md` router loads focused reference playbooks on demand, so an agent only reads the guidance relevant to the current task.
 
@@ -17,9 +17,9 @@ The skill follows the [Agent Skills specification](https://agentskills.io/specif
 | Path | Contents |
 |---|---|
 | `SKILL.md` | Entry point and router; loads references per task intent |
-| `references/` | Fourteen phase playbooks (literature, design, evaluation, analysis, writing, figures and diagrams, review, ethics, orchestration, and more) |
-| `scripts/` | Dossier tooling: `research_state.py`, `capture_run.py`, `audit_research.py`, plus the `validate_drawio.py` figure lint |
-| `assets/` | Copy-and-adapt templates: research brief, experiment plan, paper and proposal outlines, figure plan, review template, rebuttal matrix |
+| `references/` | Fifteen phase playbooks (literature, design, evaluation, analysis, writing, figures and diagrams, formatting, review, ethics, orchestration, and more) |
+| `scripts/` | Dossier tooling: `research_state.py`, `capture_run.py`, `audit_research.py`, plus the `validate_drawio.py` figure lint and `check_latex_log.py` build-log checker |
+| `assets/` | Copy-and-adapt templates: research brief, experiment plan, paper and proposal outlines, figure plan, format checklist, review template, rebuttal matrix |
 | `agents/openai.yaml` | Interface metadata for runtimes that read the OpenAI agent format |
 | `tests/` | End-to-end tests for the scripts |
 
@@ -82,6 +82,9 @@ python3 scripts/audit_research.py
 
 # Lint draw.io figure sources (exit 1 on errors; --strict also fails on warnings)
 python3 scripts/validate_drawio.py figures/method.drawio
+
+# Check a LaTeX build log for errors, overfull boxes, undefined refs (exit 1 on errors)
+python3 scripts/check_latex_log.py build/main.log --max-pages 9
 ```
 
 Notes on the audit:
