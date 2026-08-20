@@ -78,7 +78,7 @@ Keep the source file portable and reviewable:
 - Keep page sizes explicit (`pageWidth`, `pageHeight`) and keep content on the page.
 - Use descriptive ids where they help review (`encoder-block`, `loss-arrow`); ids must be unique within a page.
 
-Official documentation for the file format and the desktop app: the draw.io project at https://github.com/jgraph/drawio and the desktop releases at https://github.com/jgraph/drawio-desktop. Diagrams.net documentation lives at https://www.diagrams.net/doc/. Re-verify command syntax against the installed version rather than assuming flags.
+Official documentation for the file format and the desktop app: the draw.io project at https://github.com/jgraph/drawio and the desktop releases at https://github.com/jgraph/drawio-desktop. Diagrams.net documentation lives in the project wiki at https://github.com/jgraph/drawio/wiki. Re-verify command syntax against the installed version rather than assuming flags.
 
 ## 5. Author LaTeX-native figures
 

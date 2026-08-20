@@ -1,5 +1,9 @@
 # Conduct CS and AI Research
 
+[![CI](https://github.com/honghuy127/cs-ai-research-skills/actions/workflows/ci.yml/badge.svg)](https://github.com/honghuy127/cs-ai-research-skills/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.10_%7C_3.13-blue)](https://www.python.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 An agent skill for rigorous computer science and AI research. It guides an AI agent through idea construction, literature synthesis, novelty and feasibility checks, proposals, experimental design, implementation, evaluation, statistical analysis, reproducibility, paper writing, figure and diagram preparation, formatting checks, office document analysis and authoring, presentation slides, peer review, and rebuttals, with evidence discipline enforced at every step.
 
 The skill follows the [Agent Skills specification](https://agentskills.io/specification): a lean `SKILL.md` router loads focused reference playbooks on demand, so an agent only reads the guidance relevant to the current task.
@@ -31,10 +35,10 @@ The installed directory name must match the skill name `conduct-cs-ai-research` 
 
 ```bash
 # Personal skill (all projects)
-git clone <this-repo-url> ~/.claude/skills/conduct-cs-ai-research
+git clone https://github.com/honghuy127/cs-ai-research-skills.git ~/.claude/skills/conduct-cs-ai-research
 
 # Project skill (one repository)
-git clone <this-repo-url> .claude/skills/conduct-cs-ai-research
+git clone https://github.com/honghuy127/cs-ai-research-skills.git .claude/skills/conduct-cs-ai-research
 ```
 
 Claude Code then triggers the skill automatically for research-shaped tasks, or explicitly via `/conduct-cs-ai-research`.
@@ -85,11 +89,13 @@ python3 scripts/audit_research.py
 python3 scripts/validate_drawio.py figures/method.drawio
 
 # Check a LaTeX build log for errors, overfull boxes, undefined refs
-# (exit 1 on errors; --json emits a machine report)
+# (exit 1 on errors; --strict also fails on warnings; --json emits a
+# machine report)
 python3 scripts/check_latex_log.py build/main.log --max-pages 9
 
 # Check Office packages (.docx, .pptx, .xlsx) for broken media, placeholder
-# markers, and macro payloads (exit 1 on errors; --strict also fails on warnings)
+# markers, and macro payloads (exit 1 on errors; --strict also fails on
+# warnings; --json emits a machine report)
 python3 scripts/check_office.py deck.pptx --strict
 
 # Check Markdown files for unclosed fences, unresolved markers, broken
@@ -109,8 +115,8 @@ Notes on the audit:
 ## Testing
 
 ```bash
-python -m pip install pytest
-python -m pytest tests/ -v
+python3 -m pip install pytest
+python3 -m pytest tests/ -v
 ```
 
 CI runs the tests on Python 3.10 and 3.13 and link-checks the documentation weekly.
