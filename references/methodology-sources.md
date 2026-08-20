@@ -98,6 +98,15 @@ The following public repositories informed workflow design. Reuse principles aft
 | LaTeX document skill | https://github.com/ndpvt-web/latex-document-skill | Recorded compile commands, TeX log triage of overfull boxes and undefined references, and page-image rendering before verdicts | Do not copy its pip auto-install script behavior or broad non-research document scope |
 | PDF proof | https://github.com/metedata/pdf-proof | Locate-then-crop evidence screenshots instead of text-only claims about visual material | Keep its render-as-evidence principle without the PyMuPDF dependency or the HTML proof-page deliverable |
 | Anthropic pdf skill | https://github.com/anthropics/skills/tree/main/skills/pdf | Separation of structural PDF checks from visual review | Proprietary license: reuse concepts only, never copy code |
+| Anthropic docx skill | https://github.com/anthropics/skills/tree/main/skills/docx | OOXML as inspectable zip/XML parts, template-first Word generation, and tracked-change-aware edits | Proprietary license: reuse concepts only, never copy code |
+| Anthropic pptx skill | https://github.com/anthropics/skills/tree/main/skills/pptx | Structural validation plus rendered-thumbnail verification before delivery | Proprietary license: reuse concepts only, never copy code |
+| Anthropic xlsx skill | https://github.com/anthropics/skills/tree/main/skills/xlsx | Formula-aware spreadsheet reading and clean tabular conventions | Proprietary license: reuse concepts only, never copy code |
+| Anthropic doc-coauthoring skill | https://github.com/anthropics/skills/tree/main/skills/doc-coauthoring | Structured co-authoring passes that separate content edits from commentary | Proprietary license: reuse concepts only, never copy code |
+| Beamer LaTeX presentation class | https://ctan.org/pkg/beamer | Theme, overlay, handout, and appendix conventions for LaTeX slide decks | Verify themes and packages against the installed TeX distribution; never invent package names |
+| python-pptx documentation | https://python-pptx.readthedocs.io/ | Reproducible `.pptx` generation and patching from recorded scripts | Third-party dependency, not bundled with this skill; verify API behavior per installed release |
+| Pandoc | https://pandoc.org/ | Markdown or LaTeX to docx conversion with `--reference-doc` templates | Verify flags per installed version |
+| LibreOffice | https://www.libreoffice.org/ | Headless Office-to-PDF export that enables rendered slide and document verification without Office | Verify binary names and flags per install |
+| Public PPT generator skills, for example sunbigfly/ppt-agent-skills | https://github.com/sunbigfly/ppt-agent-skills | Outline-first storyboarding and rendered visual QA loops | Reject network, image-generation, and multi-tool pipeline dependencies; adopt no fixed design quotas |
 
 ## 7. Reject unsafe defaults
 

@@ -1,6 +1,6 @@
 ---
 name: conduct-cs-ai-research
-description: Guide rigorous computer science and AI research across idea construction, scholarly literature synthesis, novelty and feasibility checks, thesis or grant proposals, experimental design and implementation, benchmark and human evaluation, statistical analysis, reproducibility, academic paper writing and revision, paper figures and diagrams, submission formatting and format checks, rebuttals, and evidence-grounded manuscript review. Use for research questions, hypotheses, contribution framing, datasets, baselines, metrics, ablations, run plans, research code, result interpretation, LaTeX manuscripts, paper figures and diagram sources, rendered manuscript inspection, peer reviews, or an end-to-end research project. Do not use for a simple fact lookup, ordinary production coding or code review unrelated to a research claim, generic concept explanations, or copyediting that needs no research reasoning.
+description: Guide rigorous computer science and AI research across idea construction, scholarly literature synthesis, novelty and feasibility checks, thesis or grant proposals, experimental design and implementation, benchmark and human evaluation, statistical analysis, reproducibility, academic paper writing and revision, paper figures and diagrams, submission formatting and format checks, office document analysis and authoring, presentation slides, rebuttals, and evidence-grounded manuscript review. Use for research questions, hypotheses, contribution framing, datasets, baselines, metrics, ablations, run plans, research code, result interpretation, LaTeX manuscripts, paper figures and diagram sources, rendered manuscript inspection, Office documents (docx, xlsx), PowerPoint and Beamer slide preparation, peer reviews, or an end-to-end research project. Do not use for a simple fact lookup, ordinary production coding or code review unrelated to a research claim, generic concept explanations, or copyediting that needs no research reasoning.
 ---
 
 # Conduct CS and AI Research
@@ -33,6 +33,8 @@ Load every additional reference listed for the selected route before acting. Add
 | Draft or revise a manuscript | [paper-writing.md](references/paper-writing.md), [literature-and-ideas.md](references/literature-and-ideas.md), [analysis-and-statistics.md](references/analysis-and-statistics.md) when empirical |
 | Create or revise paper figures and diagrams | [figures-and-diagrams.md](references/figures-and-diagrams.md), plus [paper-writing.md](references/paper-writing.md) during a manuscript pass |
 | Format or format-check a manuscript or submission | [paper-formatting.md](references/paper-formatting.md), plus [paper-writing.md](references/paper-writing.md) during a manuscript pass |
+| Analyze or author office documents | [office-documents.md](references/office-documents.md), plus [analysis-and-statistics.md](references/analysis-and-statistics.md) when numbers appear |
+| Create or revise presentation slides | [presentation-slides.md](references/presentation-slides.md), plus [paper-writing.md](references/paper-writing.md) when deriving the deck from a manuscript |
 | Review a paper or artifact | [paper-review-and-rebuttal.md](references/paper-review-and-rebuttal.md), [ethics-integrity-and-policy.md](references/ethics-integrity-and-policy.md) |
 | Prepare a rebuttal or revision plan | [paper-review-and-rebuttal.md](references/paper-review-and-rebuttal.md), [paper-writing.md](references/paper-writing.md) |
 | Coordinate an end-to-end project or parallel agents | All phase references as reached, plus [agent-orchestration.md](references/agent-orchestration.md) |
@@ -88,6 +90,7 @@ Typical gates are:
 8. Writing gate: claims, tables, figures, citations, limitations, and artifacts agree.
 9. Formatting gate: the compile log, rendered pages, files, and metadata satisfy the current venue contract.
 10. Review gate: every criticism is evidence-backed, calibrated, actionable, and policy-compliant.
+11. Talk gate: the deck traces to the claim map, rendered slides are inspected, and every number agrees with its recorded source.
 
 Return `PASS`, `CONDITIONAL`, `FAIL`, `BLOCKED`, or `NOT_ASSESSED`, with evidence and next action. Do not hide a waiver.
 
@@ -105,7 +108,7 @@ For substantial ongoing projects, keep the canonical dossier in the research rep
 └── runs/<run-id>/manifest.json
 ```
 
-Treat existing project artifacts as authoritative; the dossier indexes them rather than duplicating them. Initialize or inspect it with `scripts/research_state.py`. Capture immutable run provenance with `scripts/capture_run.py`. Check structural traceability with `scripts/audit_research.py`. Lint `.drawio` figure sources with `scripts/validate_drawio.py`. Check LaTeX compile logs for layout and reference defects with `scripts/check_latex_log.py`. Use the scripts only when Python is available; otherwise preserve the same contracts manually.
+Treat existing project artifacts as authoritative; the dossier indexes them rather than duplicating them. Initialize or inspect it with `scripts/research_state.py`. Capture immutable run provenance with `scripts/capture_run.py`. Check structural traceability with `scripts/audit_research.py`. Lint `.drawio` figure sources with `scripts/validate_drawio.py`. Check LaTeX compile logs for layout and reference defects with `scripts/check_latex_log.py`. Check Office packages for structural defects with `scripts/check_office.py`. Use the scripts only when Python is available; otherwise preserve the same contracts manually.
 
 The dossier serializes lifecycle states in lowercase even though prose and gate reports use the uppercase labels above. A clean helper-script audit proves structural consistency only, never scientific validity.
 
@@ -117,6 +120,7 @@ Copy and adapt only the needed templates from `assets/`:
 - `paper-outline.md` for claim-led manuscript planning.
 - `figure-plan.md` for a single traceable paper figure.
 - `format-checklist.md` for a submission format contract and gate record.
+- `slide-deck-plan.md` for a talk contract, storyboard, and talk gate record.
 - `review-template.md` for a constructive review.
 - `rebuttal-matrix.csv` for response and revision tracking.
 

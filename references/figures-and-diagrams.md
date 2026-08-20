@@ -23,7 +23,7 @@ For each requested figure, record:
 - The role: method schematic, system architecture, protocol or pipeline flow, data figure, qualitative example, or teaser.
 - The content source: method description, code, run artifacts, analysis outputs, or named assumptions. Label schematic or illustrative content as such; a schematic may not present invented measurements, and a data figure may not use values that cannot be traced to an analysis artifact.
 - The editable source format and the derived export formats.
-- The target placement: column width, page width, appendix, or slides.
+- The target placement: column width, page width, appendix, or slides, loading [presentation-slides.md](presentation-slides.md) for deck work.
 
 Treat the editable source (`.drawio`, `.tex`, plotting script) as the primary artifact. Exports (PDF, PNG, SVG) are derived artifacts regenerated from the source. Never hand-edit an export or ship an export whose source is missing or out of date.
 

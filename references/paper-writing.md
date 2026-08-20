@@ -200,4 +200,6 @@ Lead with what was drafted or changed. Identify:
 - The writing-gate status.
 - The smallest next action needed for a submission-ready manuscript.
 
+When the manuscript becomes a talk, load [presentation-slides.md](presentation-slides.md); slides may simplify claims but never strengthen them.
+
 Distinguish completed edits from recommended future work. Never describe a manuscript as submission-ready when unresolved evidence, integrity, policy, or authorization blockers remain.

@@ -94,6 +94,8 @@ Each phase reference owns the detailed criteria for its gate. Load the reference
 | Figures and diagrams | [figures-and-diagrams.md](figures-and-diagrams.md), section "Record provenance and pass the figure gate" |
 | Review and rebuttal | [paper-review-and-rebuttal.md](paper-review-and-rebuttal.md), section "Complete the review or rebuttal gate" |
 | Submission formatting | [paper-formatting.md](paper-formatting.md), section "Iterate, record, and pass the formatting gate" |
+| Office documents | [office-documents.md](office-documents.md), section "Verify and pass the office document gate" |
+| Presentation slides | [presentation-slides.md](presentation-slides.md), section "Record provenance and pass the talk gate" |
 | Ethics and policy response | [ethics-integrity-and-policy.md](ethics-integrity-and-policy.md), section "Respond to concerns and record the gate" |
 
 The gates below have no phase reference of their own and remain canonical here.

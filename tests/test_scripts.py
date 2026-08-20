@@ -11,6 +11,7 @@ import json
 import subprocess
 import sys
 import urllib.parse
+import zipfile
 import zlib
 from pathlib import Path
 
@@ -521,3 +522,202 @@ class TestCheckLatexLog:
         code, report = latex_log_report(tmp_path, "--json", "missing.log")
         assert code == 1
         assert {finding["code"] for finding in report["errors"]} == {"unreadable-log"}
+
+
+OOXML_CONTENT_TYPES = (
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+    '<Default Extension="xml" ContentType="application/xml"/>'
+    '<Default Extension="png" ContentType="image/png"/>'
+    '<Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/>'
+    '<Override PartName="/ppt/slides/slide1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>'
+    '<Override PartName="/ppt/slides/slide2.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>'
+    "</Types>"
+)
+
+OOXML_ROOT_RELS = (
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/>'
+    "</Relationships>"
+)
+
+PPTX_PRESENTATION = (
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    '<p:presentation xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" '
+    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+    '<p:sldIdLst><p:sldId id="256" r:id="rId2"/><p:sldId id="257" r:id="rId3"/></p:sldIdLst>'
+    "</p:presentation>"
+)
+
+
+def pptx_slide(text: str, show: str = "1") -> str:
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" '
+        'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" show="' + show + '">'
+        "<p:cSld><p:spTree><p:sp><a:t>" + text + "</a:t></p:sp></p:spTree></p:cSld></p:sld>"
+    )
+
+
+PPTX_SLIDE_RELS = (
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+    '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image1.png"/>'
+    "</Relationships>"
+)
+
+DOCX_DOCUMENT = (
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+    "<w:body>"
+    "<w:p><w:r><w:t>First paragraph.</w:t></w:r></w:p>"
+    "<w:p><w:r><w:t>Second paragraph.</w:t></w:r></w:p>"
+    "</w:body></w:document>"
+)
+
+XLSX_WORKBOOK = (
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+    '<sheets><sheet name="Data" sheetId="1"/></sheets>'
+    "</workbook>"
+)
+
+XLSX_SHEET = (
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+    "<sheetData><row>"
+    '<c t="inlineStr"><is><t>[EVIDENCE NEEDED]</t></is></c>'
+    "</row></sheetData></worksheet>"
+)
+
+DOCX_CORE_PROPS = (
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    '<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" '
+    'xmlns:dc="http://purl.org/dc/elements/1.1/">'
+    "<dc:creator>Jane Doe</dc:creator>"
+    "</cp:coreProperties>"
+)
+
+
+def base_pptx_parts() -> dict[str, str | bytes]:
+    return {
+        "[Content_Types].xml": OOXML_CONTENT_TYPES,
+        "_rels/.rels": OOXML_ROOT_RELS,
+        "ppt/presentation.xml": PPTX_PRESENTATION,
+        "ppt/slides/slide1.xml": pptx_slide("Title slide"),
+        "ppt/slides/_rels/slide1.xml.rels": PPTX_SLIDE_RELS,
+        "ppt/slides/slide2.xml": pptx_slide("Result: 0.62 accuracy"),
+        "ppt/media/image1.png": b"\x89PNG fake",
+        "docProps/core.xml": DOCX_CORE_PROPS,
+    }
+
+
+def make_office_package(path: Path, parts: dict[str, str | bytes]) -> None:
+    with zipfile.ZipFile(path, "w") as handle:
+        for name, content in parts.items():
+            handle.writestr(name, content)
+
+
+def office_report(project: Path, *args: str) -> tuple[int, dict]:
+    result = run_script("check_office.py", *args, cwd=project)
+    return result.returncode, json.loads(result.stdout)
+
+
+class TestCheckOffice:
+    def test_clean_pptx_passes(self, tmp_path: Path) -> None:
+        make_office_package(tmp_path / "deck.pptx", base_pptx_parts())
+        code, report = office_report(tmp_path, "--json", "deck.pptx")
+        assert code == 0, report
+        entry = report["reports"][0]
+        assert entry["status"] == "pass"
+        assert entry["kind"] == "pptx"
+        assert entry["counts"] == {"slides": 2, "hidden": 0}
+        assert entry["errors"] == []
+        assert entry["warnings"] == []
+        assert {finding["code"] for finding in entry["info"]} == {"author-metadata"}
+
+    def test_missing_media_fails(self, tmp_path: Path) -> None:
+        parts = base_pptx_parts()
+        del parts["ppt/media/image1.png"]
+        make_office_package(tmp_path / "deck.pptx", parts)
+        code, report = office_report(tmp_path, "--json", "deck.pptx")
+        assert code == 1
+        entry = report["reports"][0]
+        assert entry["status"] == "fail"
+        assert {finding["code"] for finding in entry["errors"]} == {"missing-media"}
+
+    def test_placeholder_warns_and_strict_fails(self, tmp_path: Path) -> None:
+        parts = base_pptx_parts()
+        parts["ppt/slides/slide2.xml"] = pptx_slide("[RESULT PENDING]")
+        make_office_package(tmp_path / "deck.pptx", parts)
+        code, report = office_report(tmp_path, "--json", "deck.pptx")
+        assert code == 0
+        entry = report["reports"][0]
+        assert entry["status"] == "pass-with-warnings"
+        assert {finding["code"] for finding in entry["warnings"]} == {"placeholder-content"}
+        strict_code, strict_report = office_report(tmp_path, "--json", "--strict", "deck.pptx")
+        assert strict_code == 1
+        assert strict_report["reports"][0]["status"] == "fail"
+
+    def test_empty_and_hidden_slide_reported(self, tmp_path: Path) -> None:
+        parts = base_pptx_parts()
+        parts["ppt/slides/slide2.xml"] = pptx_slide("", show="0")
+        make_office_package(tmp_path / "deck.pptx", parts)
+        code, report = office_report(tmp_path, "--json", "deck.pptx")
+        assert code == 0
+        entry = report["reports"][0]
+        assert entry["counts"] == {"slides": 2, "hidden": 1}
+        assert {finding["code"] for finding in entry["warnings"]} == {"empty-slide"}
+        assert {finding["code"] for finding in entry["info"]} == {"author-metadata", "hidden-slide"}
+
+    def test_docx_and_xlsx_checks(self, tmp_path: Path) -> None:
+        make_office_package(
+            tmp_path / "report.docx",
+            {
+                "[Content_Types].xml": OOXML_CONTENT_TYPES,
+                "word/document.xml": DOCX_DOCUMENT,
+            },
+        )
+        code, report = office_report(tmp_path, "--json", "report.docx")
+        assert code == 0, report
+        docx_entry = report["reports"][0]
+        assert docx_entry["kind"] == "docx"
+        assert docx_entry["counts"] == {"paragraphs": 2}
+
+        make_office_package(
+            tmp_path / "data.xlsx",
+            {
+                "[Content_Types].xml": OOXML_CONTENT_TYPES,
+                "xl/workbook.xml": XLSX_WORKBOOK,
+                "xl/worksheets/sheet1.xml": XLSX_SHEET,
+            },
+        )
+        code, report = office_report(tmp_path, "--json", "data.xlsx")
+        assert code == 0
+        xlsx_entry = report["reports"][0]
+        assert xlsx_entry["kind"] == "xlsx"
+        assert xlsx_entry["counts"] == {"sheets": 1, "worksheets": 1}
+        assert xlsx_entry["status"] == "pass-with-warnings"
+        assert {finding["code"] for finding in xlsx_entry["warnings"]} == {"placeholder-content"}
+
+    def test_macro_payload_fails(self, tmp_path: Path) -> None:
+        parts = base_pptx_parts()
+        parts["ppt/vbaProject.bin"] = b"fake vba payload"
+        make_office_package(tmp_path / "deck.pptm", parts)
+        code, report = office_report(tmp_path, "--json", "deck.pptm")
+        assert code == 1
+        codes = {finding["code"] for finding in report["reports"][0]["errors"]}
+        assert {"macro-enabled", "embedded-vba"} <= codes
+
+    def test_unknown_and_unreadable_fail(self, tmp_path: Path) -> None:
+        (tmp_path / "notes.txt").write_text("not an office file", encoding="utf-8")
+        code, report = office_report(tmp_path, "--json", "notes.txt")
+        assert code == 1
+        assert {finding["code"] for finding in report["reports"][0]["errors"]} == {"unknown-type"}
+
+        (tmp_path / "broken.pptx").write_text("this is not a zip archive", encoding="utf-8")
+        code, report = office_report(tmp_path, "--json", "broken.pptx")
+        assert code == 1
+        assert {finding["code"] for finding in report["reports"][0]["errors"]} == {"unreadable-file"}
