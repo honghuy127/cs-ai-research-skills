@@ -18,13 +18,13 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from research_state import (  # noqa: E402
+from research_state import (
     VALID_EVIDENCE_ELIGIBILITY,
     VALID_RESULT_KINDS,
     VALID_RUN_PHASES,
     VALID_RUN_STATUSES,
 )
-from research_state import (  # noqa: E402
+from research_state import (
     validate as validate_dossier,
 )
 

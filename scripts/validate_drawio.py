@@ -24,7 +24,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from audit_research import PLACEHOLDERS  # noqa: E402
+from audit_research import PLACEHOLDERS
 
 DEFAULT_PAGE_WIDTH = 850.0
 DEFAULT_PAGE_HEIGHT = 1100.0

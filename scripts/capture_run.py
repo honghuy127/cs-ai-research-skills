@@ -24,7 +24,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from research_state import validate as validate_dossier  # noqa: E402
+from research_state import validate as validate_dossier
 
 MAX_HASH_BYTES = 64 * 1024 * 1024
 RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")

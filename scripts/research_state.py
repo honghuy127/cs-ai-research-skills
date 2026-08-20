@@ -69,6 +69,22 @@ def now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+def parse_timestamp(value: object) -> datetime | None:
+    """Parse an ISO 8601 date or timestamp; return None when invalid."""
+    if not isinstance(value, str) or not value.strip():
+        return None
+    try:
+        return datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def check_timestamp(record: dict, field: str, prefix: str, errors: list[str]) -> None:
+    value = record.get(field)
+    if isinstance(value, str) and value.strip() and parse_timestamp(value) is None:
+        errors.append(f"{prefix} has invalid ISO 8601 {field}: {value!r}")
+
+
 def dossier(root: Path) -> Path:
     return root.resolve() / ".research"
 
@@ -86,7 +102,7 @@ def load_json(path: Path) -> dict:
 
 
 def write_json_atomic(path: Path, value: dict) -> None:
-    temp = path.with_suffix(path.suffix + ".tmp")
+    temp = path.with_suffix(f"{path.suffix}.{uuid.uuid4().hex}.tmp")
     temp.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     os.replace(temp, path)
 
@@ -101,10 +117,11 @@ def append_decision(
     owner: str,
     revisit_condition: str,
 ) -> dict:
-    recorded_at = now()
-    decision_id = f"DEC-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}-{uuid.uuid4().hex[:8]}"
+    recorded_at_dt = datetime.now(timezone.utc)
+    recorded_at = recorded_at_dt.isoformat(timespec="seconds")
+    decision_id = f"DEC-{recorded_at_dt.strftime('%Y%m%dT%H%M%SZ')}-{uuid.uuid4().hex[:8]}"
     with (base / "decisions.md").open("a", encoding="utf-8") as handle:
-        handle.write(f"\n## {decision_id} — {recorded_at} — {decision}\n\n")
+        handle.write(f"\n## {decision_id}: {decision} ({recorded_at})\n\n")
         handle.write("- Evidence:\n" + "".join(f"  - {item}\n" for item in evidence))
         handle.write("- Alternatives considered:\n" + "".join(f"  - {item}\n" for item in alternatives))
         handle.write(f"- Rationale: {reason}\n")
@@ -215,6 +232,7 @@ def validate_ledger_record(name: str, record: dict, index: int, errors: list[str
             require_string(record, field, prefix, errors)
         if record.get("verification") not in VALID_EVIDENCE_VERIFICATIONS:
             errors.append(f"{prefix} has invalid verification: {record.get('verification')!r}")
+        check_timestamp(record, "accessed_at", prefix, errors)
         for field in ("supports", "challenges", "contextualizes"):
             require_string_list(record, field, prefix, errors, required=False)
         for field in (
@@ -264,6 +282,7 @@ def validate_ledger_record(name: str, record: dict, index: int, errors: list[str
             errors.append(f"{prefix} has invalid evidential_status: {record.get('evidential_status')!r}")
         if record.get("claim_type") not in VALID_CLAIM_TYPES:
             errors.append(f"{prefix} has invalid claim type: {record.get('claim_type')!r}")
+        check_timestamp(record, "updated_at", prefix, errors)
         for field in ("evidence_ids", "run_ids", "artifact_paths", "caveats"):
             require_string_list(record, field, prefix, errors)
         for field in ("verification_run_ids", "verification_artifact_paths"):
@@ -291,6 +310,17 @@ def validate_ledger_record(name: str, record: dict, index: int, errors: list[str
         for field, allowed in enum_fields.items():
             if record.get(field) not in allowed:
                 errors.append(f"{prefix} has invalid {field}: {record.get(field)!r}")
+        for field in ("started_at", "ended_at", "recorded_at"):
+            check_timestamp(record, field, prefix, errors)
+        started = parse_timestamp(record.get("started_at"))
+        ended = parse_timestamp(record.get("ended_at"))
+        if (
+            started is not None
+            and ended is not None
+            and (started.tzinfo is None) == (ended.tzinfo is None)
+            and ended < started
+        ):
+            errors.append(f"{prefix} ended_at precedes started_at")
 
 
 def validate(root: Path) -> list[str]:
@@ -342,6 +372,8 @@ def validate(root: Path) -> list[str]:
     for field in ("schema_version", "project_id", "title", "created_at", "updated_at"):
         if not isinstance(state.get(field), str) or not state[field].strip():
             errors.append(f"state.json requires non-empty string {field}")
+    for field in ("created_at", "updated_at"):
+        check_timestamp(state, field, "state.json", errors)
     for field in (
         "research_questions",
         "deliverables",
@@ -365,6 +397,8 @@ def validate(root: Path) -> list[str]:
                 for field in ("id", "recorded_at", "summary")
             ):
                 errors.append(f"state.json decision_index entry {index} is invalid")
+                continue
+            check_timestamp(item, "recorded_at", f"state.json decision_index entry {index}", errors)
 
     for name in LEDGERS:
         records, ledger_errors = read_jsonl(base / name)
@@ -404,6 +438,22 @@ def validate(root: Path) -> list[str]:
     return errors
 
 
+def open_valid_dossier(root: Path) -> tuple[Path, dict] | None:
+    """Validate the dossier and return its base path and state, or None after printing errors."""
+    errors = validate(root)
+    if errors:
+        for error in errors:
+            print(f"ERROR: {error}")
+        return None
+    base = dossier(root)
+    try:
+        state = load_json(base / "state.json")
+    except ValueError as exc:
+        print(f"ERROR: {exc}")
+        return None
+    return base, state
+
+
 def cmd_validate(args: argparse.Namespace) -> int:
     errors = validate(Path(args.root))
     if errors:
@@ -415,14 +465,10 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
 
 def cmd_status(args: argparse.Namespace) -> int:
-    root = Path(args.root)
-    errors = validate(root)
-    if errors:
-        for error in errors:
-            print(f"ERROR: {error}")
+    loaded = open_valid_dossier(Path(args.root))
+    if loaded is None:
         return 1
-    base = dossier(root)
-    state = load_json(base / "state.json")
+    base, state = loaded
     counts = {}
     for name in LEDGERS:
         records, _ = read_jsonl(base / name)
@@ -450,21 +496,23 @@ UPDATE_LIST_FIELDS = {
 }
 
 
+def reject_blank(name: str, values: list[str]) -> str | None:
+    if any(not item.strip() for item in values):
+        return f"error: {name} values must be non-empty"
+    return None
+
+
 def cmd_update(args: argparse.Namespace) -> int:
-    root = Path(args.root)
-    errors = validate(root)
-    if errors:
-        for error in errors:
-            print(f"ERROR: {error}")
+    loaded = open_valid_dossier(Path(args.root))
+    if loaded is None:
         return 1
-    base = dossier(root)
-    state = load_json(base / "state.json")
+    base, state = loaded
     changed: list[str] = []
     if args.title is not None:
         if not args.title.strip():
             print("error: title must be non-empty", file=sys.stderr)
             return 2
-        state["title"] = args.title
+        state["title"] = args.title.strip()
         changed.append("title")
     for option in ("contribution_type", "methodology"):
         value = getattr(args, option)
@@ -474,15 +522,18 @@ def cmd_update(args: argparse.Namespace) -> int:
     for option, field in UPDATE_LIST_FIELDS.items():
         values = getattr(args, option)
         if values is not None:
-            cleaned = [item for item in values if item.strip()]
-            state[field] = cleaned
+            problem = reject_blank(f"--{option.replace('_', '-')}", values)
+            if problem:
+                print(problem, file=sys.stderr)
+                return 2
+            state[field] = [item.strip() for item in values]
             changed.append(field)
     if not changed:
         print("error: no update options were provided", file=sys.stderr)
         return 2
     state["updated_at"] = now()
     write_json_atomic(base / "state.json", state)
-    remaining = validate(root)
+    remaining = validate(Path(args.root))
     if remaining:
         for error in remaining:
             print(f"ERROR: {error}")
@@ -492,18 +543,32 @@ def cmd_update(args: argparse.Namespace) -> int:
 
 
 def cmd_transition(args: argparse.Namespace) -> int:
-    root = Path(args.root)
-    base = dossier(root)
-    errors = validate(root)
-    if errors:
-        for error in errors:
-            print(f"ERROR: {error}")
-        return 1
     if args.stage not in VALID_STAGES or args.status not in VALID_STATUSES:
         print("error: invalid stage or status", file=sys.stderr)
         return 2
-    state = load_json(base / "state.json")
+    problem = reject_blank("--reason", [args.reason]) or reject_blank("--owner", [args.owner]) or reject_blank(
+        "--revisit-condition", [args.revisit_condition]
+    )
+    if problem is None:
+        for name, values in (
+            ("--evidence", args.evidence),
+            ("--alternative", args.alternative),
+            ("--consequence", args.consequence),
+        ):
+            problem = reject_blank(name, values)
+            if problem:
+                break
+    if problem:
+        print(problem, file=sys.stderr)
+        return 2
+    loaded = open_valid_dossier(Path(args.root))
+    if loaded is None:
+        return 1
+    base, state = loaded
     previous = f"{state['stage']} / {state['stage_status']}"
+    if previous == f"{args.stage} / {args.status}":
+        print(f"error: dossier is already at {previous}; record a material change instead", file=sys.stderr)
+        return 2
     state["stage"] = args.stage
     state["stage_status"] = args.status
     state["updated_at"] = now()

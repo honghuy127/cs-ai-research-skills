@@ -200,6 +200,91 @@ class TestResearchState:
     def test_update_requires_options(self, project: Path) -> None:
         assert run_script("research_state.py", "update", cwd=project).returncode == 2
 
+    def test_update_rejects_blank_list_items(self, project: Path) -> None:
+        result = run_script("research_state.py", "update", "--next-action", "  ", cwd=project)
+        assert result.returncode == 2
+        assert "non-empty" in result.stderr
+
+    def test_transition_rejects_blank_fields(self, project: Path) -> None:
+        result = run_script(
+            "research_state.py",
+            "transition",
+            "--stage",
+            "design",
+            "--status",
+            "planned",
+            "--reason",
+            " ",
+            "--evidence",
+            "plan.md",
+            "--alternative",
+            "stay in scoping",
+            "--consequence",
+            "implementation may start",
+            "--owner",
+            "tester",
+            "--revisit-condition",
+            "design change",
+            cwd=project,
+        )
+        assert result.returncode == 2
+        assert "non-empty" in result.stderr
+
+    def test_transition_rejects_noop(self, project: Path) -> None:
+        result = run_script(
+            "research_state.py",
+            "transition",
+            "--stage",
+            "scoping",
+            "--status",
+            "proposed",
+            "--reason",
+            "restate position",
+            "--evidence",
+            "none",
+            "--alternative",
+            "none",
+            "--consequence",
+            "none",
+            "--owner",
+            "tester",
+            "--revisit-condition",
+            "none",
+            cwd=project,
+        )
+        assert result.returncode == 2
+        assert "already at" in result.stderr
+
+    def test_validate_rejects_bad_timestamp(self, project: Path) -> None:
+        state_path = project / ".research" / "state.json"
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        state["updated_at"] = "yesterday"
+        state_path.write_text(json.dumps(state), encoding="utf-8")
+        result = run_script("research_state.py", "validate", cwd=project)
+        assert result.returncode == 1
+        assert "invalid ISO 8601 updated_at" in result.stdout
+
+    def test_validate_rejects_reversed_run_times(self, project: Path) -> None:
+        append_record(
+            project,
+            "experiments.jsonl",
+            {
+                "run_id": "RUN-001",
+                "experiment_id": "EXP-001",
+                "manifest_path": ".research/runs/RUN-001/manifest.json",
+                "phase": "full",
+                "status": "completed",
+                "result_kind": "measured",
+                "evidence_eligibility": "candidate_pending_verification",
+                "started_at": END,
+                "ended_at": START,
+                "recorded_at": START,
+            },
+        )
+        result = run_script("research_state.py", "validate", cwd=project)
+        assert result.returncode == 1
+        assert "ended_at precedes started_at" in result.stdout
+
 
 class TestCaptureRun:
     def test_capture_and_clean_audit(self, project_with_run: Path) -> None:

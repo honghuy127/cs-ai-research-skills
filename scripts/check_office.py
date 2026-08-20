@@ -23,7 +23,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from audit_research import PLACEHOLDERS  # noqa: E402
+from audit_research import PLACEHOLDERS
 
 KIND_BY_EXTENSION = {".docx": "docx", ".pptx": "pptx", ".xlsx": "xlsx"}
 MACRO_EXTENSIONS = {".docm", ".pptm", ".xlsm"}
