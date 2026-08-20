@@ -278,4 +278,4 @@ Require all of the following for `PASS`:
 - Preserve raw outputs, failures, configs, prompts, and analysis provenance.
 - Bound claims to the evaluated versions, dates, tasks, populations, and conditions.
 
-Return `CONDITIONAL` when a known weakness narrows but does not invalidate the claim. Return `FAIL` when the benchmark, judge, contamination, or protocol cannot support the central inference. Return `BLOCKED` when access, policy, solvability, or system identity prevents a responsible evaluation.
+Return `CONDITIONAL` when a known weakness narrows but does not invalidate the claim. Return `FAIL` when the benchmark, judge, contamination, or protocol cannot support the central inference. Return `BLOCKED` when access, policy, solvability, or system identity prevents a responsible evaluation. Return `NOT_ASSESSED` when the evaluation was not performed or lacks the scope to characterize.

@@ -52,7 +52,7 @@ Treat the boundary as a dated scope statement, not a universal claim. Log later 
 4. Search more than one complementary source. For CS and AI, combine an index such as DBLP or OpenAlex with a preprint source, relevant publisher or conference proceedings, and citation discovery where useful.
 5. Record the exact query, platform or API, filters, sort order, date, result count, pages or cursor range inspected, and the person or agent that ran it.
 6. Deduplicate by persistent identifier first, then normalized title, authors, and year. Preserve alternate versions and link preprint, proceedings, journal, artifact, and correction records.
-7. Use backward citation chasing to find foundations and forward citation chasing to find extensions, replications, contradictions, and current use.
+7. Use backward citation chasing to find foundations, and forward citation chasing to find extensions, replications, contradictions, and current use.
 8. Search explicitly for failure evidence: negative results, retractions, corrections, benchmark leakage, dataset contamination, non-replications, and boundary conditions.
 9. Re-run narrow current-work searches before making a novelty decision. Include recent preprints, accepted-paper lists, code repositories, and challenge leaderboards when relevant.
 

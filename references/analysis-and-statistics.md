@@ -88,7 +88,7 @@ Visualize raw or lightly summarized distributions when practical. Use tables for
 
 ## 5. Choose effect sizes in meaningful units
 
-Lead with an effect that answers the decision in interpretable units. Add standardized measures only when they aid comparison across scales.
+Lead with an effect that informs the decision, in interpretable units. Add standardized measures only when they aid comparison across scales.
 
 | Outcome or design | Prefer when appropriate | Guardrail |
 |---|---|---|
@@ -176,7 +176,7 @@ Do not apply a blanket correction to unrelated descriptive outputs. Do not avoid
 - Include all frozen seeds and trials. Do not report the best seed or checkpoint unless best-of-n selection is part of the declared method and its budget is included.
 - Report baseline and proposed-method tuning budgets and selection criteria.
 - Estimate uncertainty for the actual aggregate metric, including pass@k, macro/micro averages, ranking metrics, and composite scores.
-- Avoid arbitrary averaging across datasets with incompatible scales or importance. Report per-dataset results and justify any summary weighting.
+- Avoid arbitrary averaging across datasets with incompatible scales or differing importance. Report per-dataset results and justify any summary weighting.
 - Account for benchmark reuse, leaderboard selection, and repeated test submissions when interpreting small improvements.
 - Analyze failures, invalid outputs, timeouts, refusals, and missing scores under the frozen rule rather than only among successful cases.
 
@@ -225,7 +225,7 @@ Label every table, figure, and claim internally as:
 - `SENSITIVITY`: Alternative assumption or specification testing a primary conclusion.
 - `DEVIATION`: Planned analysis changed or became infeasible.
 
-For each deviation, record what changed, why, when, what outcomes were visible, and how claim eligibility changed. Present the planned result when computable alongside the revised analysis.
+For each deviation, record what changed, why, when, what outcomes were visible, and how claim eligibility shifts. Present the planned result, when computable, alongside the revised analysis.
 
 When exploratory work produces a promising claim, reserve new data, use an untouched holdout, or plan a future confirmatory study. Do not erase the discovery path.
 
@@ -286,4 +286,4 @@ Require all of the following for `PASS`:
 - Trace every reported value, table, and figure to immutable inputs and versioned code.
 - Bound conclusions to the supported population, conditions, versions, and time horizon.
 
-Return `CONDITIONAL` when a bounded assumption or missing component narrows the claim. Return `FAIL` when dependence, leakage, selection, missingness, or analysis choices invalidate the central inference. Return `BLOCKED` when required raw outputs, design records, or authorization are unavailable.
+Return `CONDITIONAL` when a bounded assumption or missing component narrows the claim. Return `FAIL` when dependence, leakage, selection, missingness, or analysis choices invalidate the central inference. Return `BLOCKED` when required raw outputs, design records, or authorization are unavailable. Return `NOT_ASSESSED` when no analysis was run or its scope cannot be characterized.

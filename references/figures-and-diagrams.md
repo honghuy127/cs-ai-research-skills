@@ -173,12 +173,12 @@ Keep a figure ledger, either in the figure plan files or in the dossier, mapping
 - Render verification: how the render was inspected, by whom, and when.
 - Outstanding defects or an explicit clean status.
 
-In a project dossier, capture figure-generation runs with `scripts/capture_run.py` like any other analysis artifact, so `audit_research.py` can trace the outputs. When figures enter a manuscript pass, recheck their labels and numbers against the text with the audit in [paper-writing.md](paper-writing.md), section "Revise and audit the manuscript".
+In a project dossier, capture figure-generation runs with `scripts/capture_run.py` like any other analysis artifact, so `scripts/audit_research.py` can trace the outputs. When figures enter a manuscript pass, recheck their labels and numbers against the text with the audit in [paper-writing.md](paper-writing.md), section "Revise and audit the manuscript".
 
 Require all of the following for a figure gate PASS:
 
 - Every figure has an ID, a supported claim, and a plan with no unresolved placeholders.
-- The editable source exists, passes `validate_drawio.py` (or an equivalent structural check for TikZ and plot sources), and is the unique origin of the shipped export.
+- The editable source exists, passes `scripts/validate_drawio.py` (or an equivalent structural check for TikZ and plot sources), and is the unique origin of the shipped export.
 - Exports were regenerated from the current source and visually inspected at target size.
 - Labels, numbers, and terminology agree with the manuscript text.
 - Style contract, font, color, size, and format rules are satisfied, with the current venue source recorded.

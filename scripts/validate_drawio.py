@@ -226,7 +226,7 @@ def main(argv: list[str] | None = None) -> int:
         "--min-font-size",
         type=float,
         default=7.0,
-        help="warn on labelled vertices below this font size (default: 7)",
+        help="warn on labeled vertices below this font size (default: 7)",
     )
     args = parser.parse_args(argv)
 

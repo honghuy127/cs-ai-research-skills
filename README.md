@@ -41,7 +41,7 @@ git clone https://github.com/honghuy127/cs-ai-research-skills.git ~/.claude/skil
 git clone https://github.com/honghuy127/cs-ai-research-skills.git .claude/skills/conduct-cs-ai-research
 ```
 
-Claude Code then triggers the skill automatically for research-shaped tasks, or explicitly via `/conduct-cs-ai-research`.
+Claude Code then triggers the skill automatically for research-shaped tasks; users can also invoke it explicitly via `/conduct-cs-ai-research`.
 
 ### Other runtimes
 
@@ -110,7 +110,8 @@ Notes on the audit:
 - Records corrected via a `supersedes` field are excluded from auditing; only the head of each supersession chain is checked. A claim that still links superseded evidence gets a warning.
 - Deliverables referenced by `reported` claims are automatically scanned for unresolved `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, and `[RESULT PENDING]` markers; pass additional files with `--scan`.
 - Files over 64 MiB are not hashed and must carry an immutable external version (`--file-version PATH=ID` at capture time).
-- The manifest's `capture_environment` records where the manifest was written, not where the run executed; pass the run's own hardware and service facts via `--resource`.
+- The manifest's `capture_environment` records where it was written, not where the run executed; pass the run's own hardware and service facts via `--resource`.
+- `research_state.py validate` and `status` inspect an existing dossier, `audit_research.py --json` emits a machine report, and every script documents its full flags under `--help`.
 
 ## Testing
 

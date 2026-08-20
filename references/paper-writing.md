@@ -41,8 +41,8 @@ For each claim, record:
 | Exact claim | One scoped, testable or defensible statement |
 | Claim type | Contextual, novelty, theoretical, empirical, causal, descriptive, normative, performance, efficiency, or human-evaluation |
 | Evidence | Source, proof, run, analysis, table, or figure IDs |
-| Lifecycle state | Proposed, analyzed, verified, reported, dropped, or another controlled truth state |
-| Evidential status | Not assessed, insufficient, supported, mixed, or contradicted |
+| Lifecycle state | PROPOSED, ANALYZED, VERIFIED, REPORTED, DROPPED, or another controlled truth state |
+| Evidential status | `not_assessed`, `insufficient`, `supported`, `mixed`, or `contradicted` |
 | Scope | Population, task, dataset, model, workload, setting, and time horizon |
 | Caveat | Known limitation, assumption, uncertainty, or rival explanation |
 | Destination | Abstract, introduction, results, discussion, or conclusion |
@@ -124,7 +124,7 @@ Answer the research question at the supported level. Do not introduce new eviden
 
 Verify citation identity and metadata against a DOI, publisher page, official proceedings entry, or authoritative repository. Open the primary source before making a substantive attribution.
 
-Use metadata-only and abstract-only records for discovery, not for precise claims. Record a full-text locator for consequential comparisons. Distinguish whether a source supports, challenges, contextualizes, or merely mentions a claim.
+Use metadata-only and abstract-checked records for discovery, not for precise claims. Record a full-text locator for consequential comparisons. Distinguish whether a source supports, challenges, contextualizes, or merely mentions a claim.
 
 Avoid:
 

@@ -11,7 +11,7 @@ Copy per submission. Complete every line before calling the formatting gate PASS
 - Template or class and exact version:
 - Allowed template modifications:
 - Page or word limit and counting rules (main text, references, appendix, checklists):
-- File formats and engine constraints:
+- File formats, engine constraints, and font rules:
 - Anonymity state and what it removes:
 - Figure rules affecting layout (widths, caption placement, subfigures):
 
@@ -50,10 +50,12 @@ Copy per submission. Complete every line before calling the formatting gate PASS
 - PDF metadata reviewed (title, author, subject):
 - File size within portal limit:
 - Source package complete (.bbl, styles, figures) and free of forbidden files:
+- Ancillary submission files (.docx, .xlsx, .ods) checked per office-documents.md with `scripts/check_office.py`:
 - Hidden content check (reviewer-response comments, tracked changes, PDF scripts):
 
 ## Verdict
 
-- Formatting gate status and evidence paths:
-- Waivers granted, owner, and expiry:
+- Formatting gate verdict (PASS, CONDITIONAL, FAIL, BLOCKED, or NOT_ASSESSED) and evidence paths:
+- Uncertainty, waivers, and next decisive action:
+- Waivers granted, owner, and expiration:
 - Outstanding defects and owner:

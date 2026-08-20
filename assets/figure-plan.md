@@ -8,13 +8,13 @@ Copy one block per figure. Keep plans next to the manuscript or index them from 
 
 - Figure ID: FIG-
 - Supported claim IDs:
-- Manuscript placement (section, column or page width):
-- Role (method schematic, architecture, pipeline, data figure, qualitative example, teaser):
+- Manuscript placement (section, column or page width, appendix, or slides):
+- Role (method schematic, system architecture, protocol or pipeline flow, data figure, qualitative example, or teaser):
 
 ## Content contract
 
 - What the figure must convey in one sentence:
-- Content source (method description, code paths, run or analysis artifact IDs):
+- Content source (method description, named assumptions, code paths, run or analysis artifact IDs):
 - Values shown are (traceable results, illustrative only, not applicable):
 - Exact labels and terminology taken from:
 - What must be exact vs what may be approximate:
@@ -22,9 +22,11 @@ Copy one block per figure. Keep plans next to the manuscript or index them from 
 
 ## Style contract
 
+- Information hierarchy: primary flow, secondary annotations, and what to omit:
+- Connector meaning (source, target, direction, fan-in or fan-out; data, control, gradient, or reference flow):
 - Palette (hex codes) and colorblind-safe check:
 - Font family and minimum size at final width:
-- Stroke widths, corner radii, arrow style:
+- Stroke widths, corner radii, arrow style, and container style:
 - Consistency reference (existing figure ID or style file):
 
 ## Authoring
@@ -44,8 +46,9 @@ Copy one block per figure. Keep plans next to the manuscript or index them from 
 - Caption draft:
 - Current venue figure rules source and access date:
 - Figure gate verdict (PASS, CONDITIONAL, FAIL, BLOCKED, or NOT_ASSESSED):
+- Uncertainty, deviations, waivers, and next decisive action:
 
 ## Status
 
-- Lifecycle state (proposed, planned, implemented, verified, reported, or another controlled truth state):
+- Lifecycle state (NOT_ASSESSED, PROPOSED, PLANNED, IMPLEMENTED, SMOKE_TESTED, PILOT_ONLY, EXECUTED, ANALYZED, VERIFIED, REPORTED, BLOCKED, or DROPPED):
 - Explicit clean status or outstanding defects, blockers, and owner:

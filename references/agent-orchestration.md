@@ -66,7 +66,7 @@ Assign only roles needed for the current phase:
 | Research engineer | Implement an approved design, tests, configuration, and provenance capture | Scientific interpretation or unapproved execution |
 | Experiment operator | Run authorized manifests and preserve raw outputs and failures | Design changes or selective reruns |
 | Analyst | Produce traceable analysis, uncertainty, sensitivity checks, tables, and figures | Promotion of claims without verification |
-| Author | Draft from the approved claim and evidence ledger | Invented citations, results, or authorship decisions |
+| Author | Draft from the approved claim and evidence ledgers | Invented citations, results, or authorship decisions |
 | Integrity or policy checker | Identify ethics, privacy, license, safety, and current-policy requirements | Legal determination or approval |
 | Independent verifier | Reproduce a trace, audit a claim, or critique an artifact from fresh context | Silent changes to the artifact under review |
 
@@ -142,7 +142,7 @@ Require every agent to return:
     Blockers:
     Next decisive action:
 
-Require literature handoffs to include query scope, search date, source identity, verification depth, relevant locator, and support or challenge relation.
+Require literature handoffs to include query scope, search date, source identity, verification depth, relevant locator, and support, challenge, or contextualize relation.
 
 Require implementation and run handoffs to include code revision, configuration, data lineage, environment, seeds, raw-output paths, failed attempts, and whether outputs are synthetic, pilot, exploratory, or claim-eligible.
 
@@ -218,7 +218,7 @@ Let the coordinator integrate handoffs in this order:
 7. Rerun affected quality gates.
 8. Update next actions and owners.
 
-Preserve contradictory evidence. Mark a claim mixed, contradicted, unsupported, or narrowed rather than discarding an unfavorable handoff.
+Preserve contradictory evidence. Set a claim's evidential status to `insufficient`, `mixed`, or `contradicted`, and narrow its scope when warranted, rather than discarding an unfavorable handoff.
 
 Do not copy agent assertions directly into canonical state without provenance. Keep project files authoritative when state and artifacts disagree.
 

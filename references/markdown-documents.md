@@ -62,9 +62,9 @@ Rules:
 
 - Prefer relative links and image paths for files inside the same repository, so delivery works when the repository is cloned.
 - On GitHub, links starting with `/` resolve at the repository root, not the filesystem root. They work in the hosted document but break in clones, so treat them as a portability warning and state the intent.
-- Heading anchors are renderer-generated: lowercase, whitespace to hyphens, other punctuation dropped, formatting removed, with `-1`, `-2`, suffixes for duplicate headings. Renaming or reordering headings silently breaks every `#fragment` link to them. Do not construct anchors from memory; verify with `scripts/check_markdown.py` and the rendered target.
+- Heading anchors are renderer-generated: lowercase, whitespace to hyphens, other punctuation dropped, formatting removed, with `-1`, `-2` suffixes for duplicate headings. Renaming or reordering headings silently breaks every `#fragment` link to them. Do not construct anchors from memory; verify with `scripts/check_markdown.py` and the rendered target.
 - Give every image meaningful alt text and a committed asset path; do not point at private URLs, local absolute paths, or login-gated locations.
-- Cross-file links using the `path.md#section` form are real references: a missing fragment is a delivery defect, not a warning to wave through.
+- Cross-file links using the `path.md#section` form are real references: the lint reports a missing fragment as a warning, and the `--strict` delivery pass fails on it.
 
 ## 5. Machine-check the source
 
@@ -83,7 +83,7 @@ The checker reports with line numbers:
 Interpretation:
 
 - Errors block the gate; fix them all.
-- Warnings may pass a review pass with owners, but must clear before delivery.
+- Warnings may survive a review pass with owners, but must clear before delivery.
 - The lint cannot see renderer behavior such as alerts, math, task lists, and anchor quirks, so a clean lint is necessary but not sufficient; the delivery verdict comes from the rendered inspection in section 6.
 
 ## 6. Render and inspect before delivery

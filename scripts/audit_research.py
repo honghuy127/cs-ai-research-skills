@@ -259,6 +259,8 @@ def main() -> int:
                     continue
                 if claim_id in superseded_claims:
                     continue
+                if relation == "contextualizes":
+                    continue
                 linked_sources = claim_by_id[claim_id].get("evidence_ids")
                 if not isinstance(linked_sources, list) or identifier not in linked_sources:
                     add(
@@ -562,7 +564,7 @@ def main() -> int:
                         findings,
                         "error",
                         "ineligible-run-supports-claim",
-                        f"run is not a complete measured full-run candidate: {linked_run_id}",
+                        f"run is not a completed, measured, full-phase candidate: {linked_run_id}",
                         identifier,
                     )
         if item.get("claim_type") in EMPIRICAL_TYPES and lifecycle_state in INDEPENDENT_CHECK_STATES:

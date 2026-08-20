@@ -178,7 +178,7 @@ Capture at minimum:
 | Environment | Runtime, packages, hardware, drivers, image digest, and external service versions/dates |
 | Resources | CPU/GPU/accelerator use, memory, storage, wall time, tokens/actions, API calls, and cost when relevant |
 | Outputs | Raw output paths, checksums or persistent IDs, log paths, and schema versions |
-| Outcome | Completed, failed, aborted, or invalid under a prespecified rule; include the failure reason |
+| Outcome | Completed, failed, or aborted; record an attempt that never qualified as a run under failed with the reason |
 
 Assign the run ID in the frozen plan before execution, then use `scripts/capture_run.py` immediately after the attempt when the project uses the bundled dossier. It records an immutable run manifest and ledger entry; it neither executes the command nor represents a merely planned run. Supply the experiment ID, operator, timezone-aware start and end timestamps, actual status, resource facts, and a reason for a failed or aborted attempt. A completed full measured run is only `candidate_pending_verification` until outputs and analysis are checked.
 

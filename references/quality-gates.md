@@ -36,7 +36,7 @@ Return:
     Evidence: <IDs, paths, and locators>
     Uncertainty: <what remains unknown>
     Deviations: <departures from the approved plan>
-    Waivers: <risk, authority, rationale, and expiry or revisit condition>
+    Waivers: <risk, authority, rationale, and expiration or revisit condition>
     Next decisive action: <smallest informative step>
 
 Do not merge gate status with research truth state. A manuscript may exist at IMPLEMENTED while its writing gate is FAIL. An experiment may be EXECUTED while its evidence-eligibility gate is CONDITIONAL.

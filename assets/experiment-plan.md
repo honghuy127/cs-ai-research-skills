@@ -8,7 +8,7 @@ Playbook: [../references/experimental-design.md](../references/experimental-desi
 - Research question and claim IDs:
 - Contribution and methodology type:
 - Exploratory or confirmatory:
-- Freeze date and version:
+- Freeze date, version, and content hash:
 
 ## Hypotheses and decision rules
 
@@ -18,11 +18,20 @@ Playbook: [../references/experimental-design.md](../references/experimental-desi
 - Minimal meaningful effect or decision threshold:
 - Success, failure, and stopping rules:
 
+## Claims to constructs
+
+One row per central claim.
+
+| Claim ID | Claim text | Population and conditions | Construct | Operational measure | Contrast or estimand | Evidence source | Rival explanation | Failure criterion |
+|---|---|---|---|---|---|---|---|---|
+| | | | | | | | | |
+
 ## Units, data, and splits
 
 - Unit of analysis and independence assumptions:
 - Population / operating environment:
 - Dataset source, version, license, checksum or manifest:
+- Pilot vs confirmatory data, and the reuse rule:
 - Inclusion / exclusion and preprocessing:
 - Train / validation / test or temporal split:
 - Leakage and contamination controls:
@@ -38,6 +47,8 @@ Playbook: [../references/experimental-design.md](../references/experimental-desi
 ## Measures and analysis
 
 - Construct-to-measure justification:
+- Analysis paths, each labeled confirmatory, exploratory, or descriptive:
+- Planned tables, figures, and robustness checks:
 - Primary and secondary metrics:
 - Seeds, trials, folds, participants, or queries:
 - Uncertainty and effect-size plan:
@@ -61,4 +72,13 @@ Playbook: [../references/experimental-design.md](../references/experimental-desi
 
 ## Deviations
 
-Append every post-freeze change with date, reason, affected inference, and whether analysis becomes exploratory.
+Append every post-freeze change with date, reason, evidence available when decided, affected claims and inference, whether it occurred before or after outcome inspection, and whether analysis becomes exploratory.
+
+## Design gate record
+
+- Verdict (PASS, CONDITIONAL, FAIL, BLOCKED, or NOT_ASSESSED):
+- Evidence IDs and artifact paths:
+- Uncertainty:
+- Deviations:
+- Waivers (risk, authority, rationale, and expiration or revisit condition):
+- Next decisive action:

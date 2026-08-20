@@ -390,6 +390,19 @@ class TestAudit:
         assert code == 0, report
         assert "claim-links-superseded-evidence" in finding_codes(report)
 
+    def test_metadata_only_contextualizes_without_backlink(self, project: Path) -> None:
+        append_record(
+            project,
+            "evidence.jsonl",
+            make_evidence(
+                "SRC-001", verification="metadata-only", locator=None, supports=[], contextualizes=["CLM-001"]
+            ),
+        )
+        append_record(project, "claims.jsonl", make_claim("CLM-001", claim_type="contextual", evidence_ids=[]))
+        code, report = audit_report(project)
+        assert code == 0, report
+        assert report["counts"]["error"] == 0
+
     def test_metadata_only_evidence_rejected(self, project: Path) -> None:
         append_record(
             project,

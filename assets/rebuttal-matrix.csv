@@ -1,1 +1,1 @@
-comment_id,reviewer,quoted_or_paraphrased_concern,severity,validity,response_type,evidence_or_analysis,manuscript_change,location,owner,status,word_budget
+comment_id,reviewer,quoted_or_paraphrased_concern,severity,validity,response_type,proposed_response,evidence_or_analysis,manuscript_change,location,owner,dependency,status,word_budget

@@ -4,9 +4,11 @@ Playbook: [../references/proposal-writing.md](../references/proposal-writing.md)
 
 ## Compliance matrix
 
-| Requirement / criterion | Official source and access date | Limit / instruction | Planned location | Status |
-|---|---|---|---|---|
-| | | | | |
+One row per atomic requirement. Status is one of NOT_ASSESSED, in progress, satisfied, conflict, or BLOCKED.
+
+| ID | Requirement / criterion | Authority (URL, version, access date, locator) | Applicability | Mandatory | Deliverable | Owner | Evidence | Status | Due and validation |
+|---|---|---|---|---|---|---|---|---|---|
+| REQ-001 | | | | | | | | | |
 
 ## One-sentence thesis
 
@@ -14,6 +16,7 @@ State the problem, proposed contribution, method, and expected value without uns
 
 ## Summary
 
+- One-page logic summary (need, gap, goal, objectives, methods, evidence plan, impact)
 - Need and gap
 - Objectives
 - Approach
@@ -38,7 +41,7 @@ Map claims to constructs, datasets or participants, baselines, metrics, uncertai
 
 ## Schedule, resources, and management
 
-Include milestones, critical path, compute and data access, roles, governance, and communication.
+Include milestones, critical path, compute and data access, roles, governance, communication, and the budget case (personnel effort, compute, storage, API, data, indirect costs, and its mapping to work packages).
 
 ## Risks and alternatives
 
@@ -54,4 +57,4 @@ Separate expected artifacts from unearned predicted results. State what success 
 
 ## References
 
-Include only verified sources and conform to the required format.
+Include only verified sources and conform to the required format. Mark unresolved gaps with `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]` instead of plausible filler.

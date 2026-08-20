@@ -28,7 +28,7 @@ If official sources conflict or remain ambiguous on a rule that would change the
 
 A format check starts from a clean, reproducible build of the exact submission sources.
 
-- Use the engine the template requires; `latexmk -pdf`, `latexmk -xelatex`, or `latexmk -lualatex` with sufficient passes so references and citations stabilize.
+- Use the engine the template requires: `latexmk -pdf`, `latexmk -xelatex`, or `latexmk -lualatex` with sufficient passes so references and citations stabilize.
 - Compile with `-interaction=nonstopmode` so the run completes and the full log survives; never silence the log or discard it.
 - Build in an isolated output directory from a pristine copy of the submission tree, so the check reflects what will be uploaded, not a locally patched variant.
 - Record the command, engine version, template version, and source revision. Treat the resulting PDF and log as the format-check artifacts.

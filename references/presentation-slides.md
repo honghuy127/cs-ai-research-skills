@@ -36,7 +36,7 @@ Keep the story arc: problem, gap, approach, evidence with its limits, and implic
 
 ## 3. Choose the slide technology
 
-Pick the format the audience, co-authors, and venue workflow support. Both routes below are supported; a project may keep one canonical deck or derive both from the same storyboard.
+Pick the format the audience, co-authors, and venue workflow support. All three routes below are supported; a project may keep one canonical deck or derive the others from the same storyboard.
 
 | Route | Authoring source | Use when |
 |---|---|---|
@@ -57,7 +57,7 @@ Prefer reproducible authoring over one-off GUI edits:
 
 - Generate or patch the deck with python-pptx from a recorded script, or start from the institutional template and keep the template file versioned. Verify API behavior against the installed python-pptx release.
 - Use the template's layouts and masters instead of manually positioned boxes, so fonts, colors, and alignment stay consistent.
-- Place figures as high-resolution exports from their editable sources; never screenshot a figure for a slide. Native tables and editable text are re-usable; flattened images are not.
+- Place figures as high-resolution exports from their editable sources; never screenshot a figure for a slide. Native tables and editable text are reusable; flattened images are not.
 - Put elaboration and live-only content in speaker notes, not on the slide face.
 - Use fonts that ship with the presentation environment or embed them through the tooling; record the font list because python-pptx cannot embed fonts by itself.
 - Before structural checks or handoff, run the package lint:
@@ -118,7 +118,7 @@ Apply stable standards regardless of venue:
 - Sufficient contrast between text and background; no text encoded inside raster screenshots.
 - Alternative text for informative figures where the format supports it.
 - Captions or transcripts for embedded audio and video.
-- A deck that reads coherently without animation: animation clarifies sequence; it must not be the only carrier of meaning.
+- A deck that reads coherently without motion: animation may clarify sequence but must not be the only carrier of meaning.
 
 ## 8. Record provenance and pass the talk gate
 

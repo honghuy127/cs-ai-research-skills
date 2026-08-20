@@ -87,9 +87,9 @@ Use `state.json` as an index, not a second copy of the paper or code. Include:
 - Artifact paths, open risks, blockers, a compact `decision_index`, and next actions.
 - Stage status chosen from the controlled truth states.
 
-Keep `decisions.md` append-only. For each material decision record date, decision, evidence, alternatives, rationale, consequences, owner, and revisit condition.
+Keep `decisions.md` append-only. For each material decision, record date, decision, evidence, alternatives, rationale, consequences, owner, and revisit condition.
 
-Keep evidence, claims, and experiment records append-only. Correct an error with a new unique record ID and a `supersedes` field pointing to the old ID rather than silently erasing history when traceability matters.
+Keep evidence, claims, and experiment records append-only. Correct an error with a new unique record ID whose `supersedes` field points to the old ID, then update dependent claims rather than silently rewriting history.
 
 ## 5. Claim and evidence records
 
@@ -116,7 +116,7 @@ Keep two independent fields:
 
 Thus a claim may be `analyzed` and `mixed`, or `verified` and `contradicted`. A citation may contextualize a claim without supporting it; record the relation honestly in the evidence record.
 
-Keep evidence links reciprocal: every claim `evidence_ids` entry must point to an evidence record that lists the claim under `supports`, `challenges`, or `contextualizes`, and every such evidence relation must point back from the claim. Do not link `metadata-only` records as claim evidence.
+Keep evidence links reciprocal: every claim `evidence_ids` entry must point to an evidence record that lists the claim under `supports`, `challenges`, or `contextualizes`, and every `supports` or `challenges` relation must be mirrored in the claim's evidence links. Do not link `metadata-only` records as `supports` or `challenges` evidence; they may only `contextualize`.
 
 For an empirical claim whose `lifecycle_state` is `verified` or `reported`, link a distinct full measured rerun in `verification_run_ids` or a concrete independent-check report in `verification_artifact_paths`. Do not reuse the primary run as its own verification.
 
@@ -157,9 +157,11 @@ For every gate return:
 ```text
 Gate: <name>
 Status: PASS | CONDITIONAL | FAIL | BLOCKED | NOT_ASSESSED
-Evidence: <IDs and artifact paths>
+Decision controlled: <what may proceed>
+Evidence: <IDs, paths, and locators>
 Uncertainty: <what remains unknown>
-Waivers: <who accepted which risk and why>
+Deviations: <departures from the approved plan>
+Waivers: <risk, authority, rationale, and expiration or revisit condition>
 Next decisive action: <smallest informative step>
 ```
 

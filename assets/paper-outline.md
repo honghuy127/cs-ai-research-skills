@@ -19,9 +19,11 @@ Playbook: [../references/paper-writing.md](../references/paper-writing.md)
 
 ## Claim map
 
-| Claim ID | Planned wording | Lifecycle state | Evidential status | Source / run / proof IDs | Table / figure | Scope and caveat | Section |
-|---|---|---|---|---|---|---|---|
-| | | | | | | | |
+Claim type is one of contextual, novelty, theoretical, empirical, causal, descriptive, normative, performance, efficiency, or human-evaluation. Lifecycle state uses the controlled truth states (PROPOSED, ANALYZED, VERIFIED, REPORTED, DROPPED, or another). Evidential status is `not_assessed`, `insufficient`, `supported`, `mixed`, or `contradicted`. Mark unresolved gaps with `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]`.
+
+| Claim ID | Planned wording | Claim type | Lifecycle state | Evidential status | Source / run / proof IDs | Table / figure | Scope and caveat | Section |
+|---|---|---|---|---|---|---|---|---|
+| | | | | | | | | |
 
 ## Section plan
 
@@ -43,7 +45,7 @@ Define setting, assumptions, mechanism, algorithm or architecture, complexity, a
 
 ### Experimental design / study method
 
-Explain data, baselines, metrics, protocol, uncertainty, compute, governance, and preregistered deviations.
+Explain data, baselines, metrics, protocol, uncertainty, compute, governance, and deviations from the preregistered design.
 
 ### Results
 
@@ -63,3 +65,4 @@ Answer the research question at the supported scope; do not introduce new claims
 - Tables and figures derive from traceable artifacts.
 - Every citation and number is verified.
 - Limitations and negative evidence are visible.
+- Writing-gate verdict (PASS, CONDITIONAL, FAIL, BLOCKED, or NOT_ASSESSED) with evidence and next decisive action:

@@ -5,7 +5,7 @@ Playbook: [../references/research-contract-and-state.md](../references/research-
 ## Decision needed now
 
 - Deliverable:
-- Audience / venue / funder:
+- Audience / venue / funder / degree context:
 - Owner and deadline:
 - Definition of done:
 
@@ -47,7 +47,7 @@ Playbook: [../references/research-contract-and-state.md](../references/research-
 - Required skills or collaborators:
 - Ethics / privacy / security / dual use:
 - Licensing / IP:
-- Prohibited actions:
+- Prohibited data, code, models, infrastructure, tools, and actions:
 
 ## Planned artifacts
 
@@ -63,6 +63,6 @@ Playbook: [../references/research-contract-and-state.md](../references/research-
 - Top risks:
 - Known unknowns:
 - Dependencies:
-- Current gate and status:
+- Current gate and verdict (PASS, CONDITIONAL, FAIL, BLOCKED, or NOT_ASSESSED):
 - Next decision owner:
 - Next decisive action:

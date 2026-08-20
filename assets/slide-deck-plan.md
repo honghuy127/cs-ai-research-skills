@@ -11,6 +11,7 @@ Copy per deck. Complete every section before calling the talk gate PASS.
 - Format (live talk, recorded, lightning, handout-only):
 - Source of truth (manuscript revision, claim map, accepted paper, version):
 - Technical constraints (aspect ratio, platform, offline delivery, file limits):
+- Venue or platform rules source and access date:
 - Confidentiality and distribution scope:
 - Third-party figure reuse, license, and attribution:
 
@@ -21,6 +22,9 @@ One row per planned slide.
 | Slide | Title | One-sentence message | Claim / figure IDs | Notes summary | Status |
 |---|---|---|---|---|---|
 | 1 | | | | | |
+
+- Backup slides reserved for anticipated questions:
+- Time budget check against the allotment:
 
 ## Number traceability
 
@@ -47,5 +51,6 @@ One row per planned slide.
 
 ## Gate
 
-- Talk gate status and evidence paths:
+- Talk gate verdict (PASS, CONDITIONAL, FAIL, BLOCKED, or NOT_ASSESSED) and evidence paths:
+- Uncertainty, waivers, and next decisive action:
 - Outstanding defects and owner:

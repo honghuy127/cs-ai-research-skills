@@ -73,7 +73,7 @@ When authorized, verify the diff before the write command, capture the exact com
 
 - Open one issue per concern; put the decision, evidence, or reproduction details in the body so the tracker stays authoritative for the project state.
 - A pull request body states the claim under review, the runs or analysis it depends on (run IDs, artifact paths, dossier links), and the review question being asked. Never let a PR description assert a result without the evidence it cites.
-- Verify CI before requesting review: `gh pr checks <n>` and read failures with `gh run view <id> --log-failed`. A failing workflow blocks review of the change it gates, even if the change text looks right.
+- Verify CI before requesting review: run `gh pr checks <n>` and read failures with `gh run view <id> --log-failed`. A failing workflow blocks review of the change it gates, even if the change text looks right.
 - Reviewing research code, load implementation-and-reproducibility.md: check that the diff matches the claim, the pipeline records configuration and data lineage, and tests cover the logic being reviewed. Comment with evidence and a suggested next step, not taste.
 - Rebase or update the branch from the recorded base, then re-verify checks after the merge state changes.
 - Keep review discussions on the repository, not in private channels, so the decision trail survives.

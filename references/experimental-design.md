@@ -132,7 +132,7 @@ Base the rationale on the inferential unit, expected variability, smallest meani
 
 - Use analytical power, simulation, historical variance, precision targets, sequential design, or another design-appropriate method.
 - Simulate power for hierarchical, clustered, adaptive, nonstandard, or metric-heavy designs when closed-form assumptions are implausible.
-- Account separately for the number of independent items, participants or entities and the number of repeated stochastic trials. More seeds do not compensate for too few test items, and more items do not measure run-to-run instability.
+- Account separately for the number of independent items, participants, or entities, and the number of repeated stochastic trials. More seeds do not compensate for too few test items, and more items do not measure run-to-run instability.
 - For equivalence or non-inferiority claims, set and justify the margin before analysis.
 - For qualitative work, justify sample sufficiency through information power, saturation, diversity, or case coverage rather than a quantitative power formula.
 - For resource-limited studies, state what effects or failures the study can and cannot detect. Treat the constraint as a limitation, not as proof of adequacy.
