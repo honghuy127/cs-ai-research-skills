@@ -91,7 +91,9 @@ Each phase reference owns the detailed criteria for its gate. Load the reference
 | AI and ML evaluation | [cs-ai-evaluation.md](cs-ai-evaluation.md), section "Pass the AI evaluation gate" |
 | Implementation and reproducibility | [implementation-and-reproducibility.md](implementation-and-reproducibility.md), section "Pass the implementation gate" |
 | Analysis and interpretation | [analysis-and-statistics.md](analysis-and-statistics.md), section "Preserve analysis provenance and pass the gate" |
+| Figures and diagrams | [figures-and-diagrams.md](figures-and-diagrams.md), section "Record provenance and pass the figure gate" |
 | Review and rebuttal | [paper-review-and-rebuttal.md](paper-review-and-rebuttal.md), section "Complete the review or rebuttal gate" |
+| Submission formatting | [paper-formatting.md](paper-formatting.md), section "Iterate, record, and pass the formatting gate" |
 | Ethics and policy response | [ethics-integrity-and-policy.md](ethics-integrity-and-policy.md), section "Respond to concerns and record the gate" |
 
 The gates below have no phase reference of their own and remain canonical here.

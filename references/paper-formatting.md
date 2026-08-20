@@ -12,7 +12,7 @@
 
 ## 1. Establish the formatting contract
 
-Venue formatting rules are volatile. Before checking anything, retrieve the current official requirements from the venue, publisher, or template maintainer and record the URL and access date. Do not rely on remembered limits.
+This playbook verifies the rendered layout, files, and metadata of a submission; the broader venue-policy survey covering scope, ethics, disclosure, and AI-use lives in [paper-writing.md](paper-writing.md), section "Check current venue requirements". Venue formatting rules are volatile. Before checking anything, retrieve the current official requirements from the venue, publisher, or template maintainer and record the URL and access date. Do not rely on remembered limits.
 
 Record in `assets/format-checklist.md` or the dossier:
 

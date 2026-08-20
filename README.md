@@ -57,7 +57,7 @@ For substantial projects, the skill keeps canonical state in a `.research/` dire
 └── runs/<run-id>/manifest.json   # immutable per-run provenance
 ```
 
-The three scripts require only Python 3.10+ and the standard library:
+The scripts require only Python 3.10+ and the standard library:
 
 ```bash
 # Initialize a dossier in the current project
@@ -80,10 +80,12 @@ python3 scripts/capture_run.py --run-id RUN-001 --experiment-id EXP-001 \
 # Check structural traceability (exit 1 on any error)
 python3 scripts/audit_research.py
 
-# Lint draw.io figure sources (exit 1 on errors; --strict also fails on warnings)
+# Lint draw.io figure sources (exit 1 on errors; --strict also fails on warnings;
+# --min-font-size N sets the minimum label size; --json emits a machine report)
 python3 scripts/validate_drawio.py figures/method.drawio
 
-# Check a LaTeX build log for errors, overfull boxes, undefined refs (exit 1 on errors)
+# Check a LaTeX build log for errors, overfull boxes, undefined refs
+# (exit 1 on errors; --json emits a machine report)
 python3 scripts/check_latex_log.py build/main.log --max-pages 9
 ```
 

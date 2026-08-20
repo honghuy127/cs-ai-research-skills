@@ -156,7 +156,7 @@ Treat a seed as provenance, not as a guarantee of identical results across softw
 
 ## 9. Freeze the design and record deviations
 
-Create a timestamped, versioned experiment plan before claim-eligible execution. Include:
+Create a timestamped, versioned experiment plan before claim-eligible execution, recording it in `assets/experiment-plan.md` or the dossier. Include:
 
 - Research questions, hypotheses, claim IDs, and contribution type.
 - Units, population, sampling, partitions, and exclusion rules.

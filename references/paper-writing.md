@@ -31,7 +31,7 @@ Do not infer authorization to submit, upload, disclose, add authors, remove auth
 
 ## 2. Build a claim-led paper plan
 
-Construct a claim map before polishing prose. Assign a stable claim ID to every central contribution, empirical conclusion, theoretical result, dataset property, and practical implication.
+Construct a claim map before polishing prose, recording the plan in `assets/paper-outline.md`. Assign a stable claim ID to every central contribution, empirical conclusion, theoretical result, dataset property, and practical implication.
 
 For each claim, record:
 

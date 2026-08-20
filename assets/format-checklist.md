@@ -7,9 +7,11 @@ Copy per submission. Complete every line before calling the formatting gate PASS
 - Venue, track, and cycle:
 - Official instruction URLs and access date:
 - Template or class and exact version:
+- Allowed template modifications:
 - Page or word limit and counting rules (main text, references, appendix, checklists):
 - File formats and engine constraints:
 - Anonymity state and what it removes:
+- Figure rules affecting layout (widths, caption placement, subfigures):
 
 ## Build
 
@@ -23,6 +25,7 @@ Copy per submission. Complete every line before calling the formatting gate PASS
 - `check_latex_log.py` command and status:
 - Hard errors resolved:
 - Undefined references and citations resolved:
+- Labels-changed and rerun requests cleared by final stable recompile:
 - Overfull boxes resolved or explicitly waived with venue permission:
 - `--strict` pass completed for camera-ready:
 
@@ -45,6 +48,7 @@ Copy per submission. Complete every line before calling the formatting gate PASS
 - PDF metadata reviewed (title, author, subject):
 - File size within portal limit:
 - Source package complete (.bbl, styles, figures) and free of forbidden files:
+- Hidden content check (reviewer-response comments, tracked changes, PDF scripts):
 
 ## Verdict
 

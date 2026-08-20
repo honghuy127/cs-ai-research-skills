@@ -15,6 +15,7 @@ Copy one block per figure. Keep plans next to the manuscript or index them from 
 - Content source (method description, code paths, run or analysis artifact IDs):
 - Values shown are (traceable results, illustrative only, not applicable):
 - Exact labels and terminology taken from:
+- What must be exact vs what may be approximate:
 - Third-party content, license, and required attribution:
 
 ## Style contract
@@ -27,7 +28,9 @@ Copy one block per figure. Keep plans next to the manuscript or index them from 
 ## Authoring
 
 - Editable source path and canonical tool (draw.io, TikZ/pgfplots, plotting script):
+- Derived export format(s) (PDF, PNG, SVG):
 - Generation or export command:
+- Output paths:
 - Input artifact IDs and hashes (data figures only):
 - Code version or commit:
 
@@ -41,5 +44,5 @@ Copy one block per figure. Keep plans next to the manuscript or index them from 
 
 ## Status
 
-- Lifecycle state (proposed, drafted, verified, reported):
-- Outstanding blockers and owner:
+- Lifecycle state (proposed, planned, implemented, verified, reported, or another controlled truth state):
+- Explicit clean status or outstanding defects, blockers, and owner:

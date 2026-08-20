@@ -84,8 +84,10 @@ Typical gates are:
 4. Design gate: claims map to constructs, comparisons, outcomes, uncertainty, and failure criteria.
 5. Implementation gate: the pipeline passes tests and records configuration, data lineage, environment, and provenance.
 6. Execution-evidence gate: claim-eligible runs follow the frozen design; deviations and failed runs are retained.
-7. Writing gate: claims, tables, figures, citations, limitations, and artifacts agree.
-8. Review gate: every criticism is evidence-backed, calibrated, actionable, and policy-compliant.
+7. Figure gate: every figure traces from its editable source through the rendered export to named manuscript claims.
+8. Writing gate: claims, tables, figures, citations, limitations, and artifacts agree.
+9. Formatting gate: the compile log, rendered pages, files, and metadata satisfy the current venue contract.
+10. Review gate: every criticism is evidence-backed, calibrated, actionable, and policy-compliant.
 
 Return `PASS`, `CONDITIONAL`, `FAIL`, `BLOCKED`, or `NOT_ASSESSED`, with evidence and next action. Do not hide a waiver.
 

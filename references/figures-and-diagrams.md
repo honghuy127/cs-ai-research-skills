@@ -15,7 +15,7 @@
 
 ## 1. Establish the figure contract
 
-Read the claim map, manuscript draft, venue constraints, and existing figures before drawing anything. A figure is a manuscript deliverable, not decoration: every figure must answer a named question or support a named claim.
+Read the claim map, manuscript draft, venue constraints, and existing figures before drawing anything. Build or extend the claim map per [paper-writing.md](paper-writing.md), section "Build a claim-led paper plan", so placement follows manuscript claims. A figure is a manuscript deliverable, not decoration: every figure must answer a named question or support a named claim.
 
 For each requested figure, record:
 
@@ -108,6 +108,8 @@ Record the command, input artifact ids, code version, and output paths in the fi
 XML alone cannot reveal visual defects such as overlaps, clipped text, or wrong routing, but it can carry structural defects that render as garbage. Run the structural lint before any render:
 
 ```bash
+# --strict fails on warnings too; --min-font-size N raises the font threshold;
+# --json emits a machine-readable report
 python3 scripts/validate_drawio.py figures/fig01-method.drawio
 ```
 
@@ -170,7 +172,7 @@ Keep a figure ledger, either in the figure plan files or in the dossier, mapping
 - Render verification: how the render was inspected, by whom, and when.
 - Outstanding defects or an explicit clean status.
 
-In a project dossier, capture figure-generation runs with `scripts/capture_run.py` like any other analysis artifact, so `audit_research.py` can trace the outputs.
+In a project dossier, capture figure-generation runs with `scripts/capture_run.py` like any other analysis artifact, so `audit_research.py` can trace the outputs. When figures enter a manuscript pass, recheck their labels and numbers against the text with the audit in [paper-writing.md](paper-writing.md), section "Revise and audit the manuscript".
 
 Require all of the following for a figure gate PASS:
 

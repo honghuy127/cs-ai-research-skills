@@ -23,7 +23,7 @@
 
 ## Section plan
 
-### Abstract — draft last
+### Abstract (draft last)
 
 Problem, gap, approach, only verified headline results, contribution, and boundary.
 

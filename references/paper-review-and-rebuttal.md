@@ -153,7 +153,7 @@ Distinguish a required correction from a useful extension. Do not demand expensi
 
 ## 7. Assemble the review
 
-Use this order unless the current rubric requires another:
+Record the review in `assets/review-template.md`, using this order unless the current rubric requires another:
 
 1. Summary of the question, contribution, and evidence.
 2. Overall assessment at the contribution-appropriate standard.
@@ -179,7 +179,7 @@ Follow any required channel for ethics, plagiarism, security, or misconduct conc
 
 ## 9. Prepare a rebuttal or revision response
 
-Treat the reviews as evidence-bearing inputs, not commands. Parse each distinct issue into a response matrix containing:
+Treat the reviews as evidence-bearing inputs, not commands. Parse each distinct issue into a response matrix (`assets/rebuttal-matrix.csv` or equivalent) containing:
 
 - Review and comment ID.
 - Exact issue and severity.
