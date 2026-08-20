@@ -20,6 +20,7 @@ Playbook: [../references/research-contract-and-state.md](../references/research-
 - Intended scope of generalization:
 - Contribution type:
 - Methodology:
+- Evidence basis: <!-- sources only (review, survey, exposition, static analysis) or original runs -->
 
 ## Claims and falsifiers
 

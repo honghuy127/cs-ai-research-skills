@@ -71,6 +71,7 @@ Do not require:
 
 - SOTA performance when the contribution is measurement, theory, replication, negative evidence, or insight.
 - Experiments for a self-contained proof unless empirical claims are also made.
+- Execution, implementation, or evaluation gates for surveys, taxonomies, conceptual exposition, position papers, or static analyses whose claims are grounded in sources; the equivalent burden is protocol coverage, locator traceability, and sound synthesis.
 - Novelty from a replication whose stated value is reliability.
 - Statistical significance for qualitative, formal, or deterministic claims.
 - A positive outcome from a credible negative-results design.
@@ -166,7 +167,7 @@ Do not waive law, consent, confidentiality, or a nonwaivable safety control.
 
 ## 8. Gate execution and evidence eligibility
 
-Control whether a run may support a scientific claim.
+Control whether a run may support a scientific claim. Apply this gate only to claims derived from runs the project itself executes; a source-grounded project reports it as `NOT_ASSESSED` rather than waiving or fabricating it.
 
 Require:
 

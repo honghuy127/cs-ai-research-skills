@@ -10,7 +10,7 @@ The skill follows the [Agent Skills specification](https://agentskills.io/specif
 
 ## Design principles
 
-- **Truth states, not vibes.** Every claim moves through an explicit lifecycle (`NOT_ASSESSED → PROPOSED → PLANNED → IMPLEMENTED → SMOKE_TESTED → PILOT_ONLY → EXECUTED → ANALYZED → VERIFIED → REPORTED`), and workflow maturity is tracked separately from the evidential verdict. A pipeline that runs is not a result; a pilot is not confirmatory evidence.
+- **Truth states, not vibes.** Every claim moves through an explicit lifecycle (`NOT_ASSESSED → PROPOSED → PLANNED → IMPLEMENTED → SMOKE_TESTED → PILOT_ONLY → EXECUTED → ANALYZED → VERIFIED → REPORTED`), and workflow maturity is tracked separately from the evidential verdict. A pipeline that runs is not a result; a pilot is not confirmatory evidence. Source-grounded work (reviews, surveys, conceptual exposition, static analysis) skips the execution states: its claims move `PROPOSED → VERIFIED → REPORTED` on traced sources, and no runs are required.
 - **Evidence eligibility.** Smoke tests and synthetic plumbing output are structurally barred from becoming scientific evidence. A completed full measured run is only a candidate until it is independently verified.
 - **Decisive gates.** Each phase ends with a gate returning `PASS`, `CONDITIONAL`, `FAIL`, `BLOCKED`, or `NOT_ASSESSED`, with evidence and the next decisive action.
 - **No fabrication.** Unverifiable content becomes `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]`, never plausible filler. The audit script fails on unresolved markers in reported deliverables.

@@ -91,6 +91,8 @@ Keep `decisions.md` append-only. For each material decision, record date, decisi
 
 Keep evidence, claims, and experiment records append-only. Correct an error with a new unique record ID whose `supersedes` field points to the old ID, then update dependent claims rather than silently rewriting history.
 
+Source-grounded projects (systematic reviews, surveys, taxonomies, conceptual exposition, position arguments, static analysis of existing artifacts) keep `experiments.jsonl` empty and record nothing under `runs/`. An empty run ledger is complete for such projects, not a gap; the audit passes with no run records when every claim is grounded in evidence records.
+
 ## 5. Claim and evidence records
 
 Use stable IDs such as `SRC-001`, `CLM-001`, `RQ-001`, `HYP-001`, `RUN-001`, `TAB-001`, and `FIG-001`.
@@ -108,6 +110,8 @@ An internal claim record should contain:
 ```
 
 `claim_type` is one of `contextual`, `novelty`, `theoretical`, `empirical`, `causal`, `descriptive`, `normative`, `performance`, `efficiency`, or `human-evaluation`. The audit treats `empirical`, `causal`, `performance`, `efficiency`, and `human-evaluation` claims as empirical: when evidence-bearing and execution-bearing they require linked claim-eligible runs, and at `verified` or `reported` they require the independent verification described below.
+
+Type claims by what backs them. A claim about what a source reports ("X et al. measured 90% on Y") is `descriptive`, grounded in that source's evidence record, even when the source itself is empirical. Reserve the empirical types for claims the project itself tests with runs. Source-grounded projects therefore carry no empirical claims and need no run ledger.
 
 Keep two independent fields:
 
@@ -147,6 +151,8 @@ Use these lifecycle states:
 | `DROPPED` | A recorded decision removed the item from scope. |
 
 Allow loops and backward transitions. Record why. A `PILOT_ONLY` artifact never becomes confirmatory merely through rewriting.
+
+Not every claim passes through every state. Source-grounded claims (systematic reviews, surveys, taxonomies, conceptual exposition, position arguments, static analysis of existing artifacts) move `PROPOSED → VERIFIED → REPORTED`: for them `VERIFIED` means an independent trace to located passages, proofs, or inspected artifacts, not a rerun. `IMPLEMENTED` through `ANALYZED` apply to claims derived from runs the project itself executes. Do not record an execution state, demand an execution gate, or leave a `[RESULT PENDING]` marker where no run is part of the design.
 
 In prose and gate reports, use the uppercase lifecycle labels above. `state.json` serializes their lowercase equivalents such as `proposed`, `smoke_tested`, and `verified`.
 

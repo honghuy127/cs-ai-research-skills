@@ -47,7 +47,7 @@ Read [quality-gates.md](references/quality-gates.md) before declaring any phase 
 
 Select the contribution type and methodology before imposing a rubric, using the contribution and methodology tables in [research-contract-and-state.md](references/research-contract-and-state.md). Allow combinations, but identify one primary type.
 
-Do not require SOTA gains, experiments for self-contained theory, novelty for a replication, positive findings for a negative-results study, or statistical tests that do not match the design.
+Do not require SOTA gains, experiments for self-contained theory, surveys, or conceptual exposition, novelty for a replication, positive findings for a negative-results study, or statistical tests that do not match the design.
 
 ## Enforce evidence discipline
 
@@ -66,6 +66,8 @@ Use `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]` instead of f
 Keep these states distinct:
 
 `NOT_ASSESSED → PROPOSED → PLANNED → IMPLEMENTED → SMOKE_TESTED → PILOT_ONLY → EXECUTED → ANALYZED → VERIFIED → REPORTED`
+
+Not every claim passes through every state. Source-grounded work (systematic reviews, surveys, taxonomies, conceptual exposition, position arguments, static analysis of existing artifacts) carries no original runs: its claims move `PROPOSED → VERIFIED → REPORTED`, where `VERIFIED` means an independent trace to located passages, proofs, or inspected artifacts, not a rerun. The execution states apply to claims derived from runs the project itself executes. Never force an execution phase, an execution gate, or a `[RESULT PENDING]` marker onto a contribution whose burden of proof is carried by sources.
 
 Allow backward movement, revision, blocking, or dropping with a recorded reason. Never promote:
 

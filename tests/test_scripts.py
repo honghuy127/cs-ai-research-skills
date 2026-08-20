@@ -420,6 +420,42 @@ class TestAudit:
         assert "metadata-used-substantively" in codes
         assert "claim-uses-metadata-as-evidence" in codes
 
+    def test_source_only_dossier_audits_clean_with_no_runs(self, project: Path) -> None:
+        append_record(project, "evidence.jsonl", make_evidence("SRC-001", supports=["CLM-001"]))
+        append_record(
+            project,
+            "claims.jsonl",
+            make_claim(
+                "CLM-001",
+                claim_type="descriptive",
+                lifecycle_state="verified",
+                evidential_status="supported",
+                evidence_ids=["SRC-001"],
+            ),
+        )
+        code, report = audit_report(project)
+        assert code == 0, report
+        assert report["counts"]["error"] == 0
+
+    def test_empirical_claim_still_requires_a_run(self, project: Path) -> None:
+        append_record(project, "evidence.jsonl", make_evidence("SRC-001", supports=["CLM-001"]))
+        append_record(
+            project,
+            "claims.jsonl",
+            make_claim(
+                "CLM-001",
+                claim_type="empirical",
+                lifecycle_state="verified",
+                evidential_status="supported",
+                evidence_ids=["SRC-001"],
+            ),
+        )
+        code, report = audit_report(project)
+        assert code == 1
+        codes = finding_codes(report)
+        assert "empirical-claim-without-run" in codes
+        assert "verified-claim-without-independent-check" in codes
+
     def test_reported_claim_artifact_autoscanned_for_placeholders(self, project: Path) -> None:
         (project / "paper.md").write_text("Result: [RESULT PENDING]\n", encoding="utf-8")
         append_record(
