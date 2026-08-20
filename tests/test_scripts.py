@@ -6,9 +6,12 @@ throwaway project directory, mirroring how an agent uses them.
 
 from __future__ import annotations
 
+import base64
 import json
 import subprocess
 import sys
+import urllib.parse
+import zlib
 from pathlib import Path
 
 import pytest
@@ -340,3 +343,99 @@ class TestAudit:
         code, report = audit_report(project, "--scan", "draft.md")
         assert code == 1
         assert "unresolved-placeholder" in finding_codes(report)
+
+
+VALID_DRAWIO = """<mxfile host="app.diagrams.net">
+  <diagram id="p1" name="method">
+    <mxGraphModel page="1" pageWidth="850" pageHeight="1100">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="a" value="Encoder" style="rounded=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="120" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="b" value="Decoder" style="rounded=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="240" y="40" width="120" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="e" value="latents" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="a" target="b">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
+"""
+
+
+def drawio_report(project: Path, *args: str) -> tuple[int, dict]:
+    result = run_script("validate_drawio.py", *args, cwd=project)
+    return result.returncode, json.loads(result.stdout)
+
+
+def compressed_drawio(model: str) -> str:
+    payload = base64.b64encode(zlib.compress(urllib.parse.quote(model, safe="").encode("utf-8"), 9)[2:-4]).decode("ascii")
+    return f'<mxfile><diagram id="p1" name="compressed">{payload}</diagram></mxfile>'
+
+
+class TestValidateDrawio:
+    def test_valid_diagram_passes(self, tmp_path: Path) -> None:
+        (tmp_path / "fig.drawio").write_text(VALID_DRAWIO, encoding="utf-8")
+        code, report = drawio_report(tmp_path, "--json", "fig.drawio")
+        assert code == 0, report
+        entry = report["reports"][0]
+        assert entry["status"] == "pass"
+        assert entry["pages"][0]["vertices"] == 2
+        assert entry["pages"][0]["edges"] == 1
+
+    def test_compressed_diagram_decodes(self, tmp_path: Path) -> None:
+        model = (
+            '<mxGraphModel page="1" pageWidth="850" pageHeight="1100"><root>'
+            '<mxCell id="0"/><mxCell id="1" parent="0"/>'
+            '<mxCell id="n" value="Node" style="fontSize=12;" vertex="1" parent="1">'
+            '<mxGeometry x="10" y="10" width="80" height="30" as="geometry"/></mxCell>'
+            "</root></mxGraphModel>"
+        )
+        (tmp_path / "fig.drawio").write_text(compressed_drawio(model), encoding="utf-8")
+        code, report = drawio_report(tmp_path, "--json", "fig.drawio")
+        assert code == 0, report
+        assert report["reports"][0]["pages"][0]["vertices"] == 1
+
+    def test_dangling_edge_and_parent_fail(self, tmp_path: Path) -> None:
+        broken = VALID_DRAWIO.replace('target="b"', 'target="ghost"').replace('parent="1">\n          <mxGeometry x="240"', 'parent="nowhere">\n          <mxGeometry x="240"')
+        (tmp_path / "fig.drawio").write_text(broken, encoding="utf-8")
+        code, report = drawio_report(tmp_path, "--json", "fig.drawio")
+        assert code == 1
+        codes = {finding["code"] for finding in report["reports"][0]["errors"]}
+        assert "dangling-edge" in codes
+        assert "dangling-parent" in codes
+
+    def test_warnings_pass_normally_but_fail_strict(self, tmp_path: Path) -> None:
+        draft = VALID_DRAWIO.replace('value="Encoder"', 'value="[RESULT PENDING]"').replace("fontSize=12;", "fontSize=5;")
+        (tmp_path / "fig.drawio").write_text(draft, encoding="utf-8")
+        code, report = drawio_report(tmp_path, "--json", "fig.drawio")
+        assert code == 0
+        assert report["reports"][0]["status"] == "pass-with-warnings"
+        codes = {finding["code"] for finding in report["reports"][0]["warnings"]}
+        assert "placeholder-label" in codes
+        assert "small-font" in codes
+        strict, strict_report = drawio_report(tmp_path, "--json", "--strict", "fig.drawio")
+        assert strict == 1
+        assert strict_report["reports"][0]["status"] == "fail"
+
+    def test_embedded_raster_warns(self, tmp_path: Path) -> None:
+        raster = VALID_DRAWIO.replace(
+            'style="rounded=1;fontSize=12;" vertex="1" parent="1">\n          <mxGeometry x="240"',
+            'style="shape=image;imageAspect=0;image=data:image/png;base64,iVBORw0KGg;fontSize=12;" vertex="1" parent="1">\n          <mxGeometry x="240"',
+        )
+        (tmp_path / "fig.drawio").write_text(raster, encoding="utf-8")
+        code, report = drawio_report(tmp_path, "--json", "fig.drawio")
+        assert code == 0, report
+        codes = {finding["code"] for finding in report["reports"][0]["warnings"]}
+        assert "embedded-raster" in codes
+
+    def test_malformed_xml_fails(self, tmp_path: Path) -> None:
+        (tmp_path / "fig.drawio").write_text("<mxfile><diagram>", encoding="utf-8")
+        code, report = drawio_report(tmp_path, "--json", "fig.drawio")
+        assert code == 1
+        codes = {finding["code"] for finding in report["reports"][0]["errors"]}
+        assert "parse-error" in codes

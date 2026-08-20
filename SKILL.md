@@ -1,6 +1,6 @@
 ---
 name: conduct-cs-ai-research
-description: Guide rigorous computer science and AI research across idea construction, scholarly literature synthesis, novelty and feasibility checks, thesis or grant proposals, experimental design and implementation, benchmark and human evaluation, statistical analysis, reproducibility, academic paper writing and revision, rebuttals, and evidence-grounded manuscript review. Use for research questions, hypotheses, contribution framing, datasets, baselines, metrics, ablations, run plans, research code, result interpretation, LaTeX manuscripts, peer reviews, or an end-to-end research project. Do not use for a simple fact lookup, ordinary production coding or code review unrelated to a research claim, generic concept explanations, or copyediting that needs no research reasoning.
+description: Guide rigorous computer science and AI research across idea construction, scholarly literature synthesis, novelty and feasibility checks, thesis or grant proposals, experimental design and implementation, benchmark and human evaluation, statistical analysis, reproducibility, academic paper writing and revision, paper figures and diagrams, rebuttals, and evidence-grounded manuscript review. Use for research questions, hypotheses, contribution framing, datasets, baselines, metrics, ablations, run plans, research code, result interpretation, LaTeX manuscripts, paper figures and diagram sources, peer reviews, or an end-to-end research project. Do not use for a simple fact lookup, ordinary production coding or code review unrelated to a research claim, generic concept explanations, or copyediting that needs no research reasoning.
 ---
 
 # Conduct CS and AI Research
@@ -29,8 +29,9 @@ Load every additional reference listed for the selected route before acting. Add
 | Write a research, thesis, or funding proposal | [literature-and-ideas.md](references/literature-and-ideas.md), [proposal-writing.md](references/proposal-writing.md) |
 | Design a study, benchmark, or evaluation | [experimental-design.md](references/experimental-design.md), plus [cs-ai-evaluation.md](references/cs-ai-evaluation.md) for AI/ML/agent evaluation |
 | Implement or reproduce experiments | [experimental-design.md](references/experimental-design.md), [implementation-and-reproducibility.md](references/implementation-and-reproducibility.md) |
-| Analyze results or build tables and figures | [analysis-and-statistics.md](references/analysis-and-statistics.md); also load the applicable design reference |
+| Analyze results or build tables and figures | [analysis-and-statistics.md](references/analysis-and-statistics.md), plus [figures-and-diagrams.md](references/figures-and-diagrams.md) when producing figure artifacts; also load the applicable design reference |
 | Draft or revise a manuscript | [paper-writing.md](references/paper-writing.md), [literature-and-ideas.md](references/literature-and-ideas.md), [analysis-and-statistics.md](references/analysis-and-statistics.md) when empirical |
+| Create or revise paper figures and diagrams | [figures-and-diagrams.md](references/figures-and-diagrams.md), plus [paper-writing.md](references/paper-writing.md) during a manuscript pass |
 | Review a paper or artifact | [paper-review-and-rebuttal.md](references/paper-review-and-rebuttal.md), [ethics-integrity-and-policy.md](references/ethics-integrity-and-policy.md) |
 | Prepare a rebuttal or revision plan | [paper-review-and-rebuttal.md](references/paper-review-and-rebuttal.md), [paper-writing.md](references/paper-writing.md) |
 | Coordinate an end-to-end project or parallel agents | All phase references as reached, plus [agent-orchestration.md](references/agent-orchestration.md) |
@@ -101,7 +102,7 @@ For substantial ongoing projects, keep the canonical dossier in the research rep
 └── runs/<run-id>/manifest.json
 ```
 
-Treat existing project artifacts as authoritative; the dossier indexes them rather than duplicating them. Initialize or inspect it with `scripts/research_state.py`. Capture immutable run provenance with `scripts/capture_run.py`. Check structural traceability with `scripts/audit_research.py`. Use the scripts only when Python is available; otherwise preserve the same contracts manually.
+Treat existing project artifacts as authoritative; the dossier indexes them rather than duplicating them. Initialize or inspect it with `scripts/research_state.py`. Capture immutable run provenance with `scripts/capture_run.py`. Check structural traceability with `scripts/audit_research.py`. Lint `.drawio` figure sources with `scripts/validate_drawio.py`. Use the scripts only when Python is available; otherwise preserve the same contracts manually.
 
 The dossier serializes lifecycle states in lowercase even though prose and gate reports use the uppercase labels above. A clean helper-script audit proves structural consistency only, never scientific validity.
 
@@ -111,6 +112,7 @@ Copy and adapt only the needed templates from `assets/`:
 - `proposal-outline.md` for a solicitation-aligned proposal.
 - `experiment-plan.md` for a preregistered or frozen design.
 - `paper-outline.md` for claim-led manuscript planning.
+- `figure-plan.md` for a single traceable paper figure.
 - `review-template.md` for a constructive review.
 - `rebuttal-matrix.csv` for response and revision tracking.
 

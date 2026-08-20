@@ -139,7 +139,7 @@ Express novelty as a dated comparison with the nearest verified work. Record the
 
 ## 7. Build tables, figures, and appendices
 
-Generate tables and figures from versioned analysis outputs when practical. Record the producing script, source data, configuration, and artifact ID.
+Generate tables and figures from versioned analysis outputs when practical. Record the producing script, source data, configuration, and artifact ID. Load [figures-and-diagrams.md](figures-and-diagrams.md) for figure planning, schematic and LaTeX-native authoring, rendering, and verification.
 
 Require every display to:
 

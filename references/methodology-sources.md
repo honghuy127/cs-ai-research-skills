@@ -93,6 +93,8 @@ The following public repositories informed workflow design. Reuse principles aft
 | AI4S Skills | https://github.com/ai4s-research/ai4s-skills | Resumable runs, provenance, explicit handoffs, and reusable scientific procedures | Reject fixed citation-volume requirements and simulated-results defaults |
 | Academic Research Agent Skill | https://github.com/ngtiendong/Academic-Research-Agent-Skill/blob/main/SKILL.md | Lean lifecycle routing, categorical gates, cheapest falsifier, minimum informative artifact | Do not replace evidence-backed judgment with automatic numeric ranking |
 | BESSER research paper review | https://github.com/BESSER-PEARL/research-agent-skills/blob/main/research-paper-review/SKILL.md | Paper-type calibration, structured review dimensions, and numeric consistency checks | Narrow the trigger, preserve confidentiality, and follow the current venue's verdict policy |
+| draw.io diagram skill | https://github.com/Agents365-ai/drawio-skill | Direct `.drawio` XML authoring conventions, draw.io desktop CLI binary resolution and export flags, structural lint before rendering | Keep only what paper figures need; avoid the broad operations-diagramming script surface and its extra dependencies |
+| Research draw.io diagram builder | https://github.com/Will-hxw/drawio-diagram-builder-skill | Editable-source-first policy, style extraction from reference figures, and render-then-inspect verification loops | Do not adopt mandatory defect-count quotas, network-dependent embedded previews, or hard browser-automation requirements |
 
 ## 7. Reject unsafe defaults
 
