@@ -9,6 +9,8 @@
 5. Preserve provenance for binary artifacts
 6. Verify and pass the office document gate
 
+Adjacent phase playbooks: presentation-slides.md for decks or handouts, figures-and-diagrams.md when the document embeds figures, paper-writing.md for camera-ready supplements and venue cover letters.
+
 ## 1. Establish the document contract
 
 Before reading or writing any Office document, record what the work is:

@@ -1,5 +1,7 @@
 # Claim-Led Paper Outline
 
+Playbook: [../references/paper-writing.md](../references/paper-writing.md)
+
 ## Venue contract
 
 - Venue and track:

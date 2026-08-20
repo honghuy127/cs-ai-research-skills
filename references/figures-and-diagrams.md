@@ -15,8 +15,7 @@
 
 ## 1. Establish the figure contract
 
-Read the claim map, manuscript draft, venue constraints, and existing figures before drawing anything. Build or extend the claim map per [paper-writing.md](paper-writing.md), section "Build a claim-led paper plan", so placement follows manuscript claims. A figure is a manuscript deliverable, not decoration: every figure must answer a named question or support a named claim.
-
+Read the claim map, manuscript draft, venue constraints, and existing figures before drawing anything. Page, size, and package-level constraints belong to the recorded contract in paper-formatting.md. Build or extend the claim map per [paper-writing.md](paper-writing.md), section "Build a claim-led paper plan", so placement follows manuscript claims. A figure is a manuscript deliverable, not decoration: every figure must answer a named question or support a named claim.
 For each requested figure, record:
 
 - A stable figure ID such as FIG-001 and the claim IDs it supports.
@@ -151,6 +150,8 @@ Venue requirements are volatile. Retrieve the current official figure rules of t
 - Maximum widths for single-column and full-width figures, and treatment of captions and subfigures.
 - Color policy, including print and accessibility requirements.
 - Whether source files must accompany the submission.
+
+Export sizes and formats must also survive the submission-level checks in paper-formatting.md without rework.
 
 Apply stable standards regardless of venue:
 

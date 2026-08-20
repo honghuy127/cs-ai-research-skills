@@ -48,6 +48,7 @@ Routing rules:
 
 - Load figures-and-diagrams.md for every figure that appears on a slide; this reference does not relax figure provenance rules.
 - Load analysis-and-statistics.md before presenting any measured value; uncertainty and scope travel with the number.
+- Create any .docx or .xlsx handout under office-documents.md; a handout is an office document artifact with its own provenance gate.
 - Do not present a deck produced by a generator or web pipeline as a deliverable without render verification under section 6.
 
 ## 4. Author PowerPoint decks
@@ -91,7 +92,7 @@ A deck is judged by its rendered output, never by its source. For Beamer the art
 soffice --headless --convert-to pdf deck.pptx
 ```
 
-Then rasterize and inspect with the same loop as paper format checks:
+Then rasterize and inspect with the same loop as paper-formatting.md:
 
 ```bash
 pdftoppm -png -r 150 deck.pdf render/slide

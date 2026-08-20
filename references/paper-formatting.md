@@ -20,7 +20,7 @@ Record in `assets/format-checklist.md` or the dossier:
 - Page or word limits and what counts against them: main text, references, appendices, ethics statements, checklists, and reproducibility checklists are treated differently across venues.
 - Required engine or DVI/PS/PDF constraints, font rules, and file formats for submission.
 - Anonymity requirements that affect content, metadata, acknowledgments, and embedded file properties.
-- Figure rules that interact with layout (width limits, caption placement, subfigure labels), deferring content decisions to `figures-and-diagrams.md`.
+- Figure rules that interact with layout (width limits, caption placement, subfigure labels), deferring content decisions to [figures-and-diagrams.md](figures-and-diagrams.md).
 
 If official sources conflict or remain ambiguous on a rule that would change the layout work, stop and ask for a human decision rather than guessing.
 
@@ -58,7 +58,7 @@ Treat the results as:
 - Overfull boxes are visible layout defects. Fix them before camera-ready, prioritizing large spills and anything near margins, table rules, or column breaks. A venue that silently ships overflowing text has already failed its format check.
 - Use `--strict` in a camera-ready pass so any warning fails.
 
-The log check is structural evidence about the build. It does not certify that the rendered pages look right.
+The log check is structural evidence about the build. It does not certify that the rendered pages look right. Beamer decks reuse this same log check; presentation-slides.md owns the slide-specific verification loop and the talk gate.
 
 ## 4. Render pages for visual inspection
 
@@ -108,6 +108,7 @@ Before calling a submission package complete, check the artifacts themselves:
 - File size within portal limits.
 - Source package completeness when the venue requires sources: `.bbl`, style files, figures at sufficient resolution, and no files the venue forbids.
 - Absence of hidden content the venue forbids, including comments with reviewer responses, tracked changes, or JavaScript in the PDF.
+- Ancillary submission files (.docx, .xlsx, .ods) verified under office-documents.md, including a `scripts/check_office.py` structural pass.
 
 Record what was checked, the tool used, and the observed value.
 

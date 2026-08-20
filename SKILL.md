@@ -89,8 +89,9 @@ Typical gates are:
 7. Figure gate: every figure traces from its editable source through the rendered export to named manuscript claims.
 8. Writing gate: claims, tables, figures, citations, limitations, and artifacts agree.
 9. Formatting gate: the compile log, rendered pages, files, and metadata satisfy the current venue contract.
-10. Review gate: every criticism is evidence-backed, calibrated, actionable, and policy-compliant.
-11. Talk gate: the deck traces to the claim map, rendered slides are inspected, and every number agrees with its recorded source.
+10. Office document gate: the document's structure, provenance, and content satisfy the recorded document contract, with no executed macros or embedded code.
+11. Review gate: every criticism is evidence-backed, calibrated, actionable, and policy-compliant.
+12. Talk gate: the deck traces to the claim map, rendered slides are inspected, and every number agrees with its recorded source.
 
 Return `PASS`, `CONDITIONAL`, `FAIL`, `BLOCKED`, or `NOT_ASSESSED`, with evidence and next action. Do not hide a waiver.
 

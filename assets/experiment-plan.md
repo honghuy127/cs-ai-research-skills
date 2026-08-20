@@ -1,5 +1,7 @@
 # Experiment Plan
 
+Playbook: [../references/experimental-design.md](../references/experimental-design.md)
+
 ## Study identity
 
 - Study / protocol ID:

@@ -1,5 +1,7 @@
 # Format Checklist
 
+Playbook: [../references/paper-formatting.md](../references/paper-formatting.md)
+
 Copy per submission. Complete every line before calling the formatting gate PASS.
 
 ## Venue contract

@@ -182,7 +182,7 @@ Revise in passes:
 5. Audit related-work comparisons and citation locators.
 6. Audit limitations, ethics, privacy, licensing, and disclosures.
 7. Audit terminology, notation, cross-references, and acronym consistency.
-8. Audit current venue compliance, including rendered-layout checks per paper-formatting.md.
+8. Audit current venue compliance, including rendered-layout checks per [paper-formatting.md](paper-formatting.md).
 9. Copyedit only after substantive consistency passes.
 
 Preserve deliberate author choices and repository conventions. Do not flatten uncertainty or erase limitations for rhetorical force. Record material claim changes in the project dossier.

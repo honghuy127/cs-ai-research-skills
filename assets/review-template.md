@@ -1,5 +1,7 @@
 # Manuscript Review
 
+Playbook: [../references/paper-review-and-rebuttal.md](../references/paper-review-and-rebuttal.md)
+
 ## Review preflight
 
 - Review context and authorization:

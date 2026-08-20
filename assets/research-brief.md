@@ -1,5 +1,7 @@
 # Research Brief
 
+Playbook: [../references/research-contract-and-state.md](../references/research-contract-and-state.md)
+
 ## Decision needed now
 
 - Deliverable:

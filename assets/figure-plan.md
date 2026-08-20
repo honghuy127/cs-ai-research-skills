@@ -1,5 +1,7 @@
 # Figure Plan
 
+Playbook: [../references/figures-and-diagrams.md](../references/figures-and-diagrams.md)
+
 Copy one block per figure. Keep plans next to the manuscript or index them from the project dossier.
 
 ## Figure identity
@@ -41,6 +43,7 @@ Copy one block per figure. Keep plans next to the manuscript or index them from 
 - Defects found and fixed:
 - Caption draft:
 - Current venue figure rules source and access date:
+- Figure gate verdict (PASS, CONDITIONAL, FAIL, BLOCKED, or NOT_ASSESSED):
 
 ## Status
 

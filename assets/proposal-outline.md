@@ -1,5 +1,7 @@
 # Proposal Outline
 
+Playbook: [../references/proposal-writing.md](../references/proposal-writing.md)
+
 ## Compliance matrix
 
 | Requirement / criterion | Official source and access date | Limit / instruction | Planned location | Status |

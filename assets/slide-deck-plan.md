@@ -1,5 +1,7 @@
 # Slide Deck Plan
 
+Playbook: [../references/presentation-slides.md](../references/presentation-slides.md)
+
 Copy per deck. Complete every section before calling the talk gate PASS.
 
 ## Talk contract
