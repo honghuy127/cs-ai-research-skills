@@ -16,7 +16,7 @@
 
 ## 1. Decide whether to delegate
 
-Use multiple agents only when independent work can materially improve speed, coverage, or error detection. Keep the workflow single-agent when coordination cost, confidentiality, artifact coupling, or task size outweighs the benefit.
+First inspect whether the active host exposes subagents, parallel tasks, or only a single-agent workflow. Use multiple agents only when that capability exists, the user's scope permits it, and independent work can materially improve speed, coverage, or error detection. Keep the workflow single-agent when coordination cost, confidentiality, artifact coupling, task size, or host capability outweighs the benefit. When delegation is unavailable, preserve the separation of roles with sequential passes or fresh sessions rather than omitting critique or verification.
 
 Good delegation candidates include:
 
@@ -36,7 +36,7 @@ Avoid delegation when:
 - A small local inspection will answer the question faster.
 - A subtask cannot be stated with a verifiable deliverable.
 
-Do not instantiate every role for every request. Route to the smallest complete team.
+Do not instantiate every role for every request. Route to the smallest complete team, or the smallest sequence of role-separated passes on a single-agent host.
 
 ## 2. Preserve authority and scope
 

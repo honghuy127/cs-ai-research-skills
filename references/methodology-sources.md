@@ -1,6 +1,6 @@
 # Methodology Sources and Design Provenance
 
-Use this register to verify the principles and live rules behind the research skill. URLs were checked on 2026-08-14; the Markdown and GitHub rows were added on 2026-08-21. Re-open every source before relying on it, record the access date, and prefer the current official version over this snapshot.
+Use this register to verify the principles and live rules behind the research skill. URLs were checked on 2026-08-14; the Markdown and GitHub rows were added on 2026-08-21; the coding-agent portability rows were checked on 2026-08-24. Re-open every source before relying on it, record the access date, and prefer the current official version over this snapshot.
 
 ## Contents
 
@@ -45,6 +45,9 @@ When a stable principle conflicts with a current governing rule, stop and resolv
 | Source | Current official URL | Use |
 |---|---|---|
 | Agent Skills specification | https://agentskills.io/specification | Keep metadata concise, load SKILL.md on trigger, and load focused references on demand |
+| Codex skills | https://developers.openai.com/codex/skills/ | Verify `.agents/skills` discovery, explicit and implicit invocation, symlink support, and optional `agents/openai.yaml` metadata |
+| OpenCode skills | https://opencode.ai/docs/skills | Verify native `.opencode/skills` paths and compatible `.agents/skills` or `.claude/skills` discovery |
+| Claude Code skills | https://code.claude.com/docs/en/skills | Verify `.claude/skills` discovery, slash invocation, supporting-file behavior, and symlink support |
 | ACM SIGSOFT Empirical Standards | https://www2.sigsoft.org/EmpiricalStandards/ | Select method-specific quality criteria for empirical software-engineering work |
 | SIGSOFT standards catalog | https://www2.sigsoft.org/EmpiricalStandards/docs/standards | Open the standard matching the actual study design; do not apply every checklist indiscriminately |
 | PRISMA 2020 | https://www.prisma-statement.org/prisma-2020 | Report a qualifying systematic review transparently |

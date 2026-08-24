@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/badge/python-3.10--3.14-blue)](https://www.python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-An agent skill for rigorous computer science and AI research. It guides an AI agent through idea construction, literature synthesis, novelty and feasibility checks, proposals, experimental design, implementation, evaluation, statistical analysis, reproducibility, paper writing, figure and diagram preparation, formatting checks, office document analysis and authoring, presentation slides, peer review, and rebuttals, with evidence discipline enforced at every step.
+An Agent Skills-compatible package for rigorous computer science and AI research, tested for OpenCode, Codex, and Claude Code. It guides an AI agent through idea construction, literature synthesis, novelty and feasibility checks, proposals, experimental design, implementation, evaluation, statistical analysis, reproducibility, paper writing, figure and diagram preparation, formatting checks, office document analysis and authoring, presentation slides, peer review, and rebuttals, with evidence discipline enforced at every step.
 
 The skill follows the [Agent Skills specification](https://agentskills.io/specification): a lean `SKILL.md` router loads focused reference playbooks on demand, so an agent only reads the guidance relevant to the current task.
 
@@ -27,10 +27,45 @@ The skill follows the [Agent Skills specification](https://agentskills.io/specif
 | `agents/openai.yaml` | Interface metadata for runtimes that read the OpenAI agent format |
 | `tests/` | End-to-end tests for the scripts |
 | `requirements-dev.txt` | Pinned test and lint dependencies used locally and in CI |
+| `tools/install_skill.py` | Safe dry-run-first installer for OpenCode, Codex, Claude Code, or a shared multi-agent setup |
 
 ## Installation
 
-### Claude Code
+The directory containing `SKILL.md` must be named `conduct-cs-ai-research`. The repository name is different, so either clone into that exact directory or use the installer below.
+
+### Shared installation for OpenCode, Codex, and Claude Code
+
+Clone the repository anywhere, then preview and apply a user-level installation:
+
+```bash
+git clone https://github.com/honghuy127/cs-ai-research-skills.git
+cd cs-ai-research-skills
+python3 tools/install_skill.py --scope user --agents all
+python3 tools/install_skill.py --scope user --agents all --apply
+```
+
+The installer links one checkout into `~/.agents/skills/conduct-cs-ai-research` for Codex and OpenCode, and into `~/.claude/skills/conduct-cs-ai-research` for Claude Code. It never replaces an existing file or a link to another source. Re-running it for the same checkout is idempotent.
+
+For a project-level installation, supply the target repository explicitly:
+
+```bash
+python3 tools/install_skill.py --scope project --project-dir /path/to/project --agents all
+python3 tools/install_skill.py --scope project --project-dir /path/to/project --agents all --apply
+```
+
+This creates the shared `.agents/skills/` link plus the Claude-compatible `.claude/skills/` link inside that project. Commit those links only if the source checkout location is stable for every collaborator; for a team repository, a submodule or a copied release artifact is usually more reproducible than a machine-specific link.
+
+### Agent-specific locations
+
+| Agent | User scope | Project scope | Explicit use |
+|---|---|---|---|
+| [Codex](https://developers.openai.com/codex/skills/) | `~/.agents/skills/conduct-cs-ai-research` | `.agents/skills/conduct-cs-ai-research` | Select with `/skills` or mention `$conduct-cs-ai-research` |
+| [OpenCode](https://opencode.ai/docs/skills) | `~/.config/opencode/skills/conduct-cs-ai-research` | `.opencode/skills/conduct-cs-ai-research` | Ask for the skill by name or select it from the available skills |
+| [Claude Code](https://code.claude.com/docs/en/skills) | `~/.claude/skills/conduct-cs-ai-research` | `.claude/skills/conduct-cs-ai-research` | Invoke `/conduct-cs-ai-research` or let Claude match the description |
+
+To install only one host, replace `--agents all` with `--agents codex`, `--agents opencode`, or `--agents claude`.
+
+### Manual Claude Code installation
 
 The installed directory name must match the skill name `conduct-cs-ai-research` (the repository name differs), so clone directly into the skills directory:
 
@@ -44,9 +79,9 @@ git clone https://github.com/honghuy127/cs-ai-research-skills.git .claude/skills
 
 Claude Code then triggers the skill automatically for research-shaped tasks; users can also invoke it explicitly via `/conduct-cs-ai-research`.
 
-### Other runtimes
+### Other Agent Skills runtimes
 
-Any runtime implementing the Agent Skills specification can load `SKILL.md` directly. `agents/openai.yaml` supplies display metadata for runtimes that read that format.
+Any runtime implementing the Agent Skills specification can load `SKILL.md` directly. Install the complete directory so relative `references/`, `scripts/`, and `assets/` remain available. `agents/openai.yaml` supplies optional display metadata for ChatGPT and Codex hosts that read that format.
 
 ## The project dossier
 
@@ -118,7 +153,7 @@ Notes on the audit:
 
 ```bash
 python3 -m pip install -r requirements-dev.txt
-ruff check scripts tests
+ruff check scripts tools tests
 python3 -m pytest tests/ -v
 python3 scripts/check_markdown.py SKILL.md README.md references/*.md assets/*.md --strict
 ```

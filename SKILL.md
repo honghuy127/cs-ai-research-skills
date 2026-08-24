@@ -1,9 +1,21 @@
 ---
 name: conduct-cs-ai-research
 description: Plan, execute, analyze, write, review, and present rigorous computer science and AI research with evidence, provenance, reproducibility, and decisive gates. Use for research ideas and literature, proposals, experiments and evaluations, statistical analysis, manuscripts and figures, research submissions or repositories, presentations, peer review, rebuttals, or an end-to-end research project. Do not use for simple fact lookup, generic documents or repository work, production engineering unrelated to a research claim, or copyediting that needs no research reasoning.
+license: MIT
+metadata:
+  audience: cs-ai-researchers
+  workflow: evidence-grounded-research
+  portability: OpenCode, Codex, Claude Code, and Agent Skills-compatible hosts
+  optional-runtime: Python 3.10+ for bundled helpers
 ---
 
 # Conduct CS and AI Research
+
+## Adapt to the host runtime
+
+Keep this workflow host-neutral. Use the tools and delegation mechanisms the active coding agent actually exposes; do not invent a vendor-specific command, tool name, environment variable, or permission. If a required capability such as web access, code execution, or delegation is unavailable, use an equivalent available capability or report the limitation instead of silently weakening the evidence standard.
+
+Resolve links and bundled resource paths relative to this `SKILL.md`, not the research project's current working directory. Resolve project artifacts, repository commands, and `.research/` state relative to the user's project unless the user supplies another root. Before running a bundled helper, derive its absolute path from the skill directory exposed by the host; do not assume the project itself contains this skill's `scripts/` directory.
 
 ## Work from a research contract
 
@@ -151,7 +163,7 @@ Copy and adapt only the needed templates from `assets/`:
 
 ## Coordinate independent checks
 
-Use parallel agents when literature retrieval, methodology critique, implementation, analysis, and writing can proceed on disjoint artifacts. Assign one coordinator to own canonical state and integration. Require structured handoffs containing inputs, outputs, evidence IDs, decisions, uncertainties, and blockers.
+When the host supports delegation and the user's scope permits it, use parallel agents when literature retrieval, methodology critique, implementation, analysis, and writing can proceed on disjoint artifacts. Otherwise perform the same independent checks sequentially or in fresh sessions. Assign one coordinator to own canonical state and integration. Require structured handoffs containing inputs, outputs, evidence IDs, decisions, uncertainties, and blockers.
 
 Give independent reviewers raw artifacts and the user task, not the intended conclusion, unless testing that exact claim requires it. Keep the critic separate from the author when practical. Reconcile all agent output against the dossier before promoting claims.
 
