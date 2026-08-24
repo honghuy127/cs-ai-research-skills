@@ -39,7 +39,7 @@ jobs:
       - run: ruff check scripts tools tests
       - name: Check project Markdown and local links
         run: >-
-          python scripts/check_markdown.py SKILL.md README.md
+          python scripts/check_markdown.py *.md
           references/*.md assets/*.md --strict
 
   links:

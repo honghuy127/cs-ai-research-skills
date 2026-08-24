@@ -16,6 +16,34 @@ The skill follows the [Agent Skills specification](https://agentskills.io/specif
 - **No fabrication.** Unverifiable content becomes `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]`, never plausible filler. The audit script fails on unresolved markers in reported deliverables.
 - **Humans keep authority.** Submissions, releases, costly runs, participant work, and license or authorship decisions stay with the user.
 
+## To Burn, or Not to Burn
+
+*A soliloquy for evidence-grounded agents, after Shakespeare’s Hamlet.*
+
+> To burn, or not to burn—that is the prompt:
+> Whether ’tis nobler in the mind to vibe,
+> And spend ten thousand tokens on a guess,
+> Or take up skills against a sea of claims
+> And, harnessed well, examine every one.
+>
+> To search, to cite—
+> To cite, perchance to know. Ay, there’s the rub:
+> For what hallucinations yet may come,
+> When agents roam beyond the evidence,
+> Must give us pause.
+>
+> A smoke test is no proof; a run, no truth,
+> Till claim and source and artifact agree.
+> Thus evidence makes cowards of our vibes,
+> And bold conjecture, lacking citation,
+> Becomes `[EVIDENCE NEEDED]`.
+>
+> Load not the world, but only what thou need’st;
+> Let skills give craft; let harness set their bounds.
+> Then burn thy tokens, if the gate be worth it:
+>
+> **PASS, CONDITIONAL, FAIL, or BLOCKED.**
+
 ## Repository layout
 
 | Path | Contents |
@@ -155,7 +183,7 @@ Notes on the audit:
 python3 -m pip install -r requirements-dev.txt
 ruff check scripts tools tests
 python3 -m pytest tests/ -v
-python3 scripts/check_markdown.py SKILL.md README.md references/*.md assets/*.md --strict
+python3 scripts/check_markdown.py *.md references/*.md assets/*.md --strict
 ```
 
 CI tests the minimum supported Python 3.10 and current feature series 3.14, checks Python quality and local documentation links on every change, and checks external documentation links weekly. Actions are pinned to immutable release commits, and Dependabot proposes controlled updates for both development dependencies and workflow actions.
