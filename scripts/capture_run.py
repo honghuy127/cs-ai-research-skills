@@ -218,7 +218,7 @@ def main() -> int:
     parser.add_argument("--status", choices=("completed", "failed", "aborted"), required=True)
     parser.add_argument("--result-kind", choices=("none", "measured", "synthetic-plumbing"), required=True)
     parser.add_argument(
-        "--command", required=True, help="exact command that was or will be run; it is not executed"
+        "--command", required=True, help="exact command that produced the recorded run; it is not executed"
     )
     parser.add_argument("--seed", action="append", default=[])
     parser.add_argument("--config", action="append", default=[])

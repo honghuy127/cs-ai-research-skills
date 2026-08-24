@@ -79,10 +79,22 @@ def parse_timestamp(value: object) -> datetime | None:
         return None
 
 
-def check_timestamp(record: dict, field: str, prefix: str, errors: list[str]) -> None:
+def check_timestamp(
+    record: dict,
+    field: str,
+    prefix: str,
+    errors: list[str],
+    *,
+    require_offset: bool = False,
+) -> None:
     value = record.get(field)
-    if isinstance(value, str) and value.strip() and parse_timestamp(value) is None:
+    parsed = parse_timestamp(value)
+    if isinstance(value, str) and value.strip() and parsed is None:
         errors.append(f"{prefix} has invalid ISO 8601 {field}: {value!r}")
+    elif require_offset and parsed is not None and (
+        parsed.tzinfo is None or parsed.utcoffset() is None
+    ):
+        errors.append(f"{prefix} {field} must include a UTC offset or Z")
 
 
 def dossier(root: Path) -> Path:
@@ -97,7 +109,7 @@ def load_json(path: Path) -> dict:
     except json.JSONDecodeError as exc:
         raise ValueError(f"invalid JSON in {path}: {exc}") from exc
     if not isinstance(value, dict):
-        raise ValueError(f"expected JSON object in {path}")
+        raise TypeError(f"expected JSON object in {path}")
     return value
 
 
@@ -311,13 +323,16 @@ def validate_ledger_record(name: str, record: dict, index: int, errors: list[str
             if record.get(field) not in allowed:
                 errors.append(f"{prefix} has invalid {field}: {record.get(field)!r}")
         for field in ("started_at", "ended_at", "recorded_at"):
-            check_timestamp(record, field, prefix, errors)
+            check_timestamp(record, field, prefix, errors, require_offset=True)
         started = parse_timestamp(record.get("started_at"))
         ended = parse_timestamp(record.get("ended_at"))
         if (
             started is not None
             and ended is not None
-            and (started.tzinfo is None) == (ended.tzinfo is None)
+            and started.tzinfo is not None
+            and started.utcoffset() is not None
+            and ended.tzinfo is not None
+            and ended.utcoffset() is not None
             and ended < started
         ):
             errors.append(f"{prefix} ended_at precedes started_at")
@@ -338,7 +353,7 @@ def validate(root: Path) -> list[str]:
         return [f"refusing symlinked canonical dossier path: {path}" for path in symlinked]
     try:
         state = load_json(base / "state.json")
-    except ValueError as exc:
+    except (TypeError, ValueError) as exc:
         return [str(exc)]
 
     required = {
@@ -448,7 +463,7 @@ def open_valid_dossier(root: Path) -> tuple[Path, dict] | None:
     base = dossier(root)
     try:
         state = load_json(base / "state.json")
-    except ValueError as exc:
+    except (TypeError, ValueError) as exc:
         print(f"ERROR: {exc}")
         return None
     return base, state

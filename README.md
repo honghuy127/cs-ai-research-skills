@@ -116,11 +116,13 @@ Notes on the audit:
 ## Testing
 
 ```bash
-python3 -m pip install pytest
+python3 -m pip install pytest ruff
+ruff check scripts tests
 python3 -m pytest tests/ -v
+python3 scripts/check_markdown.py SKILL.md README.md references/*.md assets/*.md --strict
 ```
 
-CI runs the tests on Python 3.10 and 3.13 and link-checks the documentation weekly.
+CI runs the tests on Python 3.10 and 3.13, checks Python quality and local documentation links on every change, and checks external documentation links weekly.
 
 ## License
 

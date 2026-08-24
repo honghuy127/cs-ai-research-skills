@@ -264,6 +264,12 @@ class TestResearchState:
         assert result.returncode == 1
         assert "invalid ISO 8601 updated_at" in result.stdout
 
+    def test_validate_rejects_non_object_state(self, project: Path) -> None:
+        (project / ".research" / "state.json").write_text("[]\n", encoding="utf-8")
+        result = run_script("research_state.py", "validate", cwd=project)
+        assert result.returncode == 1
+        assert "expected JSON object" in result.stdout
+
     def test_validate_rejects_reversed_run_times(self, project: Path) -> None:
         append_record(
             project,
@@ -284,6 +290,27 @@ class TestResearchState:
         result = run_script("research_state.py", "validate", cwd=project)
         assert result.returncode == 1
         assert "ended_at precedes started_at" in result.stdout
+
+    def test_validate_requires_offsets_for_run_timestamps(self, project: Path) -> None:
+        append_record(
+            project,
+            "experiments.jsonl",
+            {
+                "run_id": "RUN-001",
+                "experiment_id": "EXP-001",
+                "manifest_path": ".research/runs/RUN-001/manifest.json",
+                "phase": "full",
+                "status": "completed",
+                "result_kind": "measured",
+                "evidence_eligibility": "candidate_pending_verification",
+                "started_at": "2026-08-14T01:00:00",
+                "ended_at": "2026-08-14T01:30:00",
+                "recorded_at": "2026-08-14T01:31:00",
+            },
+        )
+        result = run_script("research_state.py", "validate", cwd=project)
+        assert result.returncode == 1
+        assert "must include a UTC offset or Z" in result.stdout
 
 
 class TestCaptureRun:
