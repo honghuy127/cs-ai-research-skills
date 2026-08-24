@@ -20,26 +20,26 @@ The skill follows the [Agent Skills specification](https://agentskills.io/specif
 
 *A soliloquy for evidence-grounded agents, after Shakespeare’s Hamlet.*
 
-> To burn, or not to burn—that is the prompt:
-> Whether ’tis nobler in the mind to vibe,
-> And spend ten thousand tokens on a guess,
-> Or take up skills against a sea of claims
+> To burn, or not to burn—that is the prompt:<br>
+> Whether ’tis nobler in the mind to vibe,<br>
+> And spend ten thousand tokens on a guess,<br>
+> Or take up skills against a sea of claims<br>
 > And, harnessed well, examine every one.
 >
-> To search, to cite—
-> To cite, perchance to know. Ay, there’s the rub:
-> For what hallucinations yet may come,
-> When agents roam beyond the evidence,
+> To search, to cite—<br>
+> To cite, perchance to know. Ay, there’s the rub:<br>
+> For what hallucinations yet may come,<br>
+> When agents roam beyond the evidence,<br>
 > Must give us pause.
 >
-> A smoke test is no proof; a run, no truth,
-> Till claim and source and artifact agree.
-> Thus evidence makes cowards of our vibes,
-> And bold conjecture, lacking citation,
+> A smoke test is no proof; a run, no truth,<br>
+> Till claim and source and artifact agree.<br>
+> Thus evidence makes cowards of our vibes,<br>
+> And bold conjecture, lacking citation,<br>
 > Becomes `[EVIDENCE NEEDED]`.
 >
-> Load not the world, but only what thou need’st;
-> Let skills give craft; let harness set their bounds.
+> Load not the world, but only what thou need’st;<br>
+> Let skills give craft; let harness set their bounds.<br>
 > Then burn thy tokens, if the gate be worth it:
 >
 > **PASS, CONDITIONAL, FAIL, or BLOCKED.**
