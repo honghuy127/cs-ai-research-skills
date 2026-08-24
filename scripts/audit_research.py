@@ -18,7 +18,14 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from research_state import (
+from research_contract import (
+    EMPIRICAL_TYPES,
+    EVIDENCE_BEARING_STATUSES,
+    EXECUTION_BEARING_STATES,
+    INDEPENDENT_CHECK_STATES,
+    MAX_HASH_BYTES,
+    PLACEHOLDERS,
+    SUPPORTED_MANIFEST_SCHEMAS,
     VALID_EVIDENCE_ELIGIBILITY,
     VALID_RESULT_KINDS,
     VALID_RUN_PHASES,
@@ -28,14 +35,6 @@ from research_state import (
     validate as validate_dossier,
 )
 
-PLACEHOLDERS = ("[CITATION NEEDED]", "[EVIDENCE NEEDED]", "[RESULT PENDING]")
-EVIDENCE_BEARING_STATUSES = {"supported", "mixed", "contradicted"}
-EXECUTION_BEARING_STATES = {"executed", "analyzed", "verified", "reported"}
-INDEPENDENT_CHECK_STATES = {"verified", "reported"}
-EMPIRICAL_TYPES = {"empirical", "causal", "performance", "efficiency", "human-evaluation"}
-SUPPORTED_MANIFEST_SCHEMAS = {"1.0", "1.1"}
-MAX_HASH_BYTES = 64 * 1024 * 1024
-
 
 def load_jsonl(path: Path) -> tuple[list[dict], list[dict]]:
     records: list[dict] = []
@@ -44,7 +43,13 @@ def load_jsonl(path: Path) -> tuple[list[dict], list[dict]]:
         return records, [{"severity": "error", "code": "missing-ledger", "message": str(path)}]
     if path.is_symlink():
         return records, [{"severity": "error", "code": "symlinked-ledger", "message": str(path)}]
-    for line_number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except (OSError, UnicodeDecodeError) as exc:
+        return records, [
+            {"severity": "error", "code": "unreadable-ledger", "message": f"{path}: {exc}"}
+        ]
+    for line_number, raw in enumerate(lines, start=1):
         if not raw.strip():
             continue
         try:
@@ -83,6 +88,9 @@ def scan_file(path: Path, findings: list[dict], warn_non_text: bool = True) -> N
     except UnicodeDecodeError:
         if warn_non_text:
             add(findings, "warning", "non-text-scan-target", str(path))
+        return
+    except OSError as exc:
+        add(findings, "error", "unreadable-scan-target", f"{path}: {exc}")
         return
     for token in PLACEHOLDERS:
         for line_number, line in enumerate(text.splitlines(), start=1):
@@ -171,7 +179,11 @@ def audit_file_records(
         if path.is_symlink() or not path.is_file():
             add(findings, "error", f"recorded-{category}-no-longer-exists", str(path), run_id)
             continue
-        current_size = path.stat().st_size
+        try:
+            current_size = path.stat().st_size
+        except OSError as exc:
+            add(findings, "error", f"unreadable-{category}", f"{path}: {exc}", run_id)
+            continue
         if record.get("size_bytes") != current_size:
             add(findings, "error", f"recorded-{category}-size-changed", str(path), run_id)
             continue
@@ -179,8 +191,14 @@ def audit_file_records(
         if current_size <= MAX_HASH_BYTES:
             if not isinstance(recorded_hash, str) or not recorded_hash:
                 add(findings, "error", f"recorded-{category}-missing-hash", str(path), run_id)
-            elif hash_file(path) != recorded_hash:
-                add(findings, "error", f"recorded-{category}-hash-changed", str(path), run_id)
+            else:
+                try:
+                    changed = hash_file(path) != recorded_hash
+                except OSError as exc:
+                    add(findings, "error", f"unreadable-{category}", f"{path}: {exc}", run_id)
+                    continue
+                if changed:
+                    add(findings, "error", f"recorded-{category}-hash-changed", str(path), run_id)
         elif not record.get("external_version"):
             add(findings, "error", f"recorded-large-{category}-unversioned", str(path), run_id)
 
@@ -306,7 +324,7 @@ def main() -> int:
             continue
         try:
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        except (OSError, json.JSONDecodeError, UnicodeDecodeError) as exc:
             add(findings, "error", "invalid-manifest", f"{manifest_path}: {exc}", run_id)
             continue
         if not isinstance(manifest, dict):

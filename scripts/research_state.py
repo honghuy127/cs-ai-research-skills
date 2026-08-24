@@ -15,54 +15,23 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-SCHEMA_VERSION = "1.0"
-VALID_STAGES = {
-    "scoping",
-    "literature",
-    "proposal",
-    "design",
-    "implementation",
-    "execution",
-    "analysis",
-    "writing",
-    "review",
-    "submission",
-}
-VALID_STATUSES = {
-    "not_assessed",
-    "proposed",
-    "planned",
-    "implemented",
-    "smoke_tested",
-    "pilot_only",
-    "executed",
-    "analyzed",
-    "verified",
-    "reported",
-    "blocked",
-    "dropped",
-}
-VALID_EVIDENTIAL_STATUSES = {"not_assessed", "insufficient", "supported", "mixed", "contradicted"}
-VALID_CLAIM_TYPES = {
-    "contextual",
-    "novelty",
-    "theoretical",
-    "empirical",
-    "causal",
-    "descriptive",
-    "normative",
-    "performance",
-    "efficiency",
-    "human-evaluation",
-}
-VALID_EVIDENCE_VERIFICATIONS = {"metadata-only", "abstract-checked", "full-text-checked", "artifact-checked"}
-VALID_PUBLICATION_STATUSES = {"published", "accepted", "preprint", "unpublished", "unknown"}
-VALID_PEER_REVIEW_STATUSES = {"peer-reviewed", "not-peer-reviewed", "unknown"}
-VALID_RUN_PHASES = {"smoke", "pilot", "full"}
-VALID_RUN_STATUSES = {"completed", "failed", "aborted"}
-VALID_RESULT_KINDS = {"none", "measured", "synthetic-plumbing"}
-VALID_EVIDENCE_ELIGIBILITY = {"candidate_pending_verification", "not_scientific_evidence"}
-LEDGERS = ("evidence.jsonl", "claims.jsonl", "experiments.jsonl")
+from research_contract import (
+    DOSSIER_SCHEMA_VERSION,
+    LEDGERS,
+    VALID_CLAIM_TYPES,
+    VALID_EVIDENCE_ELIGIBILITY,
+    VALID_EVIDENCE_VERIFICATIONS,
+    VALID_EVIDENTIAL_STATUSES,
+    VALID_PEER_REVIEW_STATUSES,
+    VALID_PUBLICATION_STATUSES,
+    VALID_RESULT_KINDS,
+    VALID_RUN_PHASES,
+    VALID_RUN_STATUSES,
+    VALID_STAGES,
+    VALID_STATUSES,
+)
+
+SCHEMA_VERSION = DOSSIER_SCHEMA_VERSION
 
 
 def now() -> str:
@@ -108,6 +77,8 @@ def load_json(path: Path) -> dict:
         raise ValueError(f"missing file: {path}") from exc
     except json.JSONDecodeError as exc:
         raise ValueError(f"invalid JSON in {path}: {exc}") from exc
+    except (OSError, UnicodeDecodeError) as exc:
+        raise ValueError(f"cannot read JSON in {path}: {exc}") from exc
     if not isinstance(value, dict):
         raise TypeError(f"expected JSON object in {path}")
     return value
@@ -147,6 +118,9 @@ def cmd_init(args: argparse.Namespace) -> int:
     root = Path(args.root).resolve()
     if not root.is_dir():
         print(f"error: project root is not a directory: {root}", file=sys.stderr)
+        return 2
+    if not args.title.strip() or not args.owner.strip():
+        print("error: title and owner must be non-empty", file=sys.stderr)
         return 2
     base = dossier(root)
     state_path = base / "state.json"
@@ -207,7 +181,11 @@ def read_jsonl(path: Path) -> tuple[list[dict], list[str]]:
     errors: list[str] = []
     if not path.exists():
         return records, [f"missing ledger: {path}"]
-    for line_number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except (OSError, UnicodeDecodeError) as exc:
+        return records, [f"cannot read ledger {path}: {exc}"]
+    for line_number, raw in enumerate(lines, start=1):
         if not raw.strip():
             continue
         try:
@@ -406,6 +384,7 @@ def validate(root: Path) -> list[str]:
         if state.get(field) is not None and not isinstance(state.get(field), str):
             errors.append(f"state.json {field} must be null or a string")
     if isinstance(state.get("decision_index"), list):
+        decision_ids: set[str] = set()
         for index, item in enumerate(state["decision_index"], start=1):
             if not isinstance(item, dict) or any(
                 not isinstance(item.get(field), str) or not item[field].strip()
@@ -413,6 +392,9 @@ def validate(root: Path) -> list[str]:
             ):
                 errors.append(f"state.json decision_index entry {index} is invalid")
                 continue
+            if item["id"] in decision_ids:
+                errors.append(f"state.json contains duplicate decision ID: {item['id']}")
+            decision_ids.add(item["id"])
             check_timestamp(item, "recorded_at", f"state.json decision_index entry {index}", errors)
 
     for name in LEDGERS:

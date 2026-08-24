@@ -112,6 +112,8 @@ XML alone cannot reveal visual defects such as overlaps, clipped text, or wrong 
 python3 scripts/validate_drawio.py figures/fig01-method.drawio
 ```
 
+The validator rejects a compressed draw.io page that expands beyond 8 MiB. Split an unusually large page or save a simpler editable source rather than bypassing the safety limit.
+
 The validator parses plain and compressed `.drawio` files and reports errors and warnings: malformed XML, duplicate cell ids, edges with dangling source or target references, broken parent links, vertices missing geometry, empty labels, embedded raster images, sub-minimum font sizes, off-page content, and unresolved markers such as `[RESULT PENDING]`. Fix every error and review every warning before rendering; use `--strict` in a camera-ready pass so warnings also fail. The validator certifies structure only, never that the figure communicates correctly.
 
 ## 8. Render, inspect, and iterate

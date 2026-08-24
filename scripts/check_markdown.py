@@ -20,7 +20,8 @@ import sys
 import urllib.parse
 from pathlib import Path
 
-PLACEHOLDERS = ("[CITATION NEEDED]", "[EVIDENCE NEEDED]", "[RESULT PENDING]")
+from research_contract import PLACEHOLDERS
+
 DRAFT_WORD_RE = re.compile(r"\b(TODO|FIXME|TBD|XXX)\b")
 FENCE_OPEN_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})\s*(.*)$")
 FENCE_CLOSE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,}) *$")

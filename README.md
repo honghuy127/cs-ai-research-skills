@@ -1,7 +1,7 @@
 # Conduct CS and AI Research
 
 [![CI](https://github.com/honghuy127/cs-ai-research-skills/actions/workflows/ci.yml/badge.svg)](https://github.com/honghuy127/cs-ai-research-skills/actions/workflows/ci.yml)
-[![Python](https://img.shields.io/badge/python-3.10_%7C_3.13-blue)](https://www.python.org)
+[![Python](https://img.shields.io/badge/python-3.10--3.14-blue)](https://www.python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 An agent skill for rigorous computer science and AI research. It guides an AI agent through idea construction, literature synthesis, novelty and feasibility checks, proposals, experimental design, implementation, evaluation, statistical analysis, reproducibility, paper writing, figure and diagram preparation, formatting checks, office document analysis and authoring, presentation slides, peer review, and rebuttals, with evidence discipline enforced at every step.
@@ -26,6 +26,7 @@ The skill follows the [Agent Skills specification](https://agentskills.io/specif
 | `assets/` | Copy-and-adapt templates: research brief, experiment plan, paper and proposal outlines, figure plan, format checklist, slide deck plan, review template, rebuttal matrix |
 | `agents/openai.yaml` | Interface metadata for runtimes that read the OpenAI agent format |
 | `tests/` | End-to-end tests for the scripts |
+| `requirements-dev.txt` | Pinned test and lint dependencies used locally and in CI |
 
 ## Installation
 
@@ -116,13 +117,13 @@ Notes on the audit:
 ## Testing
 
 ```bash
-python3 -m pip install pytest ruff
+python3 -m pip install -r requirements-dev.txt
 ruff check scripts tests
 python3 -m pytest tests/ -v
 python3 scripts/check_markdown.py SKILL.md README.md references/*.md assets/*.md --strict
 ```
 
-CI runs the tests on Python 3.10 and 3.13, checks Python quality and local documentation links on every change, and checks external documentation links weekly.
+CI tests the minimum supported Python 3.10 and current feature series 3.14, checks Python quality and local documentation links on every change, and checks external documentation links weekly. Actions are pinned to immutable release commits, and Dependabot proposes controlled updates for both development dependencies and workflow actions.
 
 ## License
 

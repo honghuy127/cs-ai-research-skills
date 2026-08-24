@@ -34,6 +34,8 @@ Modern Office files (`.docx`, `.xlsx`, `.pptx`, `.odt`, `.ods`) are zip archives
 python3 scripts/check_office.py submission.docx --strict
 ```
 
+The checker deliberately does not parse an individual XML part larger than 4 MiB. It reports `oversized-xml-part`; inspect or simplify that part before treating the structural pass as complete, and use `--strict` for delivery checks.
+
 The checker reports malformed XML, missing core parts, broken media references, macro payloads, embedded objects, placeholder markers, and author metadata. It certifies structure only, never that the content is correct.
 
 ## 3. Analyze documents

@@ -24,10 +24,11 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from audit_research import PLACEHOLDERS
+from research_contract import PLACEHOLDERS
 
 DEFAULT_PAGE_WIDTH = 850.0
 DEFAULT_PAGE_HEIGHT = 1100.0
+MAX_DECOMPRESSED_PAGE_BYTES = 8 * 1024 * 1024
 
 
 class Finding:
@@ -51,7 +52,14 @@ class Finding:
 
 def decode_compressed(payload: str) -> str:
     padded = payload + "=" * (-len(payload) % 4)
-    inflated = zlib.decompress(base64.b64decode(padded), -zlib.MAX_WBITS)
+    compressed = base64.b64decode(padded)
+    decompressor = zlib.decompressobj(-zlib.MAX_WBITS)
+    inflated = decompressor.decompress(compressed, MAX_DECOMPRESSED_PAGE_BYTES + 1)
+    if len(inflated) > MAX_DECOMPRESSED_PAGE_BYTES or decompressor.unconsumed_tail:
+        raise ValueError("decompressed page exceeds the 8 MiB safety limit")
+    inflated += decompressor.flush()
+    if len(inflated) > MAX_DECOMPRESSED_PAGE_BYTES:
+        raise ValueError("decompressed page exceeds the 8 MiB safety limit")
     return urllib.parse.unquote(inflated.decode("utf-8"))
 
 

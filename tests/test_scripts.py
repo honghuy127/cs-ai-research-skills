@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import base64
 import json
+import os
 import subprocess
 import sys
 import urllib.parse
@@ -22,10 +23,13 @@ START = "2026-08-14T01:00:00Z"
 END = "2026-08-14T01:30:00Z"
 
 
-def run_script(name: str, *args: str, cwd: Path) -> subprocess.CompletedProcess[str]:
+def run_script(
+    name: str, *args: str, cwd: Path, env: dict[str, str] | None = None
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(SCRIPTS / name), *args],
         cwd=cwd,
+        env=env,
         capture_output=True,
         text=True,
         check=False,
@@ -142,6 +146,14 @@ class TestResearchState:
     def test_init_refuses_existing_dossier(self, project: Path) -> None:
         result = run_script("research_state.py", "init", "--title", "X", "--owner", "y", cwd=project)
         assert result.returncode == 2
+
+    @pytest.mark.parametrize(("title", "owner"), [(" ", "tester"), ("Test", " ")])
+    def test_init_rejects_blank_identity(self, tmp_path: Path, title: str, owner: str) -> None:
+        result = run_script(
+            "research_state.py", "init", "--title", title, "--owner", owner, cwd=tmp_path
+        )
+        assert result.returncode == 2
+        assert "must be non-empty" in result.stderr
 
     def test_transition(self, project: Path) -> None:
         result = run_script(
@@ -270,6 +282,34 @@ class TestResearchState:
         assert result.returncode == 1
         assert "expected JSON object" in result.stdout
 
+    def test_validate_reports_non_utf8_state_and_ledger(self, project: Path) -> None:
+        state_path = project / ".research" / "state.json"
+        original_state = state_path.read_bytes()
+        state_path.write_bytes(b"\xff")
+        state_result = run_script("research_state.py", "validate", cwd=project)
+        assert state_result.returncode == 1
+        assert "cannot read JSON" in state_result.stdout
+        assert "Traceback" not in state_result.stderr
+
+        state_path.write_bytes(original_state)
+        (project / ".research" / "claims.jsonl").write_bytes(b"\xff")
+        ledger_result = run_script("research_state.py", "validate", cwd=project)
+        assert ledger_result.returncode == 1
+        assert "cannot read ledger" in ledger_result.stdout
+        assert "Traceback" not in ledger_result.stderr
+        audit_code, audit_data = audit_report(project)
+        assert audit_code == 1
+        assert "unreadable-ledger" in finding_codes(audit_data)
+
+    def test_validate_rejects_duplicate_decision_ids(self, project: Path) -> None:
+        state_path = project / ".research" / "state.json"
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        state["decision_index"].append(dict(state["decision_index"][0]))
+        state_path.write_text(json.dumps(state), encoding="utf-8")
+        result = run_script("research_state.py", "validate", cwd=project)
+        assert result.returncode == 1
+        assert "duplicate decision ID" in result.stdout
+
     def test_validate_rejects_reversed_run_times(self, project: Path) -> None:
         append_record(
             project,
@@ -335,6 +375,54 @@ class TestCaptureRun:
         result = capture(project, "RUN-002", status="failed")
         assert result.returncode == 2
         assert "failure-reason" in result.stderr
+
+    def test_blank_command_rejected(self, project: Path) -> None:
+        (project / "cfg.yaml").write_text("option: 1\n", encoding="utf-8")
+        (project / "out.txt").write_text("output data\n", encoding="utf-8")
+        result = capture(project, "RUN-002", "--command", "  ")
+        assert result.returncode == 2
+        assert "command must be non-empty" in result.stderr
+
+    def test_capture_without_git_executable_records_unavailable(self, project: Path) -> None:
+        (project / "cfg.yaml").write_text("option: 1\n", encoding="utf-8")
+        (project / "out.txt").write_text("output data\n", encoding="utf-8")
+        env = dict(os.environ)
+        env["PATH"] = ""
+        result = run_script(
+            "capture_run.py",
+            "--run-id",
+            "RUN-002",
+            "--experiment-id",
+            "EXP-001",
+            "--operator",
+            "tester",
+            "--started-at",
+            START,
+            "--ended-at",
+            END,
+            "--phase",
+            "full",
+            "--status",
+            "completed",
+            "--result-kind",
+            "measured",
+            "--command",
+            "python train.py",
+            "--config",
+            "cfg.yaml",
+            "--output",
+            "out.txt",
+            cwd=project,
+            env=env,
+        )
+        assert result.returncode == 0, result.stderr
+        manifest = json.loads(
+            (project / ".research" / "runs" / "RUN-002" / "manifest.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        assert manifest["git"]["available"] is False
+        assert manifest["git"]["reason"]
 
     def test_large_file_requires_immutable_version(self, project: Path) -> None:
         (project / "cfg.yaml").write_text("option: 1\n", encoding="utf-8")
@@ -561,6 +649,16 @@ class TestValidateDrawio:
         code, report = drawio_report(tmp_path, "--json", "fig.drawio")
         assert code == 0, report
         assert report["reports"][0]["pages"][0]["vertices"] == 1
+
+    def test_compressed_diagram_expansion_is_bounded(self, tmp_path: Path) -> None:
+        (tmp_path / "fig.drawio").write_text(
+            compressed_drawio("x" * (8 * 1024 * 1024 + 1)), encoding="utf-8"
+        )
+        code, report = drawio_report(tmp_path, "--json", "fig.drawio")
+        assert code == 1
+        errors = report["reports"][0]["errors"]
+        assert {finding["code"] for finding in errors} == {"decode-error", "no-pages"}
+        assert "safety limit" in errors[0]["message"]
 
     def test_dangling_edge_and_parent_fail(self, tmp_path: Path) -> None:
         broken = VALID_DRAWIO.replace('target="b"', 'target="ghost"').replace('parent="1">\n          <mxGeometry x="240"', 'parent="nowhere">\n          <mxGeometry x="240"')
@@ -821,6 +919,17 @@ class TestCheckOffice:
         strict_code, strict_report = office_report(tmp_path, "--json", "--strict", "deck.pptx")
         assert strict_code == 1
         assert strict_report["reports"][0]["status"] == "fail"
+
+    def test_oversized_xml_part_is_not_silently_skipped(self, tmp_path: Path) -> None:
+        parts = base_pptx_parts()
+        parts["ppt/slides/slide2.xml"] = " " * (4 * 1024 * 1024 + 1)
+        make_office_package(tmp_path / "deck.pptx", parts)
+        code, report = office_report(tmp_path, "--json", "deck.pptx")
+        assert code == 0
+        warnings = report["reports"][0]["warnings"]
+        assert {finding["code"] for finding in warnings} == {"oversized-xml-part"}
+        strict_code, _ = office_report(tmp_path, "--json", "--strict", "deck.pptx")
+        assert strict_code == 1
 
     def test_empty_and_hidden_slide_reported(self, tmp_path: Path) -> None:
         parts = base_pptx_parts()

@@ -24,9 +24,9 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
+from research_contract import MANIFEST_SCHEMA_VERSION, MAX_HASH_BYTES
 from research_state import validate as validate_dossier
 
-MAX_HASH_BYTES = 64 * 1024 * 1024
 RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 EXPERIMENT_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 
@@ -102,7 +102,10 @@ def git_record(root: Path) -> dict:
             check=False,
         )
 
-    commit = run("rev-parse", "HEAD")
+    try:
+        commit = run("rev-parse", "HEAD")
+    except OSError as exc:
+        return {"available": False, "reason": str(exc)}
     if commit.returncode != 0:
         return {"available": False}
     status = run("status", "--porcelain=v1")
@@ -251,6 +254,9 @@ def main() -> int:
     if not args.operator.strip():
         print("error: operator must be non-empty", file=sys.stderr)
         return 2
+    if not args.command.strip():
+        print("error: command must be non-empty", file=sys.stderr)
+        return 2
     try:
         started_at = parse_timestamp(args.started_at, "started-at")
         ended_at = parse_timestamp(args.ended_at, "ended-at")
@@ -347,7 +353,7 @@ def main() -> int:
         print(f"error: immutable run directory already exists: {run_dir}", file=sys.stderr)
         return 2
     manifest = {
-        "schema_version": "1.1",
+        "schema_version": MANIFEST_SCHEMA_VERSION,
         "run_id": args.run_id,
         "experiment_id": args.experiment_id,
         "operator": args.operator,

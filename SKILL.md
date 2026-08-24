@@ -1,6 +1,6 @@
 ---
 name: conduct-cs-ai-research
-description: Guide rigorous computer science and AI research across idea construction, literature synthesis, novelty and feasibility checks, thesis or grant proposals, experimental design and implementation, benchmark and human evaluation, statistical analysis, reproducibility, paper writing and revision, figures and diagrams, submission formatting, office documents, presentation slides, rebuttals, and evidence-grounded manuscript review. Use for research questions, hypotheses, contribution framing, datasets, baselines, metrics, ablations, run plans, research code, LaTeX manuscripts, rendered manuscript inspection, Office document content (docx, xlsx), Markdown documents and GitHub-rendered files, GitHub repositories, issues, pull requests, and research releases, PowerPoint and Beamer slide preparation, peer reviews, or an end-to-end research project. Do not use for simple fact lookup, production coding or code review unrelated to a research claim, generic concepts, or copyediting that needs no research reasoning.
+description: Plan, execute, analyze, write, review, and present rigorous computer science and AI research with evidence, provenance, reproducibility, and decisive gates. Use for research ideas and literature, proposals, experiments and evaluations, statistical analysis, manuscripts and figures, research submissions or repositories, presentations, peer review, rebuttals, or an end-to-end research project. Do not use for simple fact lookup, generic documents or repository work, production engineering unrelated to a research claim, or copyediting that needs no research reasoning.
 ---
 
 # Conduct CS and AI Research
@@ -17,7 +17,7 @@ Before substantive work:
 4. Distinguish facts established by sources, interpretations, hypotheses, assumptions, and speculation.
 5. Resolve only missing information that would materially change the work. Make and label safe assumptions for the rest.
 
-Before any substantive route, read [research-contract-and-state.md](references/research-contract-and-state.md) for the shared terminology and record contracts. Create project-local state only when useful and authorized. Do not create state for a one-off read-only review.
+Before work that creates, evaluates, or changes research claims, evidence, gates, or project state, read [research-contract-and-state.md](references/research-contract-and-state.md) for the shared terminology and record contracts. A bounded format, lint, conversion, or artifact-structure check may route directly to its format reference when it makes no research judgment and changes no state. Create project-local state only when useful and authorized; never create it for a one-off read-only review.
 
 ## Route to the smallest complete workflow
 
@@ -35,7 +35,7 @@ Load every additional reference listed for the selected route before acting. Add
 | Format or format-check a manuscript or submission | [paper-formatting.md](references/paper-formatting.md), plus [paper-writing.md](references/paper-writing.md) during a manuscript pass |
 | Analyze or author office documents | [office-documents.md](references/office-documents.md), plus [analysis-and-statistics.md](references/analysis-and-statistics.md) when numbers appear |
 | Author or check Markdown documents | [markdown-documents.md](references/markdown-documents.md), plus [github-collaboration.md](references/github-collaboration.md) when the render target or release channel is GitHub |
-| Manage a GitHub repository, issues, pull requests, reviews, or releases | [github-collaboration.md](references/github-collaboration.md), plus [markdown-documents.md](references/markdown-documents.md) when writing repository documents and the applicable phase reference for the content being shipped |
+| Manage a research repository, its issues, pull requests, reviews, or releases | [github-collaboration.md](references/github-collaboration.md), plus [markdown-documents.md](references/markdown-documents.md) when writing repository documents and the applicable phase reference for the content being shipped |
 | Create or revise presentation slides | [presentation-slides.md](references/presentation-slides.md), plus [paper-writing.md](references/paper-writing.md) when deriving the deck from a manuscript |
 | Review a paper or artifact | [paper-review-and-rebuttal.md](references/paper-review-and-rebuttal.md), [ethics-integrity-and-policy.md](references/ethics-integrity-and-policy.md) |
 | Prepare a rebuttal or revision plan | [paper-review-and-rebuttal.md](references/paper-review-and-rebuttal.md), [paper-writing.md](references/paper-writing.md) |
