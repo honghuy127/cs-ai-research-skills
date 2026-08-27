@@ -40,7 +40,7 @@ jobs:
       - name: Check project Markdown and local links
         run: >-
           python scripts/check_markdown.py *.md
-          references/*.md assets/*.md --strict
+          references/*.md assets/*.md figures/*.md --strict
 
   links:
     runs-on: ubuntu-latest

@@ -38,9 +38,9 @@ Playbook: [../references/figures-and-diagrams.md](../references/figures-and-diag
 
 ## Verification
 
-- Structural check command and result (for example `python3 scripts/validate_drawio.py figures/fig.drawio`): `python3 scripts/validate_drawio.py figures/fig-001-skill-architecture.drawio --strict --min-font-size 10` — pass (2026-08-27)
-- Render inspected at target size (how, by whom, date): PNG and SVG re-render (.svg.check.png) inspected visually by the authoring agent at full page width, 2026-08-27
-- Defects found and fixed: first render showed an edge crossing the scripts/ box text, an audit-label overlapping the scripts/ title, and two colliding route labels near the gate box; fixed by re-routing the audit edge to originate at scripts/ (exit left), entering scripts/ from the top for the run-recording edge, shortening three labels, and removing one redundant label; second render is clean
+- Structural check command and result (for example `python3 scripts/validate_drawio.py figures/fig.drawio`): `python3 scripts/validate_drawio.py figures/fig-001-skill-architecture.drawio --strict --min-font-size 10` — pass (2026-08-27, rerun after F-1 fix)
+- Render inspected at target size (how, by whom, date): PNG and SVG re-render (.svg.check.png) inspected visually by the authoring agent at full page width, 2026-08-27 (initial) and 2026-08-27 (F-1 re-render)
+- Defects found and fixed: first render showed an edge crossing the scripts/ box text, an audit-label overlapping the scripts/ title, and two colliding route labels near the gate box; fixed by re-routing the audit edge to originate at scripts/ (exit left), entering scripts/ from the top for the run-recording edge, shortening three labels, and removing one redundant label; second render is clean. Full-repo audit finding F-1 (scripts/ box omitted render_drawio.py) fixed by adding the line and extending the box; re-rendered and re-inspected clean.
 - Caption draft: "Skill architecture. SKILL.md routes a task to the smallest complete workflow of phase playbooks; every phase closes at a decisive gate, and provenance lives in the project .research/ dossier maintained with scripts/."
 - Current venue figure rules source and access date: not applicable (README on GitHub; no venue constraints). GitHub renders SVG and PNG in Markdown.
 - Figure gate verdict (PASS, CONDITIONAL, FAIL, BLOCKED, or NOT_ASSESSED): PASS
