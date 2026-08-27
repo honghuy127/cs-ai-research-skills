@@ -1119,3 +1119,49 @@ class TestCheckMarkdown:
         result = run_script("check_markdown.py", "absent.md", cwd=tmp_path)
         assert result.returncode == 1
         assert "unreadable-file" in result.stdout
+
+
+sys.path.insert(0, str(SCRIPTS))
+
+
+def tiny_drawio(tmp_path: Path) -> Path:
+    source = tmp_path / "fig.drawio"
+    source.write_text(
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<mxfile host=\"app.diagrams.net\"><diagram name=\"p\" id=\"p\">"
+        "<mxGraphModel pageWidth=\"200\" pageHeight=\"100\"><root>"
+        "<mxCell id=\"0\"/><mxCell id=\"1\" parent=\"0\"/>"
+        "<mxCell id=\"box\" value=\"A\" style=\"rounded=1;fontSize=12;\" vertex=\"1\" parent=\"1\">"
+        "<mxGeometry x=\"10\" y=\"10\" width=\"60\" height=\"30\" as=\"geometry\"/></mxCell>"
+        "</root></mxGraphModel></diagram></mxfile>\n",
+        encoding="utf-8",
+    )
+    return source
+
+
+class TestRenderDrawio:
+    def test_embed_page_carries_escaped_xml(self, tmp_path: Path) -> None:
+        import render_drawio
+
+        source = tiny_drawio(tmp_path)
+        page = render_drawio.build_embed_page(source.read_text(encoding="utf-8"))
+        assert "viewer-static.min.js" in page
+        assert "&quot;" in page
+        assert 'class="mxgraph"' in page
+        assert "<mxfile" not in page  # raw XML must be attribute-escaped
+
+    def test_missing_source_fails(self, tmp_path: Path) -> None:
+        result = run_script("render_drawio.py", "absent.drawio", cwd=tmp_path)
+        assert result.returncode == 2
+        assert "source not found" in result.stderr
+
+    @pytest.mark.skipif(
+        os.environ.get("RENDER_E2E") != "1",
+        reason="headless render requires playwright, a browser, and network; set RENDER_E2E=1",
+    )
+    def test_headless_render_produces_png_and_svg(self, tmp_path: Path) -> None:
+        source = tiny_drawio(tmp_path)
+        result = run_script("render_drawio.py", str(source), cwd=tmp_path)
+        assert result.returncode == 0, result.stderr
+        assert (tmp_path / "fig.png").is_file()
+        assert (tmp_path / "fig.svg").is_file()

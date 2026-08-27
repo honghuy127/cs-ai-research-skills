@@ -138,7 +138,17 @@ drawio -x -f pdf -p 1,2 -o figures/fig01-method.pdf figures/fig01-method.drawio
 
 Verify each exported file after rendering: open or screenshot the PDF or PNG and check it against the figure plan. Inspect text readability at final print size, arrow semantics, alignment, color coherence, and agreement of every label and number with the manuscript.
 
-Fallbacks when the CLI is unavailable, in order: local render through the desktop app GUI, the diagrams.net embed in a locally served preview page, or asking the user to export manually. If the only fallback is a public web editor, confirm that the content is not confidential or under anonymity constraints before using it.
+When the draw.io desktop CLI is unavailable, use the bundled headless renderer:
+
+```bash
+# Needs playwright and a Playwright browser in the active Python environment:
+#   python3 -m pip install playwright && python3 -m playwright install chromium
+python3 scripts/render_drawio.py figures/fig01-method.drawio --scale 2
+```
+
+The renderer embeds the drawio XML in a local page, renders it with the diagrams.net static viewer in a Playwright-controlled headless browser, and captures a PNG screenshot plus a reconstructed SVG (shapes come from the viewer's SVG; HTML labels are folded back in as foreignObject elements). It also re-renders the exported SVG once to `<name>.svg.check.png` so you can verify the vector export itself; inspect that file too, since the SVG is reconstructed rather than exported by draw.io. The viewer script is fetched from `viewer.diagrams.net` at render time, so network access is required; figure content stays inside the local page. Treat the SVG as a convenience export; if it shows artifacts, ship the high-scale PNG and record the deviation in the figure plan.
+
+Further fallbacks when neither the CLI nor Playwright is available, in order: local render through the desktop app GUI, or asking the user to export manually. If the only remaining fallback is a public web editor, confirm that the content is not confidential or under anonymity constraints before using it.
 
 Iterate on evidence: for each defect found in a render, patch the source, regenerate the export, and re-check. Do not re-render after every micro-edit without a named defect list, and do not stop while a known blocker (wrong connector semantics, clipped or overlapping text, missing content, wrong numbers) remains visible. Name the defects fixed in the final summary instead of claiming broad perfection.
 
