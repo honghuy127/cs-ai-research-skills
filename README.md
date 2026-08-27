@@ -8,6 +8,10 @@ An Agent Skills-compatible package for rigorous computer science and AI research
 
 The skill follows the [Agent Skills specification](https://agentskills.io/specification): a lean `SKILL.md` router loads focused reference playbooks on demand, so an agent only reads the guidance relevant to the current task.
 
+![Skill architecture: SKILL.md routes a task to the smallest complete workflow of phase playbooks; every phase closes at a decisive gate, and provenance lives in the project .research/ dossier maintained with scripts/.](figures/fig-001-skill-architecture.svg)
+
+The figure's editable source is [figures/fig-001-skill-architecture.drawio](figures/fig-001-skill-architecture.drawio); regenerate the exports with `python3 scripts/render_drawio.py figures/fig-001-skill-architecture.drawio` after any edit.
+
 ## Design principles
 
 - **Truth states, not vibes.** Every claim moves through an explicit lifecycle (`NOT_ASSESSED → PROPOSED → PLANNED → IMPLEMENTED → SMOKE_TESTED → PILOT_ONLY → EXECUTED → ANALYZED → VERIFIED → REPORTED`), and workflow maturity is tracked separately from the evidential verdict. A pipeline that runs is not a result; a pilot is not confirmatory evidence. Source-grounded work (reviews, surveys, conceptual exposition, static analysis) skips the execution states: its claims move `PROPOSED → VERIFIED → REPORTED` on traced sources, and no runs are required.
@@ -50,7 +54,7 @@ The skill follows the [Agent Skills specification](https://agentskills.io/specif
 |---|---|
 | `SKILL.md` | Entry point and router; loads references per task intent |
 | `references/` | Nineteen phase playbooks (literature, design, evaluation, analysis, writing, figures and diagrams, formatting, office documents, Markdown documents, presentation slides, GitHub collaboration, review, ethics, orchestration, and more) |
-| `scripts/` | Dossier tooling: `research_state.py`, `capture_run.py`, `audit_research.py`, plus the `validate_drawio.py` figure lint, the `check_latex_log.py` build-log checker, the `check_office.py` Office package checker, and the `check_markdown.py` Markdown checker |
+| `scripts/` | Dossier tooling: `research_state.py`, `capture_run.py`, `audit_research.py`, plus the `validate_drawio.py` figure lint, the `render_drawio.py` headless drawio renderer, the `check_latex_log.py` build-log checker, the `check_office.py` Office package checker, and the `check_markdown.py` Markdown checker |
 | `assets/` | Copy-and-adapt templates: research brief, experiment plan, paper and proposal outlines, figure plan, format checklist, slide deck plan, review template, rebuttal matrix |
 | `agents/openai.yaml` | Interface metadata for runtimes that read the OpenAI agent format |
 | `tests/` | End-to-end tests for the scripts |
@@ -125,7 +129,7 @@ For substantial projects, the skill keeps canonical state in a `.research/` dire
 └── runs/<run-id>/manifest.json   # immutable per-run provenance
 ```
 
-The scripts require only Python 3.10+ and the standard library:
+All scripts require only Python 3.10+ and the standard library, except `render_drawio.py`, which additionally needs `playwright` and a Playwright-installed browser (`python3 -m pip install playwright && python3 -m playwright install chromium`):
 
 ```bash
 # Initialize a dossier in the current project
@@ -151,6 +155,11 @@ python3 scripts/audit_research.py
 # Lint draw.io figure sources (exit 1 on errors; --strict also fails on warnings;
 # --min-font-size N sets the minimum label size; --json emits a machine report)
 python3 scripts/validate_drawio.py figures/method.drawio
+
+# Render a draw.io figure to PNG and SVG without the draw.io desktop CLI,
+# via the diagrams.net static viewer in a headless Playwright browser
+# (needs playwright; see the note above)
+python3 scripts/render_drawio.py figures/method.drawio --scale 2
 
 # Check a LaTeX build log for errors, overfull boxes, undefined refs
 # (exit 1 on errors; --strict also fails on warnings; --json emits a
