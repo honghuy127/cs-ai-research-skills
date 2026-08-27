@@ -172,3 +172,14 @@ def test_executables_share_one_runtime_contract(monkeypatch: pytest.MonkeyPatch)
     assert markdown.PLACEHOLDERS is contract.PLACEHOLDERS
     assert office.PLACEHOLDERS is contract.PLACEHOLDERS
     assert drawio.PLACEHOLDERS is contract.PLACEHOLDERS
+
+
+def test_architecture_figure_lists_every_executable_helper() -> None:
+    figure = ROOT / "figures" / "fig-001-skill-architecture.drawio"
+    if not figure.is_file():
+        return
+    source = figure.read_text(encoding="utf-8")
+    for path in sorted((ROOT / "scripts").glob("*.py")):
+        if not path.read_bytes().startswith(b"#!"):
+            continue
+        assert path.name in source, f"architecture figure omits executable helper: {path.name}"
