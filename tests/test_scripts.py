@@ -9,6 +9,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import shutil
 import subprocess
 import sys
 import urllib.parse
@@ -435,6 +436,64 @@ class TestCaptureRun:
         accepted = capture(project, "RUN-003", "--file-version", "out.txt=dataset-v1")
         assert accepted.returncode == 0, accepted.stderr
 
+    def test_file_version_id_may_contain_equals(self, project: Path) -> None:
+        (project / "cfg.yaml").write_text("option: 1\n", encoding="utf-8")
+        big = project / "out.txt"
+        with big.open("wb") as handle:
+            handle.truncate(64 * 1024 * 1024 + 1)
+        result = capture(project, "RUN-004", "--file-version", "out.txt=sha256=abc==")
+        assert result.returncode == 0, result.stderr
+        manifest = json.loads(
+            (project / ".research" / "runs" / "RUN-004" / "manifest.json").read_text(encoding="utf-8")
+        )
+        assert manifest["outputs"][0]["external_version"] == "sha256=abc=="
+
+    def test_dirty_snapshot_covers_repo_subdirectory_root(self, tmp_path: Path) -> None:
+        if shutil.which("git") is None:
+            pytest.skip("git is unavailable")
+        repo = tmp_path / "repo"
+        sub = repo / "sub"
+        sub.mkdir(parents=True)
+
+        def git(*parts: str) -> None:
+            subprocess.run(
+                ["git", "-c", "user.email=t@example.org", "-c", "user.name=T", *parts],
+                cwd=repo,
+                check=True,
+                capture_output=True,
+            )
+
+        git("init", "-q")
+        (sub / "inner.txt").write_text("clean\n", encoding="utf-8")
+        (repo / "outer.txt").write_text("clean\n", encoding="utf-8")
+        git("add", ".")
+        git("commit", "-q", "-m", "init")
+        init = run_script("research_state.py", "init", "--title", "T", "--owner", "t", cwd=sub)
+        assert init.returncode == 0, init.stderr
+        (sub / "inner.txt").write_text("dirty\n", encoding="utf-8")
+        (sub / "cfg.yaml").write_text("option: 1\n", encoding="utf-8")
+        (sub / "out.txt").write_text("output\n", encoding="utf-8")
+        result = capture(sub, "RUN-001")
+        assert result.returncode == 0, result.stderr
+        manifest = json.loads(
+            (sub / ".research" / "runs" / "RUN-001" / "manifest.json").read_text(encoding="utf-8")
+        )
+        dirty = {record["path"]: record for record in manifest["git"]["dirty_file_hashes"]}
+        assert dirty["inner.txt"]["kind"] == "file"
+        assert dirty["inner.txt"]["sha256"]
+        assert "sub/inner.txt" not in dirty
+        assert "outer.txt" not in dirty
+        code, report = audit_report(sub)
+        assert code == 0, report
+
+    def test_os_junk_file_in_runs_tolerated(self, project_with_run: Path) -> None:
+        (project_with_run / ".research" / "runs" / ".DS_Store").write_bytes(b"\x00")
+        result = capture(project_with_run, "RUN-002")
+        assert result.returncode == 0, result.stderr
+        code, report = audit_report(project_with_run)
+        assert code == 0, report
+        assert "junk-file-in-runs" in finding_codes(report)
+
     def test_tampered_output_detected(self, project_with_run: Path) -> None:
         (project_with_run / "out.txt").write_text("altered after capture\n", encoding="utf-8")
         code, report = audit_report(project_with_run)
@@ -517,6 +576,47 @@ class TestAudit:
         code, report = audit_report(project)
         assert code == 0, report
         assert report["counts"]["error"] == 0
+
+    def test_metadata_only_contextualize_may_be_linked(self, project: Path) -> None:
+        append_record(
+            project,
+            "evidence.jsonl",
+            make_evidence(
+                "SRC-001", verification="metadata-only", locator=None, contextualizes=["CLM-001"]
+            ),
+        )
+        append_record(
+            project,
+            "claims.jsonl",
+            make_claim("CLM-001", claim_type="contextual", evidence_ids=["SRC-001"]),
+        )
+        code, report = audit_report(project)
+        assert code == 0, report
+        assert "claim-uses-metadata-as-evidence" not in finding_codes(report)
+
+    def test_superseded_run_record_is_not_audited(self, project_with_run: Path) -> None:
+        result = capture(project_with_run, "RUN-002")
+        assert result.returncode == 0, result.stderr
+        ledger = project_with_run / ".research" / "experiments.jsonl"
+        records = [
+            json.loads(line)
+            for line in ledger.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        records[0]["phase"] = "pilot"  # now contradicts its manifest
+        records[1]["supersedes"] = "RUN-001"
+        ledger.write_text("".join(json.dumps(r) + "\n" for r in records), encoding="utf-8")
+        append_record(
+            project_with_run,
+            "claims.jsonl",
+            make_claim(
+                "CLM-001", claim_type="contextual", run_ids=["RUN-001"], artifact_paths=["out.txt"]
+            ),
+        )
+        code, report = audit_report(project_with_run)
+        assert code == 0, report
+        assert "ledger-manifest-mismatch" not in finding_codes(report)
+        assert "claim-links-superseded-run" in finding_codes(report)
 
     def test_metadata_only_evidence_rejected(self, project: Path) -> None:
         append_record(
@@ -693,6 +793,17 @@ class TestValidateDrawio:
         codes = {finding["code"] for finding in report["reports"][0]["warnings"]}
         assert "embedded-raster" in codes
 
+    def test_unlabeled_image_vertex_is_not_flagged(self, tmp_path: Path) -> None:
+        image = VALID_DRAWIO.replace(
+            'value="Decoder" style="rounded=1;fontSize=12;"',
+            'value="" style="image;html=1;image=data:image/svg+xml,PHN2Zz48L3N2Zz4=;"',
+        )
+        (tmp_path / "fig.drawio").write_text(image, encoding="utf-8")
+        code, report = drawio_report(tmp_path, "--json", "fig.drawio")
+        assert code == 0, report
+        codes = {finding["code"] for finding in report["reports"][0]["warnings"]}
+        assert "empty-label" not in codes
+
     def test_malformed_xml_fails(self, tmp_path: Path) -> None:
         (tmp_path / "fig.drawio").write_text("<mxfile><diagram>", encoding="utf-8")
         code, report = drawio_report(tmp_path, "--json", "fig.drawio")
@@ -767,6 +878,17 @@ class TestCheckLatexLog:
         error = report["errors"][0]
         assert error["code"] == "latex-error"
         assert "source line 42" in error["message"]
+
+    def test_pdftex_error_without_space_detected(self, tmp_path: Path) -> None:
+        log = CLEAN_LATEX_LOG.replace(
+            "(./main.aux)",
+            "(./main.aux)\n!pdfTeX error (font expansion): auto expansion is only"
+            " possible with scalable fonts.",
+        )
+        (tmp_path / "main.log").write_text(log, encoding="utf-8")
+        code, report = latex_log_report(tmp_path, "--json", "main.log")
+        assert code == 1
+        assert "latex-error" in {finding["code"] for finding in report["errors"]}
 
     def test_max_pages_enforced(self, tmp_path: Path) -> None:
         (tmp_path / "main.log").write_text(WARN_LATEX_LOG, encoding="utf-8")
@@ -1069,6 +1191,35 @@ class TestCheckMarkdown:
         write_markdown(tmp_path, "doc.md", text)
         result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
         assert result.returncode == 0, result.stdout + result.stderr
+
+    def test_reference_style_link_targets_are_checked(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "doc.md", "# A\n\nSee [the notes][notes].\n\n[notes]: missing.md\n")
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 1
+        assert "broken-link" in result.stdout
+
+    def test_undefined_link_reference_warns(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "doc.md", "# A\n\nSee [the notes][nowhere].\n")
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 0
+        assert "undefined-link-reference" in result.stdout
+        strict = run_script("check_markdown.py", "--strict", "doc.md", cwd=tmp_path)
+        assert strict.returncode == 1
+
+    def test_reference_definition_with_valid_target_passes(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "docs/notes.md", "# Notes\n\n## Details\n\nText.\n")
+        write_markdown(
+            tmp_path, "doc.md", "# A\n\nSee [the notes][notes].\n\n[notes]: docs/notes.md#details\n"
+        )
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert "status: pass" in result.stdout
+
+    def test_custom_anchor_on_heading_line_resolves(self, tmp_path: Path) -> None:
+        write_markdown(tmp_path, "doc.md", '# A\n\n## Foo <a id="bar"></a>\n\n[x](#bar)\n\n[y](#foo)\n')
+        result = run_script("check_markdown.py", "doc.md", cwd=tmp_path)
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert "missing-anchor" not in result.stdout
 
     def test_duplicate_heading_anchor(self, tmp_path: Path) -> None:
         write_markdown(tmp_path, "docs/notes.md", "# Notes\n\n## Same\n\n## Same\n")

@@ -24,7 +24,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from research_contract import MANIFEST_SCHEMA_VERSION, MAX_HASH_BYTES
+from research_contract import MANIFEST_SCHEMA_VERSION, MAX_HASH_BYTES, OS_JUNK_FILES
 from research_state import validate as validate_dossier
 
 RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
@@ -83,7 +83,9 @@ def parse_versions(values: list[str], root: Path) -> tuple[dict[str, str], str |
     for value in values:
         if "=" not in value:
             return {}, f"invalid --file-version {value!r}; expected PATH=IMMUTABLE_ID"
-        raw_path, version = value.rsplit("=", 1)
+        # Split at the first separator: immutable IDs often contain "=" (base64
+        # digests, "sha256=..." prefixes), while paths rarely do.
+        raw_path, version = value.split("=", 1)
         if not raw_path.strip() or not version.strip():
             return {}, f"invalid --file-version {value!r}; path and immutable ID must be non-empty"
         key = str(resolve_file(raw_path, root))
@@ -108,9 +110,12 @@ def git_record(root: Path) -> dict:
         return {"available": False, "reason": str(exc)}
     if commit.returncode != 0:
         return {"available": False}
-    status = run("status", "--porcelain=v1")
+    status = run("status", "--porcelain=v1", "--", ".")
     branch = run("branch", "--show-current")
-    tracked = run("diff", "--name-only", "-z", "HEAD")
+    # --relative scopes the diff to the dossier root and reports paths relative
+    # to it, matching ls-files --others; without it a root below the repository
+    # top level would receive repository-relative paths and hash nothing.
+    tracked = run("diff", "--name-only", "-z", "--relative", "HEAD")
     untracked = run("ls-files", "--others", "--exclude-standard", "-z")
 
     dirty_paths: set[str] = set()
@@ -152,7 +157,7 @@ def git_record(root: Path) -> dict:
         "dirty": bool(status.stdout.strip()),
         "status_porcelain": status.stdout.decode(errors="replace").splitlines(),
         "dirty_file_hashes": dirty_files,
-        "dirty_snapshot_scope": "tracked changes and untracked non-ignored files, excluding .research runtime state",
+        "dirty_snapshot_scope": "tracked changes and untracked non-ignored files under the run root, excluding .research runtime state",
         "dirty_snapshot_complete": tracked.returncode == 0 and untracked.returncode == 0,
     }
 
@@ -200,8 +205,13 @@ def validate_run_storage(root: Path, runs_dir: Path, ledger_path: Path, run_ids:
             errors.append(f"missing or symlinked manifest for {run_id}: {actual}")
         expected_manifests.add(expected)
     for child in runs_dir.iterdir():
+        if not child.is_symlink() and child.is_file() and child.name in OS_JUNK_FILES:
+            continue
         if child.is_symlink() or not child.is_dir():
-            errors.append(f"unexpected or symlinked entry in runs directory: {child}")
+            errors.append(
+                f"unexpected or symlinked entry in runs directory: {child}; "
+                "remove it or move it out of .research/runs"
+            )
             continue
         manifest = (child / "manifest.json").resolve()
         if child.name not in run_ids or manifest not in expected_manifests or not manifest.is_file():
@@ -211,7 +221,11 @@ def validate_run_storage(root: Path, runs_dir: Path, ledger_path: Path, run_ids:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", default=".")
+    parser.add_argument(
+        "--root",
+        default=".",
+        help="project root; relative --config, --input, and --output paths resolve against it",
+    )
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--experiment-id", required=True)
     parser.add_argument("--operator", required=True)

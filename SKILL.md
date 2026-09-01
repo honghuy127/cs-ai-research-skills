@@ -1,6 +1,6 @@
 ---
 name: conduct-cs-ai-research
-description: Plan, execute, analyze, write, review, and present rigorous computer science and AI research with evidence, provenance, reproducibility, and decisive gates. Use for research ideas and literature, proposals, experiments and evaluations, statistical analysis, manuscripts and figures, research submissions or repositories, presentations, peer review, rebuttals, or an end-to-end research project. Do not use for simple fact lookup, generic documents or repository work, production engineering unrelated to a research claim, or copyediting that needs no research reasoning.
+description: Plan, execute, analyze, write, review, and present rigorous computer science and AI research with evidence, provenance, reproducibility, and decisive gates. Use for research ideas and literature, proposals, experiments and evaluations, statistical analysis, manuscripts and figures, research documents in Office or Markdown formats, research submissions or repositories, presentations, peer review, rebuttals, resuming or auditing a research project's state, or an end-to-end research project. Do not use for simple fact lookup, generic documents or repository work, production engineering unrelated to a research claim, or copyediting that needs no research reasoning.
 license: MIT
 metadata:
   audience: cs-ai-researchers
@@ -51,6 +51,7 @@ Load every additional reference listed for the selected route before acting. Add
 | Create or revise presentation slides | [presentation-slides.md](references/presentation-slides.md), plus [paper-writing.md](references/paper-writing.md) when deriving the deck from a manuscript |
 | Review a paper or artifact | [paper-review-and-rebuttal.md](references/paper-review-and-rebuttal.md), [ethics-integrity-and-policy.md](references/ethics-integrity-and-policy.md) |
 | Prepare a rebuttal or revision plan | [paper-review-and-rebuttal.md](references/paper-review-and-rebuttal.md), [paper-writing.md](references/paper-writing.md) |
+| Resume, audit, or reconcile an existing project or its dossier | [research-contract-and-state.md](references/research-contract-and-state.md), plus the phase reference for the work being resumed |
 | Coordinate an end-to-end project or parallel agents | All phase references, loaded as each phase is reached, plus [agent-orchestration.md](references/agent-orchestration.md) |
 
 Read [quality-gates.md](references/quality-gates.md) before declaring any phase complete. Consult [methodology-sources.md](references/methodology-sources.md) when current official standards or the skill's design provenance matter.

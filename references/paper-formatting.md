@@ -14,7 +14,7 @@
 
 This playbook verifies the rendered layout, files, and metadata of a submission; the broader venue-policy survey covering scope, ethics, disclosure, and AI-use lives in [paper-writing.md](paper-writing.md), section "Check current venue requirements". Venue formatting rules are volatile. Before checking anything, retrieve the current official requirements from the venue, publisher, or template maintainer and record the URL and access date. Do not rely on remembered limits.
 
-Record in `assets/format-checklist.md` or the dossier:
+Record in a project copy of `assets/format-checklist.md` or the dossier:
 
 - Exact template or document class, version or release date, and allowed modifications.
 - Page or word limits and what counts against them: main text, references, appendices, ethics statements, checklists, and reproducibility checklists are treated differently across venues.
@@ -108,7 +108,7 @@ Before calling a submission package complete, check the artifacts themselves:
 - File size within portal limits.
 - Source package completeness when the venue requires sources: `.bbl`, style files, figures at sufficient resolution, and no files the venue forbids.
 - Absence of hidden content the venue forbids, including comments with reviewer responses, tracked changes, or JavaScript in the PDF.
-- Ancillary submission files (.docx, .xlsx, .ods) verified under office-documents.md, including a `scripts/check_office.py` structural pass.
+- Ancillary submission files (.docx, .xlsx, .ods) verified under office-documents.md, including a `scripts/check_office.py` structural pass for the OOXML formats (the checker does not parse OpenDocument files).
 
 Record what was checked, the tool used, and the observed value.
 

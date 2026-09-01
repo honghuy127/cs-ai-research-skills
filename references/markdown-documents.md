@@ -90,7 +90,7 @@ Interpretation:
 
 Text extraction is not a rendering check; the delivery verdict comes from the real target:
 
-- GitHub READMEs, issues, pull requests, discussions, and wikis: preview in the GitHub UI at the exact revision being delivered, by pushing the branch or using the comment preview.
+- GitHub READMEs, issues, pull requests, discussions, and wikis: preview in the GitHub UI at the exact revision being delivered, using the comment preview or a draft branch the user has already authorized you to push (pushing for a render check stays under the write-authority rules of github-collaboration.md). When no push authority exists, use the closest local GFM preview, record the residual render risk, and ask the owner to confirm the hosted render.
 - GitHub Pages or another site generator: build locally with the recorded generator command and inspect the built pages in a browser.
 - Editor or CLI previews are acceptable for drafts; still verify in the final renderer before delivery, because previews diverge.
 
@@ -113,7 +113,7 @@ Verify generated Office outputs with `scripts/check_office.py` and rendered-insp
 Require all of the following for a markdown gate PASS:
 
 - The document contract is recorded: class, render target, dialect, and whether results are restated.
-- `scripts/check_markdown.py` reports no errors, and `--strict` reports no warnings before delivery.
+- `scripts/check_markdown.py` reports no errors, and `--strict` reports no warnings before delivery; the one admissible `--strict` residue is a root-relative link kept deliberately for a hosted-only document, recorded per section 4 as a bounded waiver with an owner.
 - The final revision was inspected in the actual render target and all observed defects were resolved or explicitly waived.
 - Every relative link, anchor, and image target exists, and alt text is present and meaningful.
 - Every number or result statement traces to an analysis artifact or recorded source; no unresolved `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]` marker.

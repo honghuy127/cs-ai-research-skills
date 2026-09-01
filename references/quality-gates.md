@@ -83,7 +83,7 @@ Treat automated audits as structural evidence only. Do not let a passing script 
 
 ## 4. Route phase-specific gates to their references
 
-Each phase reference owns the detailed criteria for its gate. Load the reference and apply its gate section with the protocol above; do not maintain a second criteria list here.
+Each phase reference owns the detailed criteria for its gate. Load the reference and apply its gate section with the protocol above; do not maintain a second criteria list here. In a `Gate: <name>` report line, use the gate names from the numbered list in SKILL.md.
 
 | Gate | Canonical criteria |
 |---|---|
@@ -101,7 +101,7 @@ Each phase reference owns the detailed criteria for its gate. Load the reference
 | Presentation slides | [presentation-slides.md](presentation-slides.md), section "Record provenance and pass the talk gate" |
 | Ethics and policy response | [ethics-integrity-and-policy.md](ethics-integrity-and-policy.md), section "Respond to concerns and record the gate" |
 
-The gates below have no phase reference of their own and remain canonical here.
+The criteria for the gates below remain canonical here, even where a phase reference covers the surrounding workflow.
 
 ## 5. Gate the research contract and problem
 
@@ -148,7 +148,7 @@ Use CONDITIONAL for bounded issues such as pending noncritical metadata or a nam
 
 ## 7. Gate feasibility, ethics, and policy
 
-Control resource commitment, participant or data access, risky implementation, and external release.
+Control resource commitment, participant or data access, risky implementation, and external release. The feasibility gate in literature-and-ideas.md screens ideas cheaply before deep investment; this gate is the later, stricter check that authorizes committing resources, and its criteria govern when the two disagree.
 
 Require, as applicable:
 
@@ -193,6 +193,7 @@ Require:
 - Contribution-appropriate framing and scoped novelty language.
 - Methods matching the executed work and disclosed deviations.
 - Result wording matching evidence strength and generalization scope.
+- Venue-grade prose per paper-writing.md: continuous argument rather than transcribed checklists, and no internal scaffolding vocabulary (claim IDs, truth states, gate verdicts, run IDs, dossier paths, unresolved template headings) in the manuscript text.
 - Verified citations and consequential source locators.
 - Consistent values, terminology, notation, and artifact references.
 - Limitations, validity threats, ethics, data, licensing, safety, and disclosure statements.

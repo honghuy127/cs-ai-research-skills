@@ -69,7 +69,7 @@ Create the matrix before drafting. Use one row per atomic requirement.
 | Deliverable | Section, attachment, portal field, or institutional action |
 | Owner | Named role responsible for content and validation |
 | Evidence | File, page, approval, quote, or record that proves compliance |
-| Status | NOT_ASSESSED, in progress, satisfied, conflict, or BLOCKED |
+| Status | not assessed, in progress, satisfied, conflict, or blocked |
 | Due and validation | Internal deadline and final checker |
 
 Separate scientific content from applicant-specific administrative facts. Use explicit placeholders for unknown registrations, budgets, personnel, facilities, and commitments. Never manufacture an institutional detail to make the matrix look complete.

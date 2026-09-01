@@ -25,7 +25,7 @@ Ask only for missing facts that would change scope, validity, cost, policy compl
 
 ## 2. Research contract
 
-Capture the following in `assets/research-brief.md` or equivalent project state:
+Capture the following in a project copy of `assets/research-brief.md` or equivalent project state:
 
 - Working title and project ID.
 - Decision or deliverable required now.
@@ -85,6 +85,7 @@ Use `state.json` as an index, not a second copy of the paper or code. Include:
 - `schema_version`, `project_id`, timestamps, title, and current stage.
 - Research questions, contribution type, methodology, deliverables, and constraints.
 - Artifact paths, open risks, blockers, a compact `decision_index`, and next actions.
+- `stage` chosen from `scoping`, `literature`, `proposal`, `design`, `implementation`, `execution`, `analysis`, `writing`, `review`, or `submission`.
 - Stage status chosen from the controlled truth states.
 
 Keep `decisions.md` append-only. For each material decision, record date, decision, evidence, alternatives, rationale, consequences, owner, and revisit condition.
@@ -102,6 +103,8 @@ An evidence record should contain:
 ```json
 {"id":"SRC-001","title":"...","url":"...","doi":null,"source_type":"primary-paper","publication_status":"published","peer_review_status":"peer-reviewed","accessed_at":"YYYY-MM-DD","locator":"Sec. 3.2","supports":["CLM-001"],"challenges":[],"contextualizes":[],"verification":"full-text-checked","notes":"..."}
 ```
+
+The validator requires `id`, `title`, `accessed_at`, `verification`, and at least one of `url`, `doi`, or `artifact_path`; it also accepts optional `artifact_path`, `citation_key`, `locator`, `source_type`, and `notes` strings. `publication_status` is one of `published`, `accepted`, `preprint`, `unpublished`, or `unknown`; `peer_review_status` is one of `peer-reviewed`, `not-peer-reviewed`, or `unknown`.
 
 An internal claim record should contain:
 
@@ -123,6 +126,14 @@ Thus a claim may be `analyzed` and `mixed`, or `verified` and `contradicted`. A 
 Keep evidence links reciprocal: every claim `evidence_ids` entry must point to an evidence record that lists the claim under `supports`, `challenges`, or `contextualizes`, and every `supports` or `challenges` relation must be mirrored in the claim's evidence links. Do not link `metadata-only` records as `supports` or `challenges` evidence; they may only `contextualize`.
 
 For an empirical claim whose `lifecycle_state` is `verified` or `reported`, link a distinct full measured rerun in `verification_run_ids` or a concrete independent-check report in `verification_artifact_paths`. Do not reuse the primary run as its own verification.
+
+An experiments ledger record is written by `scripts/capture_run.py` and contains:
+
+```json
+{"run_id":"RUN-001","experiment_id":"EXP-001","manifest_path":".research/runs/RUN-001/manifest.json","phase":"full","status":"completed","result_kind":"measured","evidence_eligibility":"candidate_pending_verification","started_at":"...","ended_at":"...","recorded_at":"..."}
+```
+
+`phase` is `smoke`, `pilot`, or `full`; `status` is `completed`, `failed`, or `aborted`; `result_kind` is `none`, `measured`, or `synthetic-plumbing`. `evidence_eligibility` is derived, never asserted: `candidate_pending_verification` applies only to a completed full measured run, and everything else is `not_scientific_evidence`. Prefer `scripts/capture_run.py` over hand-editing this ledger; a hand-added record must satisfy the same fields and enums.
 
 For source verification, distinguish:
 

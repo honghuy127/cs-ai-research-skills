@@ -100,7 +100,7 @@ pdftoppm -png -r 150 deck.pdf render/slide
 
 Inspect every slide at presentation scale:
 
-- Text is readable from the back of the intended room; figure text meets the legibility rules in figures-and-diagrams.md.
+- Text is readable from the back of the intended room. As an operational proxy when the room is unknown, treat body text below roughly 20pt or more than about eight lines of text on one slide as a defect to justify or fix; figure text meets the legibility rules in figures-and-diagrams.md.
 - No overflow, clipped figures, tables spilled off the slide, or invisible text from contrast failures.
 - For overlay-heavy slides, check the first and final overlay states; for Beamer, also check the handout build.
 - Numbers, labels, and terminology agree with the manuscript and the deck plan.
@@ -122,7 +122,7 @@ Apply stable standards regardless of venue:
 
 ## 8. Record provenance and pass the talk gate
 
-Keep the deck ledger in `assets/slide-deck-plan.md`, mapping each slide to its claim ID, figure IDs, and the artifact supplying its numbers, plus the generation command and output paths. In a project dossier, capture deck generation runs with `scripts/capture_run.py` like any other produced artifact.
+Keep the deck ledger in a project copy of `assets/slide-deck-plan.md`, mapping each slide to its claim ID, figure IDs, and the artifact supplying its numbers, plus the generation command and output paths. The ledger is internal: claim IDs, truth states, and gate vocabulary never appear on the slides themselves. In a project dossier, capture deck generation runs with `scripts/capture_run.py` like any other produced artifact.
 
 Require all of the following for a talk gate PASS:
 

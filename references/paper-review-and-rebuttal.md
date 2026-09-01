@@ -163,7 +163,7 @@ Distinguish a required correction from a useful extension. Do not demand expensi
 
 ## 7. Assemble the review
 
-Record the review in `assets/review-template.md`, using this order unless the current rubric requires another:
+Record the review in a project copy of `assets/review-template.md`, using this order unless the current rubric requires another:
 
 1. Summary of the question, contribution, and evidence.
 2. Overall assessment at the contribution-appropriate standard.
