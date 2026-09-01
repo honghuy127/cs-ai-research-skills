@@ -128,6 +128,45 @@ def test_installer_is_dry_run_first_and_refuses_conflicts(tmp_path: Path) -> Non
     assert "destination already exists" in conflict_result.stderr
 
 
+def test_installer_refuses_a_project_dir_inside_the_checkout() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "tools" / "install_skill.py"),
+            "--scope",
+            "project",
+            "--project-dir",
+            str(ROOT / "figures"),
+            "--agents",
+            "claude",
+            "--apply",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 2
+    assert "inside itself" in result.stderr
+    assert not (ROOT / "figures" / ".claude").exists()
+
+
+def test_truth_state_chain_is_synchronized(monkeypatch: pytest.MonkeyPatch) -> None:
+    skill_text = SKILL.read_text(encoding="utf-8")
+    match = re.search(r"NOT_ASSESSED(?: → [A-Z_]+)+", skill_text)
+    assert match, "SKILL.md must state the truth-state chain"
+    chain = match.group(0)
+    assert chain in (ROOT / "README.md").read_text(encoding="utf-8")
+    contract_doc = (ROOT / "references" / "research-contract-and-state.md").read_text(encoding="utf-8")
+    states = [part.strip() for part in chain.split("→")]
+    for state in states:
+        assert f"`{state}`" in contract_doc, f"contract reference omits state {state}"
+    monkeypatch.syspath_prepend(str(ROOT / "scripts"))
+    contract = importlib.import_module("research_contract")
+    serialized = {state.lower() for state in states} | {"blocked", "dropped"}
+    assert serialized == set(contract.VALID_STATUSES)
+
+
 def test_all_references_are_routed_from_the_entrypoint() -> None:
     entrypoint = SKILL.read_text(encoding="utf-8")
     for path in sorted((ROOT / "references").glob("*.md")):

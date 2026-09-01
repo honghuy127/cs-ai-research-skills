@@ -14,6 +14,10 @@ SUPPORTED_MANIFEST_SCHEMAS = frozenset({"1.0", MANIFEST_SCHEMA_VERSION})
 MAX_HASH_BYTES = 64 * 1024 * 1024
 PLACEHOLDERS = ("[CITATION NEEDED]", "[EVIDENCE NEEDED]", "[RESULT PENDING]")
 
+# Files that operating systems and file browsers drop into directories; they
+# carry no provenance and must not block run capture or fail an audit.
+OS_JUNK_FILES = frozenset({".DS_Store", "Thumbs.db", "desktop.ini"})
+
 VALID_STAGES = frozenset(
     {
         "scoping",

@@ -23,7 +23,7 @@ Read `research-contract-and-state.md` and inspect existing plans, data documenta
 3. Record the target population, operating conditions, unit of analysis, and intended scope of generalization.
 4. Record constraints on data, compute, time, people, access, privacy, licensing, and safety.
 5. Define the smallest informative study and the cheapest result that would falsify or materially weaken the central idea.
-6. Mark unavailable information as `NOT_ASSESSED`; do not fill design gaps with conventional defaults.
+6. Mark unavailable information explicitly as unknown; do not fill design gaps with conventional defaults.
 
 Design only to the resolution required by the claim. Do not require an empirical study for a self-contained proof, a controlled experiment for a descriptive question, or a systematic review for ordinary related work.
 
@@ -156,7 +156,7 @@ Treat a seed as provenance, not as a guarantee of identical results across softw
 
 ## 9. Freeze the design and record deviations
 
-Create a timestamped, versioned experiment plan before claim-eligible execution, recording it in `assets/experiment-plan.md` or the dossier. Include:
+Create a timestamped, versioned experiment plan before claim-eligible execution, recording it in a project copy of `assets/experiment-plan.md` or the dossier. Include:
 
 - Research questions, hypotheses, claim IDs, and contribution type.
 - Units, population, sampling, partitions, and exclusion rules.

@@ -2,6 +2,8 @@
 
 Playbook: [../references/paper-writing.md](../references/paper-writing.md)
 
+This outline is an internal planning artifact. Draft the manuscript from it, but never ship its structures: claim IDs, lifecycle states, evidential statuses, and this template's headings stay out of the manuscript text.
+
 ## Venue contract
 
 - Venue and track:

@@ -19,7 +19,7 @@ Before changing or publishing anything, record what the repository is for:
 
 - The repository's role: research code, experiment archive, manuscript supplement, dataset card, documentation site, or review or rebuttal workspace.
 - Visibility and ownership: public versus private, personal account versus organization versus an institutional GitHub Enterprise instance, and who owns merge, visibility, license, and release decisions.
-- The license, its origin (SPDX identifier or `gh repo license view`), and compatibility with funder, participant consent, and dual-use constraints.
+- The license, its origin (SPDX identifier from `gh repo view --json licenseInfo` or the repository's license file), and compatibility with funder, participant consent, and dual-use constraints.
 - The relationship to the dossier: the research repository is the canonical home for `.research/` state when the project tracks provenance; this playbook never authorizes creating state unilaterally.
 - Which external actions require explicit user authorization: publishing or changing visibility, merging, releasing, contacting collaborators, or altering branch protection.
 

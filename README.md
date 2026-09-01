@@ -53,8 +53,8 @@ The figure's editable source is [figures/fig-001-skill-architecture.drawio](figu
 | Path | Contents |
 |---|---|
 | `SKILL.md` | Entry point and router; loads references per task intent |
-| `references/` | Nineteen phase playbooks (literature, design, evaluation, analysis, writing, figures and diagrams, formatting, office documents, Markdown documents, presentation slides, GitHub collaboration, review, ethics, orchestration, and more) |
-| `scripts/` | Dossier tooling: `research_state.py`, `capture_run.py`, `audit_research.py`, plus the `validate_drawio.py` figure lint, the `render_drawio.py` headless drawio renderer, the `check_latex_log.py` build-log checker, the `check_office.py` Office package checker, and the `check_markdown.py` Markdown checker |
+| `references/` | Nineteen reference playbooks: phase workflows (literature, design, evaluation, analysis, writing, figures and diagrams, formatting, office documents, Markdown documents, presentation slides, GitHub collaboration, review, ethics) plus cross-cutting gate, contract-and-state, methodology-sources, and orchestration references |
+| `scripts/` | Dossier tooling: `research_state.py`, `capture_run.py`, `audit_research.py`, plus the `validate_drawio.py` figure lint, the `render_drawio.py` headless drawio renderer, the `check_latex_log.py` build-log checker, the `check_office.py` Office package checker, and the `check_markdown.py` Markdown checker; `research_contract.py` holds the shared controlled vocabularies the tools import |
 | `assets/` | Copy-and-adapt templates: research brief, experiment plan, paper and proposal outlines, figure plan, format checklist, slide deck plan, review template, rebuttal matrix |
 | `agents/openai.yaml` | Interface metadata for runtimes that read the OpenAI agent format |
 | `tests/` | End-to-end tests for the scripts |
@@ -92,8 +92,10 @@ This creates the shared `.agents/skills/` link plus the Claude-compatible `.clau
 | Agent | User scope | Project scope | Explicit use |
 |---|---|---|---|
 | [Codex](https://developers.openai.com/codex/skills/) | `~/.agents/skills/conduct-cs-ai-research` | `.agents/skills/conduct-cs-ai-research` | Select with `/skills` or mention `$conduct-cs-ai-research` |
-| [OpenCode](https://opencode.ai/docs/skills) | `~/.config/opencode/skills/conduct-cs-ai-research` | `.opencode/skills/conduct-cs-ai-research` | Ask for the skill by name or select it from the available skills |
+| [OpenCode](https://opencode.ai/docs/skills) | `~/.agents/skills/conduct-cs-ai-research` (shared) | `.agents/skills/conduct-cs-ai-research` (shared) | Ask for the skill by name or select it from the available skills |
 | [Claude Code](https://code.claude.com/docs/en/skills) | `~/.claude/skills/conduct-cs-ai-research` | `.claude/skills/conduct-cs-ai-research` | Invoke `/conduct-cs-ai-research` or let Claude match the description |
+
+With `--agents opencode` alone, the installer uses OpenCode's native locations instead of the shared path: `~/.config/opencode/skills/conduct-cs-ai-research` (user scope) or `.opencode/skills/conduct-cs-ai-research` (project scope).
 
 To install only one host, replace `--agents all` with `--agents codex`, `--agents opencode`, or `--agents claude`.
 
@@ -192,7 +194,7 @@ Notes on the audit:
 python3 -m pip install -r requirements-dev.txt
 ruff check scripts tools tests
 python3 -m pytest tests/ -v
-python3 scripts/check_markdown.py *.md references/*.md assets/*.md --strict
+python3 scripts/check_markdown.py *.md references/*.md assets/*.md figures/*.md --strict
 ```
 
 CI tests the minimum supported Python 3.10 and current feature series 3.14, checks Python quality and local documentation links on every change, and checks external documentation links weekly. Actions are pinned to immutable release commits, and Dependabot proposes controlled updates for both development dependencies and workflow actions.

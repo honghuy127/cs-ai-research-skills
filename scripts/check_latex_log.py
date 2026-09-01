@@ -16,7 +16,9 @@ import re
 import sys
 from pathlib import Path
 
-ERROR_RE = re.compile(r"^!\s+(?P<message>.+)$")
+# pdfTeX sometimes omits the space after "!" ("!pdfTeX error ..."), so accept
+# any non-"!" continuation while still skipping bare "!" separator lines.
+ERROR_RE = re.compile(r"^!\s*(?P<message>[^!\s].*)$")
 SOURCE_LINE_RE = re.compile(r"^l\.(?P<line>\d+)")
 PAGE_MARK_RE = re.compile(r"\[(\d+)")
 FATAL_RE = re.compile(r"Emergency stop|Fatal error|no output PDF file produced")

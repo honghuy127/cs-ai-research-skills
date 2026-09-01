@@ -2,7 +2,8 @@
 """Check Markdown files for structural defects before rendering or release.
 
 Reports unclosed fenced code blocks, unresolved research markers, draft
-placeholder words, broken relative link or image targets, root-relative
+placeholder words, broken relative link or image targets (inline and
+reference-style definitions), undefined link references, root-relative
 link paths that resolve only inside a repository, section anchors that
 match no heading, skipped heading levels, duplicate top-level headings,
 and images without alt text. Heading anchors approximate the documented
@@ -26,9 +27,11 @@ DRAFT_WORD_RE = re.compile(r"\b(TODO|FIXME|TBD|XXX)\b")
 FENCE_OPEN_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})\s*(.*)$")
 FENCE_CLOSE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,}) *$")
 HEADING_RE = re.compile(r"^ {0,3}(#{1,6}) +(.+?)(?: +#+)?$")
-CUSTOM_ANCHOR_RE = re.compile(r'<a\s+(?:name|id)="([^"]+)"')
+CUSTOM_ANCHOR_RE = re.compile(r"<a\s+(?:name|id)=[\"']([^\"']+)[\"']")
 INLINE_CODE_RE = re.compile(r"(`+)([^`]*)\1")
-LINK_RE = re.compile(r"(!?)\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
+LINK_RE = re.compile(r"(!?)\[([^\]]*)\]\(([^)\s]+)(?:\s+(?:\"[^\"]*\"|'[^']*'))?\)")
+REFERENCE_DEF_RE = re.compile(r"^ {0,3}\[([^\]]+)\]:\s*<?([^>\s]+)>?")
+REFERENCE_LINK_RE = re.compile(r"(!?)\[([^\]]*)\]\[([^\]]*)\]")
 LINK_TEXT_IN_HEADING_RE = re.compile(r"\[([^\]]*)\]\([^)]*\)")
 HTML_TAG_RE = re.compile(r"<[^>]+>")
 SCHEME_RE = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.-]*:")
@@ -114,14 +117,13 @@ def collect_anchors(text: str) -> tuple[set[str], set[str]]:
     outside, _ = split_outside_fences(text.splitlines())
 
     for _, line in outside:
+        custom_anchors.update(CUSTOM_ANCHOR_RE.findall(line))
         heading = HEADING_RE.match(line)
         if heading:
             slug = slugify_heading(heading.group(2))
             count = counts.get(slug, 0)
             counts[slug] = count + 1
             heading_anchors.add(slug if count == 0 else f"{slug}-{count}")
-            continue
-        custom_anchors.update(CUSTOM_ANCHOR_RE.findall(line))
 
     return heading_anchors, custom_anchors
 
@@ -140,6 +142,8 @@ def check_file(path: Path, anchor_cache: dict[Path, tuple[set[str], set[str]]]) 
     h1_count = 0
     previous_level = 0
     links: list[tuple[int, bool, str, str]] = []
+    reference_definitions: dict[str, tuple[int, str]] = {}
+    reference_uses: list[tuple[int, str]] = []
 
     if unclosed is not None:
         findings.append(
@@ -172,12 +176,41 @@ def check_file(path: Path, anchor_cache: dict[Path, tuple[set[str], set[str]]]) 
         if draft:
             findings.append(Finding("warning", "draft-marker", number, f"draft placeholder word {draft.group(1)}"))
 
+        definition = REFERENCE_DEF_RE.match(stripped)
+        if definition:
+            label = " ".join(definition.group(1).casefold().split())
+            reference_definitions.setdefault(label, (number, definition.group(2)))
+            continue
+
         for match in LINK_RE.finditer(stripped):
             link_count += 1
             is_image = bool(match.group(1))
             links.append((number, is_image, match.group(2), match.group(3)))
 
-    own_headings, own_custom = anchor_cache.setdefault(path, collect_anchors(text))
+        without_inline = LINK_RE.sub(" ", stripped)
+        for match in REFERENCE_LINK_RE.finditer(without_inline):
+            link_count += 1
+            label = " ".join((match.group(3) or match.group(2)).casefold().split())
+            if label:
+                reference_uses.append((number, label))
+
+    for label, (number, target) in reference_definitions.items():
+        links.append((number, False, label, target))
+    for number, label in reference_uses:
+        if label not in reference_definitions:
+            findings.append(
+                Finding(
+                    "warning",
+                    "undefined-link-reference",
+                    number,
+                    f"no definition for link reference [{label}]",
+                )
+            )
+
+    own_key = path.resolve()
+    if own_key not in anchor_cache:
+        anchor_cache[own_key] = collect_anchors(text)
+    own_headings, own_custom = anchor_cache[own_key]
 
     for number, is_image, label, raw_target in links:
         target = urllib.parse.unquote(raw_target)
@@ -209,11 +242,13 @@ def check_file(path: Path, anchor_cache: dict[Path, tuple[set[str], set[str]]]) 
             continue
 
         if fragment and resolved.suffix.lower() in MARKDOWN_SUFFIXES:
-            try:
-                other_text = resolved.read_text(encoding="utf-8", errors="replace")
-            except OSError:
-                continue
-            other_headings, other_custom = anchor_cache.setdefault(resolved, collect_anchors(other_text))
+            if resolved not in anchor_cache:
+                try:
+                    other_text = resolved.read_text(encoding="utf-8", errors="replace")
+                except OSError:
+                    continue
+                anchor_cache[resolved] = collect_anchors(other_text)
+            other_headings, other_custom = anchor_cache[resolved]
             if fragment not in other_headings and fragment not in other_custom:
                 findings.append(
                     Finding("warning", "missing-anchor", number, f"target file has no heading generating anchor #{fragment}")

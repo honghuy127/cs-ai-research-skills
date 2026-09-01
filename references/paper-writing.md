@@ -7,11 +7,12 @@
 3. Calibrate the paper to the contribution
 4. Draft from verified evidence
 5. Write each manuscript component
-6. Handle citations and related work
-7. Build tables, figures, and appendices
-8. Check current venue requirements
-9. Revise and audit the manuscript
-10. Deliver the artifact
+6. Write venue-grade prose
+7. Handle citations and related work
+8. Build tables, figures, and appendices
+9. Check current venue requirements
+10. Revise and audit the manuscript
+11. Deliver the artifact
 
 ## 1. Establish the writing contract
 
@@ -31,7 +32,7 @@ Do not infer authorization to submit, upload, disclose, add authors, remove auth
 
 ## 2. Build a claim-led paper plan
 
-Construct a claim map before polishing prose, recording the plan in `assets/paper-outline.md`. Assign a stable claim ID to every central contribution, empirical conclusion, theoretical result, dataset property, and practical implication.
+Construct a claim map before polishing prose, recording the plan in a project copy of `assets/paper-outline.md`. Assign a stable claim ID to every central contribution, empirical conclusion, theoretical result, dataset property, and practical implication.
 
 For each claim, record:
 
@@ -48,6 +49,8 @@ For each claim, record:
 | Destination | Abstract, introduction, results, discussion, or conclusion |
 
 Require a direct path from each major claim to eligible evidence. Mark gaps with `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]`. Do not replace a marker with plausible text.
+
+The claim map is an internal planning artifact. It steers drafting and auditing but never ships: no claim ID, lifecycle state, or evidential status label appears in the manuscript itself (section 6).
 
 Draft the abstract and conclusion from the same claim map. Prevent either section from strengthening a claim beyond the evidence presented in the body.
 
@@ -106,7 +109,7 @@ Describe the design at the resolution needed to evaluate validity and reproduce 
 
 ### Results
 
-Order results by research question or claim rather than by the sequence in which experiments happened. Pair every result with its setting, uncertainty, and evidence locator. Keep interpretation distinguishable from observation.
+Order results by research question or claim rather than by the sequence in which experiments happened. Pair every result with its setting and uncertainty in the text, and keep its evidence locator in the claim map or a source comment, never in the prose; the paper itself points to tables, figures, and appendices. Keep interpretation distinguishable from observation.
 
 ### Discussion
 
@@ -120,7 +123,20 @@ Describe limitations that could change interpretation, not ceremonial disclaimer
 
 Answer the research question at the supported level. Do not introduce new evidence, promises, or stronger generalizations.
 
-## 6. Handle citations and related work
+## 6. Write venue-grade prose
+
+The rules above control what may be claimed; this section controls how the manuscript reads. A draft can satisfy every traceability rule and still read like an internal progress report. Reviewers at strong venues expect a paper that argues, not a ledger that lists.
+
+- Calibrate against the venue before drafting. Read several recent accepted papers from the target venue or its nearest neighbor, match their section conventions, framing moves, notation density, and per-section length, and record which papers served as calibration.
+- Write continuous argumentative prose. Open paragraphs with a claim-bearing topic sentence, connect each paragraph to the next, and reserve bullet lists for content the venue genuinely expects enumerated, such as a contribution list. Stacked lists and strings of one-sentence paragraphs signal transcription, not writing.
+- Convert planning structures into prose; never transcribe them. The claim map, the per-section requirement lists in this playbook, and template headings are scaffolding. A methods section that reads "Data: X. Splits: Y. Metrics: Z." has copied a checklist; describe what was done and why in connected sentences that happen to satisfy the checklist.
+- Keep internal bookkeeping vocabulary out of the deliverable. Claim IDs, lifecycle states, gate names and verdicts, evidence and run IDs, dossier paths, and phrases such as "evidence-bearing" or "claim-eligible" never appear in manuscript text. The paper cites tables, figures, sections, and references; the locators live in the claim map, source comments, or the dossier.
+- Motivate before defining. Introduce each concept, notation choice, assumption, or component with the problem it addresses before presenting its details, so the reader always knows why the next paragraph exists.
+- State verified results plainly and hedge once. Write each supported finding assertively at its supported scope and attach its main caveat once, where it changes interpretation. Spreading qualifiers over every sentence buries the caveats that matter and reads as unconfident rather than careful.
+- Delete report formula. Remove filler connectors ("It should be noted that", "As mentioned above", "In this section, we will") and activity narration ("we then proceeded to run"); present findings and mechanisms, not the project's chronology, unless the chronology is itself the contribution.
+- Read the near-final draft linearly as a reviewer would. Check that each section advances one argument and each paragraph earns its place; fix flow at the paragraph level before polishing sentences inside a broken structure.
+
+## 7. Handle citations and related work
 
 Verify citation identity and metadata against a DOI, publisher page, official proceedings entry, or authoritative repository. Open the primary source before making a substantive attribution.
 
@@ -137,7 +153,7 @@ Avoid:
 
 Express novelty as a dated comparison with the nearest verified work. Record the search cutoff and limitations.
 
-## 7. Build tables, figures, and appendices
+## 8. Build tables, figures, and appendices
 
 Generate tables and figures from versioned analysis outputs when practical. Record the producing script, source data, configuration, and artifact ID. Load [figures-and-diagrams.md](figures-and-diagrams.md) for figure planning, schematic and LaTeX-native authoring, rendering, and verification.
 
@@ -151,7 +167,7 @@ Require every display to:
 
 Do not hide unfavorable conditions in an appendix merely to simplify the main narrative. Use appendices and supplements for necessary detail, robustness checks, proofs, protocols, prompts, and expanded results subject to current venue rules.
 
-## 8. Check current venue requirements
+## 9. Check current venue requirements
 
 Retrieve requirements from current official venue, publisher, funder, or institutional sources. Record the URL, version or cycle, and access date.
 
@@ -171,7 +187,7 @@ Do not encode remembered limits as current policy. If official sources conflict 
 
 Load [paper-formatting.md](paper-formatting.md) to verify the compiled manuscript: machine-check the compile log, render pages for visual inspection, and check files and metadata. A converted-to-text read of the sources is not a format check.
 
-## 9. Revise and audit the manuscript
+## 10. Revise and audit the manuscript
 
 Revise in passes:
 
@@ -182,14 +198,15 @@ Revise in passes:
 5. Audit related-work comparisons and citation locators.
 6. Audit limitations, ethics, privacy, licensing, and disclosures.
 7. Audit terminology, notation, cross-references, and acronym consistency.
-8. Audit current venue compliance, including rendered-layout checks per [paper-formatting.md](paper-formatting.md).
-9. Copyedit only after substantive consistency passes.
+8. Audit prose quality per section 6: venue calibration, paragraph-level flow, checklist-transcription artifacts, hedge placement, and leaked planning vocabulary.
+9. Audit current venue compliance, including rendered-layout checks per [paper-formatting.md](paper-formatting.md).
+10. Copyedit only after substantive consistency passes.
 
 Preserve deliberate author choices and repository conventions. Do not flatten uncertainty or erase limitations for rhetorical force. Record material claim changes in the project dossier.
 
 Run the writing gate in quality-gates.md before calling the manuscript complete. Return PASS, CONDITIONAL, FAIL, BLOCKED, or NOT_ASSESSED with evidence and the next decisive action.
 
-## 10. Deliver the artifact
+## 11. Deliver the artifact
 
 Lead with what was drafted or changed. Identify:
 

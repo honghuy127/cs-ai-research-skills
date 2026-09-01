@@ -132,11 +132,13 @@ drawio -x -f pdf -e -b 0 -o figures/fig01-method.pdf figures/fig01-method.drawio
 # Review raster at a readable scale
 drawio -x -f png -e -s 3 -o render/fig01-method.png figures/fig01-method.drawio
 
-# Selected pages of a multi-page file
-drawio -x -f pdf -p 1,2 -o figures/fig01-method.pdf figures/fig01-method.drawio
+# One selected page of a multi-page file (0-based index); use
+# --page-range or --all-pages for several pages, and verify the current
+# flag names with drawio --help before relying on them
+drawio -x -f pdf -p 1 -o figures/fig01-method.pdf figures/fig01-method.drawio
 ```
 
-Verify each exported file after rendering: open or screenshot the PDF or PNG and check it against the figure plan. Inspect text readability at final print size, arrow semantics, alignment, color coherence, and agreement of every label and number with the manuscript.
+Verify each exported file after rendering: open or screenshot the PDF or PNG and check it against the figure plan. Inspect text readability at final print size, arrow semantics, alignment, color coherence, and agreement of every label and number with the manuscript. For PDF exports, also check font embedding immediately (`pdffonts figures/fig01-method.pdf`); an unembedded font found at figure-export time costs one regeneration, while the same font found during the submission format check costs a full formatting cycle.
 
 When the draw.io desktop CLI is unavailable, use the bundled headless renderer:
 
@@ -150,7 +152,7 @@ The renderer embeds the drawio XML in a local page, renders it with the diagrams
 
 Further fallbacks when neither the CLI nor Playwright is available, in order: local render through the desktop app GUI, or asking the user to export manually. If the only remaining fallback is a public web editor, confirm that the content is not confidential or under anonymity constraints before using it.
 
-Iterate on evidence: for each defect found in a render, patch the source, regenerate the export, and re-check. Do not re-render after every micro-edit without a named defect list, and do not stop while a known blocker (wrong connector semantics, clipped or overlapping text, missing content, wrong numbers) remains visible. Name the defects fixed in the final summary instead of claiming broad perfection.
+Iterate on evidence: keep a named defect list from each inspection, patch the source for every listed defect, regenerate the export, and re-check the render until the list is empty. Batch small edits into one regeneration rather than re-rendering per keystroke, and do not stop while a known blocker (wrong connector semantics, clipped or overlapping text, missing content, wrong numbers) remains visible. Name the defects fixed in the final summary instead of claiming broad perfection.
 
 For TikZ figures, the render is the compiled document section; inspect the page region of the figure at final size.
 

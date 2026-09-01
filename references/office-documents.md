@@ -24,7 +24,7 @@ Do not infer authorization to send, sign, share, or publicly upload any document
 
 ## 2. Treat Office files as untrusted structured input
 
-Modern Office files (`.docx`, `.xlsx`, `.pptx`, `.odt`, `.ods`) are zip archives of XML parts. Legacy binary formats (`.doc`, `.xls`, `.ppt`) are opaque to structural checking; request an OOXML or PDF version where possible.
+Modern Office files (`.docx`, `.xlsx`, `.pptx`, `.odt`, `.ods`) are zip archives of XML parts. The bundled checker parses the OOXML formats only (`.docx`, `.pptx`, `.xlsx`); verify OpenDocument files (`.odt`, `.ods`) by converting to OOXML or by manual inspection of the extracted XML. Legacy binary formats (`.doc`, `.xls`, `.ppt`) are opaque to structural checking; request an OOXML or PDF version where possible.
 
 - Never enable or execute macros, OLE or ActiveX objects, spreadsheet scripts, or linked-content payloads found in a document. Record their presence as a security flag.
 - Visible text is not the whole document. Comments, tracked changes, hidden sheets, rows, or columns, speaker notes, and file metadata can carry statements that change interpretation or reveal authorship. Decide which of these are in scope before citing the document.

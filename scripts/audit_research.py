@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -24,6 +25,7 @@ from research_contract import (
     EXECUTION_BEARING_STATES,
     INDEPENDENT_CHECK_STATES,
     MAX_HASH_BYTES,
+    OS_JUNK_FILES,
     PLACEHOLDERS,
     SUPPORTED_MANIFEST_SCHEMAS,
     VALID_EVIDENCE_ELIGIBILITY,
@@ -79,6 +81,13 @@ def add(findings: list[dict], severity: str, code: str, message: str, record_id:
     findings.append(item)
 
 
+INLINE_CODE_RE = re.compile(r"(`+)([^`]*)\1")
+
+
+def strip_inline_code(line: str) -> str:
+    return INLINE_CODE_RE.sub(lambda match: " " * len(match.group(0)), line)
+
+
 def scan_file(path: Path, findings: list[dict], warn_non_text: bool = True) -> None:
     if not path.is_file():
         add(findings, "error", "missing-scan-target", str(path))
@@ -92,8 +101,20 @@ def scan_file(path: Path, findings: list[dict], warn_non_text: bool = True) -> N
     except OSError as exc:
         add(findings, "error", "unreadable-scan-target", f"{path}: {exc}")
         return
-    for token in PLACEHOLDERS:
-        for line_number, line in enumerate(text.splitlines(), start=1):
+    # In Markdown deliverables, a marker quoted inside a code fence or inline
+    # code span documents the convention rather than leaving a gap.
+    markdown = path.suffix.lower() in {".md", ".markdown", ".mdown", ".mkd"}
+    in_fence = False
+    for line_number, line in enumerate(text.splitlines(), start=1):
+        if markdown:
+            stripped = line.lstrip()
+            if stripped.startswith(("```", "~~~")):
+                in_fence = not in_fence
+                continue
+            if in_fence:
+                continue
+            line = strip_inline_code(line)
+        for token in PLACEHOLDERS:
             if token in line:
                 add(findings, "error", "unresolved-placeholder", f"{path}:{line_number}: {token}")
 
@@ -233,6 +254,7 @@ def main() -> int:
     run_ids = {item.get("run_id") for item in experiments if isinstance(item.get("run_id"), str)}
     superseded_evidence = superseded_ids(evidence)
     superseded_claims = superseded_ids(claims)
+    superseded_runs = superseded_ids(experiments)
 
     for item in evidence:
         identifier = item.get("id") if isinstance(item.get("id"), str) else None
@@ -297,6 +319,8 @@ def main() -> int:
     run_eligibility: dict[str, str] = {}
     for item in experiments:
         run_id = item.get("run_id") if isinstance(item.get("run_id"), str) else None
+        if run_id in superseded_runs:
+            continue
         manifest_value = item.get("manifest_path")
         if not manifest_value:
             add(findings, "error", "missing-manifest-path", "experiment record has no manifest", run_id)
@@ -504,7 +528,10 @@ def main() -> int:
                 add(findings, "error", "symlinked-run-directory", str(run_dir))
                 continue
             if not run_dir.is_dir():
-                add(findings, "error", "unexpected-file-in-runs", str(run_dir))
+                if run_dir.is_file() and run_dir.name in OS_JUNK_FILES:
+                    add(findings, "warning", "junk-file-in-runs", str(run_dir))
+                else:
+                    add(findings, "error", "unexpected-file-in-runs", str(run_dir))
                 continue
             candidate_manifest = (run_dir / "manifest.json").resolve()
             if not candidate_manifest.is_file():
@@ -547,7 +574,15 @@ def main() -> int:
                 )
                 continue
             source = evidence_by_id[source_id]
-            if source.get("verification") == "metadata-only":
+            substantive = any(
+                identifier in source.get(relation)
+                for relation in ("supports", "challenges")
+                if isinstance(source.get(relation), list)
+            )
+            # A metadata-only record may contextualize a claim; it becomes an
+            # error only when linked as substantive (supports or challenges)
+            # evidence, matching research-contract-and-state.md section 5.
+            if source.get("verification") == "metadata-only" and substantive:
                 add(findings, "error", "claim-uses-metadata-as-evidence", str(source_id), identifier)
             relations = []
             for relation in ("supports", "challenges", "contextualizes"):
@@ -565,6 +600,14 @@ def main() -> int:
         for linked_run_id in linked_runs:
             if linked_run_id not in run_ids:
                 add(findings, "error", "unknown-run-id", str(linked_run_id), identifier)
+            elif linked_run_id in superseded_runs:
+                add(
+                    findings,
+                    "warning",
+                    "claim-links-superseded-run",
+                    f"claim links superseded run record: {linked_run_id}",
+                    identifier,
+                )
         audit_artifact_paths(artifact_paths, root, findings, "missing-claim-artifact", identifier)
         requires_internal_runs = lifecycle_state in EXECUTION_BEARING_STATES
         if item.get("claim_type") in EMPIRICAL_TYPES and evidence_bearing and requires_internal_runs:
@@ -577,6 +620,8 @@ def main() -> int:
                     identifier,
                 )
             for linked_run_id in linked_runs:
+                if linked_run_id in superseded_runs:
+                    continue
                 if run_eligibility.get(linked_run_id) != "candidate_pending_verification":
                     add(
                         findings,
@@ -609,6 +654,14 @@ def main() -> int:
                         "error",
                         "verification-run-not-independent",
                         str(verification_run_id),
+                        identifier,
+                    )
+                elif verification_run_id in superseded_runs:
+                    add(
+                        findings,
+                        "warning",
+                        "claim-links-superseded-run",
+                        f"claim links superseded verification run: {verification_run_id}",
                         identifier,
                     )
                 elif run_eligibility.get(verification_run_id) != "candidate_pending_verification":

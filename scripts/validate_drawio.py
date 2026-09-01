@@ -150,7 +150,7 @@ def check_page(page: dict, min_font_size: float, findings: list[Finding]) -> tup
             vertex_count += 1
             if cell.find("mxGeometry") is None:
                 findings.append(Finding("warning", "missing-geometry", name, f"vertex '{cell_id}' has no mxGeometry"))
-            if not value and any(key not in style for key in ("image", "icon")) and style.get("shape") not in ("image",):
+            if not value and all(key not in style for key in ("image", "icon")) and style.get("shape") not in ("image",):
                 findings.append(Finding("warning", "empty-label", name, f"vertex '{cell_id}' has no label"))
             font_size = style.get("fontSize")
             if font_size and value:

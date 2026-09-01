@@ -98,6 +98,10 @@ def check_package(names: list[str], zf: zipfile.ZipFile, findings: list[Finding]
 
 
 def owning_part(rels_name: str) -> str:
+    if rels_name.startswith("_rels/"):
+        # The package-root relationships part _rels/.rels belongs to the
+        # package root, so targets resolve from the package top level.
+        return rels_name[len("_rels/") : -len(".rels")]
     directory, _, filename = rels_name.rpartition("/_rels/")
     return f"{directory}/{filename[:-len('.rels')]}"
 
@@ -212,7 +216,9 @@ def check_file(path: Path, findings: list[Finding]) -> tuple[str, dict]:
                 "macro-enabled extension can carry executable VBA; request a macro-free copy before analysis",
             )
         )
-        kind = extension[1:]
+        # Run the same content checks as the macro-free format so a rejected
+        # macro-enabled file still reports its other structural defects.
+        kind = KIND_BY_EXTENSION.get(extension[:-1] + "x", "unknown")
     else:
         kind = KIND_BY_EXTENSION.get(extension, "unknown")
     if kind == "unknown":

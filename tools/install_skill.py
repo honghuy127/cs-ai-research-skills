@@ -138,6 +138,12 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: {error}", file=sys.stderr)
         return 2
 
+    nested = [target for target in targets if target.path.is_relative_to(source)]
+    if nested:
+        for target in nested:
+            print(f"error: refusing to link the checkout inside itself: {target.path}", file=sys.stderr)
+        return 2
+
     conflicts = [target for target in targets if target_state(target.path, source) == "conflict"]
     if conflicts:
         for target in conflicts:
@@ -156,7 +162,14 @@ def main(argv: list[str] | None = None) -> int:
             print(f"plan [{hosts}]: {target.path} -> {source}")
             continue
         target.path.parent.mkdir(parents=True, exist_ok=True)
-        target.path.symlink_to(source, target_is_directory=True)
+        try:
+            target.path.symlink_to(source, target_is_directory=True)
+        except FileExistsError:
+            print(f"error: destination already exists: {target.path}", file=sys.stderr)
+            return 2
+        except OSError as exc:
+            print(f"error: cannot create link {target.path}: {exc}", file=sys.stderr)
+            return 2
         changed = True
         print(f"linked [{hosts}]: {target.path} -> {source}")
 
