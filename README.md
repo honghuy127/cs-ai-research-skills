@@ -53,7 +53,7 @@ The figure's editable source is [figures/fig-001-skill-architecture.drawio](figu
 | Path | Contents |
 |---|---|
 | `SKILL.md` | Entry point and router; loads references per task intent |
-| `references/` | Nineteen reference playbooks: phase workflows (literature, design, evaluation, analysis, writing, figures and diagrams, formatting, office documents, Markdown documents, presentation slides, GitHub collaboration, review, ethics) plus cross-cutting gate, contract-and-state, methodology-sources, and orchestration references |
+| `references/` | Twenty reference playbooks: phase workflows (literature, design, evaluation, analysis, writing, manuscript revision, figures and diagrams, formatting, office documents, Markdown documents, presentation slides, GitHub collaboration, review, ethics) plus cross-cutting gate, contract-and-state, methodology-sources, and orchestration references |
 | `scripts/` | Dossier tooling: `research_state.py`, `capture_run.py`, `audit_research.py`, plus the `validate_drawio.py` figure lint, the `render_drawio.py` headless drawio renderer, the `check_latex_log.py` build-log checker, the `check_office.py` Office package checker, and the `check_markdown.py` Markdown checker; `research_contract.py` holds the shared controlled vocabularies the tools import |
 | `assets/` | Copy-and-adapt templates: research brief, experiment plan, paper and proposal outlines, figure plan, format checklist, slide deck plan, review template, rebuttal matrix |
 | `agents/openai.yaml` | Interface metadata for runtimes that read the OpenAI agent format |

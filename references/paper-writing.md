@@ -202,6 +202,8 @@ Revise in passes:
 9. Audit current venue compliance, including rendered-layout checks per [paper-formatting.md](paper-formatting.md).
 10. Copyedit only after substantive consistency passes.
 
+For a dedicated readability, explanation, or consistency revision of a drafted manuscript, including readers who are not native speakers, load [manuscript-revision.md](manuscript-revision.md). It adds measurement-driven diagnosis, a relocation ledger, explanation tiers, a consistency-defect checklist, and appendix guidance.
+
 Preserve deliberate author choices and repository conventions. Do not flatten uncertainty or erase limitations for rhetorical force. Record material claim changes in the project dossier.
 
 Run the writing gate in quality-gates.md before calling the manuscript complete. Return PASS, CONDITIONAL, FAIL, BLOCKED, or NOT_ASSESSED with evidence and the next decisive action.
