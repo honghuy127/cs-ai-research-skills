@@ -213,6 +213,78 @@ class TestResearchState:
     def test_update_requires_options(self, project: Path) -> None:
         assert run_script("research_state.py", "update", cwd=project).returncode == 2
 
+    def test_update_records_operating_mode_and_status_reports_it(self, project: Path) -> None:
+        result = run_script("research_state.py", "update", "--operating-mode", "human-led", cwd=project)
+        assert result.returncode == 0, result.stderr
+        state = json.loads((project / ".research" / "state.json").read_text(encoding="utf-8"))
+        assert state["constraints"]["operating_mode"] == "human-led"
+        status = run_script("research_state.py", "status", cwd=project)
+        assert json.loads(status.stdout)["operating_mode"] == "human-led"
+
+    def test_update_rejects_unknown_operating_mode(self, project: Path) -> None:
+        result = run_script("research_state.py", "update", "--operating-mode", "autopilot", cwd=project)
+        assert result.returncode == 2
+
+    def test_validate_rejects_invalid_operating_mode(self, project: Path) -> None:
+        state_path = project / ".research" / "state.json"
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        state["constraints"]["operating_mode"] = "autopilot"
+        state_path.write_text(json.dumps(state), encoding="utf-8")
+        result = run_script("research_state.py", "validate", cwd=project)
+        assert result.returncode == 1
+        assert "invalid constraints.operating_mode" in result.stdout
+
+    def test_decide_appends_decision_without_stage_change(self, project: Path) -> None:
+        result = run_script(
+            "research_state.py",
+            "decide",
+            "--decision",
+            "keep the three-seed design",
+            "--reason",
+            "compute budget",
+            "--evidence",
+            "advisory: design gate would be CONDITIONAL",
+            "--alternative",
+            "five seeds",
+            "--consequence",
+            "wider intervals on CLM-002",
+            "--owner",
+            "tester",
+            "--revisit-condition",
+            "more compute",
+            cwd=project,
+        )
+        assert result.returncode == 0, result.stderr
+        decision_id = result.stdout.strip()
+        assert decision_id.startswith("DEC-")
+        state = json.loads((project / ".research" / "state.json").read_text(encoding="utf-8"))
+        assert (state["stage"], state["stage_status"]) == ("scoping", "proposed")
+        assert [entry["id"] for entry in state["decision_index"]][-1] == decision_id
+        assert state["decision_index"][-1]["summary"] == "keep the three-seed design"
+        log = (project / ".research" / "decisions.md").read_text(encoding="utf-8")
+        assert f"## {decision_id}: keep the three-seed design" in log
+        assert "advisory: design gate would be CONDITIONAL" in log
+        assert run_script("research_state.py", "validate", cwd=project).returncode == 0
+
+    @pytest.mark.parametrize("blank_option", ["--decision", "--reason", "--evidence", "--owner"])
+    def test_decide_rejects_blank_fields(self, project: Path, blank_option: str) -> None:
+        values = {
+            "--decision": "override",
+            "--reason": "why",
+            "--evidence": "advisory",
+            "--alternative": "comply",
+            "--consequence": "none",
+            "--owner": "tester",
+            "--revisit-condition": "never",
+        }
+        values[blank_option] = " "
+        args = [item for pair in values.items() for item in pair]
+        result = run_script("research_state.py", "decide", *args, cwd=project)
+        assert result.returncode == 2
+        assert "non-empty" in result.stderr
+        state = json.loads((project / ".research" / "state.json").read_text(encoding="utf-8"))
+        assert len(state["decision_index"]) == 1
+
     def test_update_rejects_blank_list_items(self, project: Path) -> None:
         result = run_script("research_state.py", "update", "--next-action", "  ", cwd=project)
         assert result.returncode == 2

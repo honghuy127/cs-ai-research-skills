@@ -41,6 +41,8 @@ Return:
 
 Do not merge gate status with research truth state. A manuscript may exist at IMPLEMENTED while its writing gate is FAIL. An experiment may be EXECUTED while its evidence-eligibility gate is CONDITIONAL.
 
+Do not merge gate status with the operating mode either. In `human-led` mode (see [operating-modes.md](operating-modes.md)) assign the same verdict the evidence supports, deliver it as an advisory rather than a stop, and record the human's decision to proceed under Waivers with the human as the authority. Never raise a verdict to match that decision.
+
 ## 2. Assign gate status
 
 Use the statuses consistently:
@@ -235,5 +237,7 @@ Update project state only when authorized. Preserve:
 - The next decisive action.
 
 When evidence changes, rerun affected downstream gates. Downgrade stale or unsupported statuses. Do not retain PASS after its supporting artifact, policy, design, or result has materially changed.
+
+In `human-led` mode, list every open override once at the submission or release gate so the human sees the full set before the external action.
 
 Never call a phase complete merely because a document, code path, or run exists.

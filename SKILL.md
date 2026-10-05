@@ -1,6 +1,6 @@
 ---
 name: conduct-cs-ai-research
-description: Plan, execute, analyze, write, review, and present rigorous computer science and AI research with evidence, provenance, reproducibility, and decisive gates. Use for research ideas and literature, proposals, experiments and evaluations, statistical analysis, manuscripts and figures, research documents in Office or Markdown formats, research submissions or repositories, presentations, peer review, rebuttals, resuming or auditing a research project's state, or an end-to-end research project. Do not use for simple fact lookup, generic documents or repository work, production engineering unrelated to a research claim, or copyediting that needs no research reasoning.
+description: Plan, execute, analyze, write, review, and present rigorous computer science and AI research with evidence, provenance, reproducibility, and decisive gates. Use for research ideas and literature, proposals, experiments and evaluations, statistical analysis, manuscripts and figures, research documents in Office or Markdown formats, research submissions or repositories, presentations, peer review, rebuttals, resuming or auditing a research project's state, assisting a researcher who directs each step, or an end-to-end research project. Do not use for simple fact lookup, generic documents or repository work, production engineering unrelated to a research claim, or copyediting that needs no research reasoning.
 license: MIT
 metadata:
   audience: cs-ai-researchers
@@ -24,12 +24,23 @@ Treat research as a traceable sequence of decisions, evidence, implementations, 
 Before substantive work:
 
 1. Inspect the supplied files, repository, prior decisions, and `.research/` state when present.
-2. Identify the role: co-researcher, proposal writer, experimenter, analyst, author, formative critic, or official reviewer.
+2. Identify the operating mode (`agent-led` or `human-led`) and the role: co-researcher, proposal writer, experimenter, analyst, author, formative critic, or official reviewer.
 3. Record the objective, intended contribution, audience or venue, constraints, evidence horizon, deliverable, and current artifact status.
 4. Distinguish facts established by sources, interpretations, hypotheses, assumptions, and speculation.
 5. Resolve only missing information that would materially change the work. Make and label safe assumptions for the rest.
 
 Before work that creates, evaluates, or changes research claims, evidence, gates, or project state, read [research-contract-and-state.md](references/research-contract-and-state.md) for the shared terminology and record contracts. A bounded format, lint, conversion, or artifact-structure check may route directly to its format reference when it makes no research judgment and changes no state. Create project-local state only when useful and authorized; never create it for a one-off read-only review.
+
+## Choose the operating mode
+
+Run in one of two operating modes, defined in [operating-modes.md](references/operating-modes.md):
+
+- `agent-led`: the agent drives a phase or project within the user's authorization. Gates block; a `FAIL` or `BLOCKED` stops the phase until it is fixed, narrowed, or escalated.
+- `human-led`: the human directs the work step by step. The agent advises, executes bounded tasks, and raises an advisory whenever directed work would make a gate return `FAIL`, `CONDITIONAL`, or `BLOCKED`; it then follows the human's decision and records it.
+
+Use the mode the user names. Otherwise infer `human-led` when a person directs each step and `agent-led` when the user hands over a phase or project. State the mode once, record it in the dossier when one exists, and record every mode change and override as a decision.
+
+Hold the floor in both modes: never fabricate evidence, citations, or provenance; never hide an override or relabel evidence to match a decision; never take an external, costly, participant-facing, or sensitive action without explicit instruction; never override law, consent, confidentiality, or a nonwaivable safety control. Everything above the floor is the human's call in `human-led` mode.
 
 ## Route to the smallest complete workflow
 
@@ -94,7 +105,7 @@ Allow backward movement, revision, blocking, or dropping with a recorded reason.
 
 ## Use decisive gates
 
-At each phase, identify the cheapest decisive falsifier or de-risking step. Stop or pivot when a hard assumption fails rather than accumulating cosmetic work.
+At each phase, identify the cheapest decisive falsifier or de-risking step. Stop or pivot when a hard assumption fails rather than accumulating cosmetic work; in `human-led` mode, flag the failed assumption and recommend the stop or pivot instead.
 
 Typical gates are:
 
@@ -120,7 +131,7 @@ Typical gates are:
 
 See [quality-gates.md](references/quality-gates.md) for the full gate protocol, routing, and criteria.
 
-Return `PASS`, `CONDITIONAL`, `FAIL`, `BLOCKED`, or `NOT_ASSESSED`, with evidence and next action. Do not hide a waiver.
+Return `PASS`, `CONDITIONAL`, `FAIL`, `BLOCKED`, or `NOT_ASSESSED`, with evidence and next action. Do not hide a waiver. In `human-led` mode the verdict is advisory, and the human's decision to proceed is recorded under Waivers.
 
 ## Preserve a project-local dossier
 
@@ -171,4 +182,4 @@ Give independent reviewers raw artifacts and the user task, not the intended con
 
 ## Deliver at the user's requested altitude
 
-Lead with the result or decision. Include the evidence basis, important assumptions, unresolved risks, artifact paths, gate status, and the next decisive action. Distinguish completed work from recommended future work. Never describe a phase as complete merely because prose or code exists.
+Lead with the result or decision. Include the evidence basis, important assumptions, unresolved risks, artifact paths, gate status, open advisories and recorded overrides in `human-led` mode, and the next decisive action. Distinguish completed work from recommended future work. Never describe a phase as complete merely because prose or code exists.
