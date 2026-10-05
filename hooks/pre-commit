@@ -1,0 +1,19 @@
+#!/bin/sh
+# Fast checks on staged changes. Enable once per checkout:
+#   git config core.hooksPath hooks
+# The full suite runs in the pre-push hook. Skip with: git commit --no-verify
+set -e
+
+staged_py=$(git diff --cached --name-only --diff-filter=ACM -- '*.py')
+if [ -n "$staged_py" ]; then
+    if ! command -v ruff >/dev/null 2>&1; then
+        echo "pre-commit: ruff not found; run: python3 -m pip install -r requirements-dev.txt" >&2
+        exit 1
+    fi
+    ruff check scripts tools tests
+fi
+
+staged_md=$(git diff --cached --name-only --diff-filter=ACM -- '*.md')
+if [ -n "$staged_md" ]; then
+    python3 scripts/check_markdown.py $staged_md --strict
+fi

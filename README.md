@@ -61,6 +61,7 @@ The figure's editable source is [figures/fig-001-skill-architecture.drawio](figu
 | `tests/` | End-to-end tests for the scripts |
 | `requirements-dev.txt` | Pinned test and lint dependencies used locally and in CI |
 | `tools/install_skill.py` | Safe dry-run-first installer for OpenCode, Codex, Claude Code, or a shared multi-agent setup |
+| `hooks/` | Tracked Git hooks that run the offline checks before each commit and push; see Testing |
 
 ## Installation
 
@@ -207,7 +208,15 @@ python3 -m pytest tests/ -v
 python3 scripts/check_markdown.py *.md references/*.md assets/*.md figures/*.md --strict
 ```
 
-CI tests the minimum supported Python 3.10 and current feature series 3.14, checks Python quality and local documentation links on every change, and checks external documentation links weekly. Actions are pinned to immutable release commits, and Dependabot proposes controlled updates for both development dependencies and workflow actions.
+To catch problems offline before they reach CI, enable the tracked hooks once per checkout:
+
+```bash
+git config core.hooksPath hooks
+```
+
+The `pre-commit` hook lints when Python files are staged and checks staged Markdown; the `pre-push` hook runs the full suite above. Skip either with `git commit --no-verify` or `git push --no-verify`.
+
+CI re-runs the same suite in a single job on the current feature series 3.14 and the minimum supported Python 3.10, so pushes that pass the hooks rarely fail. A separate weekly workflow checks external documentation links. Actions are pinned to immutable release commits, and Dependabot proposes controlled updates for both development dependencies and workflow actions.
 
 ## License
 
