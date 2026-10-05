@@ -17,6 +17,25 @@ Keep this workflow host-neutral. Use the tools and delegation mechanisms the act
 
 Resolve links and bundled resource paths relative to this `SKILL.md`, not the research project's current working directory. Resolve project artifacts, repository commands, and `.research/` state relative to the user's project unless the user supplies another root. Before running a bundled helper, derive its absolute path from the skill directory exposed by the host; do not assume the project itself contains this skill's `scripts/` directory.
 
+## Ask before choosing between overlapping skills
+
+Hosts often ship their own skills, plugins, or built-in commands that cover part of this skill's ground, such as Office document, PDF, slide, figure, chart, code-review, security-review, or GitHub workflows. When another available skill covers the same task as a route here, do not choose between them yourself, and do not blend their procedures silently. Before acting on that task, ask the user one question:
+
+```text
+Overlap: <task> is covered by this skill's <route or reference> and by <other skill>.
+Difference: <what each one does that the other does not, in one line each>
+Use: (1) this skill  (2) <other skill>  (3) both, <other skill> for file mechanics and this skill for evidence, provenance, and the gate
+```
+
+Follow these rules:
+
+- Ask even when the user invoked or named this skill. A user may load it for a single request from outside the project, so naming it does not choose it over a host skill for an overlapping task. Only an answer to this question settles the choice.
+- Treat any shared coverage as an overlap, including a step that looks mechanical. Do not decide that the overlap is too small to ask about.
+- Describe the difference neutrally. You may say which option fits the task better, but wait for the answer before loading or invoking either skill.
+- Reuse an answer only for the same kind of task in the current session. Ask again in a new session, even when a dossier records an earlier answer. When a dossier exists, record each answer with `scripts/research_state.py decide` and `--revisit-condition "next session"`.
+- When the host offers no way to ask, as in a non-interactive run, follow this skill's route alone, do not invoke the other skill, and report the overlap in the reply or handoff.
+- The floor in [operating-modes.md](references/operating-modes.md) holds under every choice. When the user picks the other skill alone, report this skill's gate for that deliverable as `NOT_ASSESSED` rather than as passed.
+
 ## Work from a research contract
 
 Treat research as a traceable sequence of decisions, evidence, implementations, runs, claims, and artifacts. Match effort to the requested deliverable; do not force a full lifecycle onto a focused task.

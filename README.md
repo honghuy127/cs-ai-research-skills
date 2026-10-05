@@ -19,6 +19,7 @@ The figure's editable source is [figures/fig-001-skill-architecture.drawio](figu
 - **Decisive gates.** Each phase ends with a gate returning `PASS`, `CONDITIONAL`, `FAIL`, `BLOCKED`, or `NOT_ASSESSED`, with evidence and the next decisive action.
 - **No fabrication.** Unverifiable content becomes `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]`, never plausible filler. The audit script fails on unresolved markers in reported deliverables.
 - **Humans keep authority.** Submissions, releases, costly runs, participant work, and license or authorship decisions stay with the user.
+- **No silent skill choice.** When a host's own skill or built-in command covers the same task as this skill (Office files, PDFs, slides, figures, code review), the agent asks the user which to use, or whether to combine them, instead of choosing on its own. It asks even when the user invoked this skill by name, because invoking it for one request is not a choice against the host's skill; the answer holds for the current session only.
 - **Two operating modes.** In `agent-led` mode the agent drives a phase or project and gates block. In `human-led` mode the researcher directs each step; the agent raises an advisory whenever a step would fail a gate, then follows the human's decision and records the override. The floor (no fabrication, no hidden overrides, no relabeled evidence, no unauthorized external action) holds in both.
 
 ## To Burn, or Not to Burn

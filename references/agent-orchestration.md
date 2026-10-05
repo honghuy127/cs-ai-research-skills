@@ -120,6 +120,8 @@ Give each agent the minimum complete context:
 
 State whether work is advisory, read-only, implementation, execution, analysis, or writing. Name any action that requires human confirmation.
 
+List under required references the skills the user chose for any overlapping task. A delegated agent uses only those skills; when it meets an overlap the packet does not settle, it returns the question to the coordinator as a blocker instead of choosing or asking the user directly.
+
 Do not include the expected conclusion in an independent verification packet. Provide the research question, raw artifact, method, and evaluation contract needed to assess it.
 
 For confidential tasks, send only the minimum allowed excerpt or derived question. Do not distribute the full artifact when a narrower packet suffices.
