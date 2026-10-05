@@ -48,6 +48,7 @@ VALID_STATUSES = frozenset(
         "dropped",
     }
 )
+VALID_OPERATING_MODES = frozenset({"agent-led", "human-led"})
 VALID_EVIDENTIAL_STATUSES = frozenset(
     {"not_assessed", "insufficient", "supported", "mixed", "contradicted"}
 )

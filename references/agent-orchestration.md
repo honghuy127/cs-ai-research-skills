@@ -38,6 +38,8 @@ Avoid delegation when:
 
 Do not instantiate every role for every request. Route to the smallest complete team, or the smallest sequence of role-separated passes on a single-agent host.
 
+In `human-led` mode (see [operating-modes.md](operating-modes.md)) the human is the coordinator. Delegate only when asked, return handoffs to the human for reconciliation, and raise an advisory rather than a stop when a handoff would fail a gate.
+
 ## 2. Preserve authority and scope
 
 Make every delegated action inherit the user's original scope and authorization. A subagent cannot authorize:

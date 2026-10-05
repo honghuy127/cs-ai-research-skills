@@ -5,6 +5,7 @@ Playbook: [../references/research-contract-and-state.md](../references/research-
 ## Decision needed now
 
 - Deliverable:
+- Operating mode (agent-led or human-led):
 - Audience / venue / funder / degree context:
 - Owner and deadline:
 - Definition of done:

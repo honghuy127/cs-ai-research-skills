@@ -19,6 +19,7 @@ The figure's editable source is [figures/fig-001-skill-architecture.drawio](figu
 - **Decisive gates.** Each phase ends with a gate returning `PASS`, `CONDITIONAL`, `FAIL`, `BLOCKED`, or `NOT_ASSESSED`, with evidence and the next decisive action.
 - **No fabrication.** Unverifiable content becomes `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]`, never plausible filler. The audit script fails on unresolved markers in reported deliverables.
 - **Humans keep authority.** Submissions, releases, costly runs, participant work, and license or authorship decisions stay with the user.
+- **Two operating modes.** In `agent-led` mode the agent drives a phase or project and gates block. In `human-led` mode the researcher directs each step; the agent raises an advisory whenever a step would fail a gate, then follows the human's decision and records the override. The floor (no fabrication, no hidden overrides, no relabeled evidence, no unauthorized external action) holds in both.
 
 ## To Burn, or Not to Burn
 
@@ -53,7 +54,7 @@ The figure's editable source is [figures/fig-001-skill-architecture.drawio](figu
 | Path | Contents |
 |---|---|
 | `SKILL.md` | Entry point and router; loads references per task intent |
-| `references/` | Twenty reference playbooks: phase workflows (literature, design, evaluation, analysis, writing, manuscript revision, figures and diagrams, formatting, office documents, Markdown documents, presentation slides, GitHub collaboration, review, ethics) plus cross-cutting gate, contract-and-state, methodology-sources, and orchestration references |
+| `references/` | Twenty-one reference playbooks: phase workflows (literature, design, evaluation, analysis, writing, manuscript revision, figures and diagrams, formatting, office documents, Markdown documents, presentation slides, GitHub collaboration, review, ethics) plus cross-cutting gate, contract-and-state, operating-mode, methodology-sources, and orchestration references |
 | `scripts/` | Dossier tooling: `research_state.py`, `capture_run.py`, `audit_research.py`, plus the `validate_drawio.py` figure lint, the `render_drawio.py` headless drawio renderer, the `check_latex_log.py` build-log checker, the `check_office.py` Office package checker, and the `check_markdown.py` Markdown checker; `research_contract.py` holds the shared controlled vocabularies the tools import |
 | `assets/` | Copy-and-adapt templates: research brief, experiment plan, paper and proposal outlines, figure plan, format checklist, slide deck plan, review template, rebuttal matrix |
 | `agents/openai.yaml` | Interface metadata for runtimes that read the OpenAI agent format |
@@ -139,6 +140,15 @@ python3 scripts/research_state.py init --title "My Study" --owner "me"
 
 # Update index fields; repeated list options replace the stored list
 python3 scripts/research_state.py update --next-action "freeze design"
+
+# Record the operating mode (agent-led or human-led)
+python3 scripts/research_state.py update --operating-mode human-led
+
+# Record a decision without a stage change, such as a human override of an advisory
+python3 scripts/research_state.py decide --decision "keep the 3-seed design" \
+  --reason "compute budget" --evidence "advisory: design gate would be CONDITIONAL" \
+  --alternative "5 seeds" --consequence "wider intervals on CLM-002" --owner me \
+  --revisit-condition "more compute"
 
 # Record a justified stage transition
 python3 scripts/research_state.py transition --stage design --status planned \

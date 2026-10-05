@@ -22,6 +22,7 @@ from research_contract import (
     VALID_EVIDENCE_ELIGIBILITY,
     VALID_EVIDENCE_VERIFICATIONS,
     VALID_EVIDENTIAL_STATUSES,
+    VALID_OPERATING_MODES,
     VALID_PEER_REVIEW_STATUSES,
     VALID_PUBLICATION_STATUSES,
     VALID_RESULT_KINDS,
@@ -380,6 +381,10 @@ def validate(root: Path) -> list[str]:
     for field in ("constraints", "artifact_index"):
         if not isinstance(state.get(field), dict):
             errors.append(f"state.json requires object {field}")
+    if isinstance(state.get("constraints"), dict):
+        mode = state["constraints"].get("operating_mode")
+        if mode is not None and mode not in VALID_OPERATING_MODES:
+            errors.append(f"state.json has invalid constraints.operating_mode: {mode!r}")
     for field in ("contribution_type", "methodology"):
         if state.get(field) is not None and not isinstance(state.get(field), str):
             errors.append(f"state.json {field} must be null or a string")
@@ -475,6 +480,7 @@ def cmd_status(args: argparse.Namespace) -> int:
         "title": state["title"],
         "stage": state["stage"],
         "stage_status": state["stage_status"],
+        "operating_mode": state.get("constraints", {}).get("operating_mode"),
         "updated_at": state["updated_at"],
         "record_counts": counts,
         "blockers": state.get("blockers", []),
@@ -525,6 +531,11 @@ def cmd_update(args: argparse.Namespace) -> int:
                 return 2
             state[field] = [item.strip() for item in values]
             changed.append(field)
+    if args.operating_mode is not None:
+        if not isinstance(state.get("constraints"), dict):
+            state["constraints"] = {}
+        state["constraints"]["operating_mode"] = args.operating_mode
+        changed.append("constraints.operating_mode")
     if not changed:
         print("error: no update options were provided", file=sys.stderr)
         return 2
@@ -539,10 +550,8 @@ def cmd_update(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_transition(args: argparse.Namespace) -> int:
-    if args.stage not in VALID_STAGES or args.status not in VALID_STATUSES:
-        print("error: invalid stage or status", file=sys.stderr)
-        return 2
+def reject_blank_decision_fields(args: argparse.Namespace) -> str | None:
+    """Return an error for any blank decision field shared by transition and decide."""
     problem = reject_blank("--reason", [args.reason]) or reject_blank("--owner", [args.owner]) or reject_blank(
         "--revisit-condition", [args.revisit_condition]
     )
@@ -555,6 +564,49 @@ def cmd_transition(args: argparse.Namespace) -> int:
             problem = reject_blank(name, values)
             if problem:
                 break
+    return problem
+
+
+def add_decision_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--reason", required=True)
+    parser.add_argument("--evidence", action="append", required=True)
+    parser.add_argument("--alternative", action="append", required=True)
+    parser.add_argument("--consequence", action="append", required=True)
+    parser.add_argument("--owner", required=True)
+    parser.add_argument("--revisit-condition", required=True)
+
+
+def cmd_decide(args: argparse.Namespace) -> int:
+    problem = reject_blank("--decision", [args.decision]) or reject_blank_decision_fields(args)
+    if problem:
+        print(problem, file=sys.stderr)
+        return 2
+    loaded = open_valid_dossier(Path(args.root))
+    if loaded is None:
+        return 1
+    base, state = loaded
+    decision_entry = append_decision(
+        base,
+        args.decision.strip(),
+        args.reason,
+        args.evidence,
+        args.alternative,
+        args.consequence,
+        args.owner,
+        args.revisit_condition,
+    )
+    state["decision_index"].append(decision_entry)
+    state["updated_at"] = now()
+    write_json_atomic(base / "state.json", state)
+    print(decision_entry["id"])
+    return 0
+
+
+def cmd_transition(args: argparse.Namespace) -> int:
+    if args.stage not in VALID_STAGES or args.status not in VALID_STATUSES:
+        print("error: invalid stage or status", file=sys.stderr)
+        return 2
+    problem = reject_blank_decision_fields(args)
     if problem:
         print(problem, file=sys.stderr)
         return 2
@@ -625,18 +677,32 @@ def build_parser() -> argparse.ArgumentParser:
     update_parser.add_argument("--open-risk", dest="open_risk", action="append")
     update_parser.add_argument("--blocker", action="append")
     update_parser.add_argument("--next-action", dest="next_action", action="append")
+    update_parser.add_argument(
+        "--operating-mode",
+        dest="operating_mode",
+        choices=sorted(VALID_OPERATING_MODES),
+        help="record whether the agent or the human leads the workflow",
+    )
     update_parser.set_defaults(func=cmd_update)
+
+    decide_parser = subparsers.add_parser(
+        "decide",
+        help="append a justified decision without changing the stage",
+        description=(
+            "Append a material decision to decisions.md and the state index without a stage "
+            "transition, for example a mode change or a human override of an advisory."
+        ),
+    )
+    decide_parser.add_argument("--root", default=".")
+    decide_parser.add_argument("--decision", required=True)
+    add_decision_arguments(decide_parser)
+    decide_parser.set_defaults(func=cmd_decide)
 
     transition_parser = subparsers.add_parser("transition", help="record a justified stage transition")
     transition_parser.add_argument("--root", default=".")
     transition_parser.add_argument("--stage", required=True, choices=sorted(VALID_STAGES))
     transition_parser.add_argument("--status", required=True, choices=sorted(VALID_STATUSES))
-    transition_parser.add_argument("--reason", required=True)
-    transition_parser.add_argument("--evidence", action="append", required=True)
-    transition_parser.add_argument("--alternative", action="append", required=True)
-    transition_parser.add_argument("--consequence", action="append", required=True)
-    transition_parser.add_argument("--owner", required=True)
-    transition_parser.add_argument("--revisit-condition", required=True)
+    add_decision_arguments(transition_parser)
     transition_parser.set_defaults(func=cmd_transition)
     return parser
 

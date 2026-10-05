@@ -19,6 +19,7 @@ Inspect before asking questions:
 - Repository instructions and current version-control state.
 - `.research/state.json` and append-only ledgers when present.
 - The user's requested role and authorization: advise, diagnose, write, implement, run, or review.
+- The operating mode, `agent-led` or `human-led`, as named by the user or inferred under [operating-modes.md](operating-modes.md).
 - Confidentiality, ownership, licensing, personal-data, human-subject, safety, and official-review constraints.
 
 Ask only for missing facts that would change scope, validity, cost, policy compliance, or the requested artifact. Otherwise state a reasonable assumption and proceed.
@@ -87,8 +88,9 @@ Use `state.json` as an index, not a second copy of the paper or code. Include:
 - Artifact paths, open risks, blockers, a compact `decision_index`, and next actions.
 - `stage` chosen from `scoping`, `literature`, `proposal`, `design`, `implementation`, `execution`, `analysis`, `writing`, `review`, or `submission`.
 - Stage status chosen from the controlled truth states.
+- `constraints.operating_mode`, when set, chosen from `agent-led` or `human-led`; `scripts/research_state.py update --operating-mode` records it.
 
-Keep `decisions.md` append-only. For each material decision, record date, decision, evidence, alternatives, rationale, consequences, owner, and revisit condition.
+Keep `decisions.md` append-only. For each material decision, record date, decision, evidence, alternatives, rationale, consequences, owner, and revisit condition. `scripts/research_state.py transition` appends a decision together with a stage change; `scripts/research_state.py decide` appends one without changing the stage, which is how a mode change or a human override of an advisory is recorded.
 
 Keep evidence, claims, and experiment records append-only. Correct an error with a new unique record ID whose `supersedes` field points to the old ID, then update dependent claims rather than silently rewriting history.
 
@@ -184,11 +186,13 @@ Next decisive action: <smallest informative step>
 
 Require explicit human confirmation when the decision materially fixes scope, commits substantial resources, recruits or affects people, accesses sensitive data, expands dangerous capability, freezes claims, or submits externally.
 
+In `human-led` mode the gate report is advisory: deliver the verdict the evidence supports, follow the human's decision, and record an override as a decision and under Waivers. Narrow the affected claims through `caveats` rather than changing their `lifecycle_state` or `evidential_status`.
+
 ## 8. Resuming stale projects
 
 Treat files as more authoritative than a stale index. On resume:
 
-1. Read state and last decisions.
+1. Read state, the recorded operating mode, and last decisions.
 2. Inspect version control, artifacts, configs, raw outputs, and manuscript timestamps.
 3. Reconcile missing, moved, or modified paths.
 4. Check whether cited sources, venue rules, APIs, datasets, and models have changed.
