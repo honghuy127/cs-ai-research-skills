@@ -47,7 +47,7 @@ Do not change mode silently to escape a FAIL. Do not drift into agent-led behavi
 | Frozen design | Required before claim-eligible execution | Recommended; a deviation is flagged and the affected claims are narrowed in `caveats` |
 | Independent verification | Required before VERIFIED | Offered; unverified work stays labeled unverified |
 | Failed hard assumption | Stop or pivot | Flag it, recommend the stop or pivot, continue if directed |
-| Clarifying questions | Only when the answer changes scope, validity, cost, or policy | Fewer still; proceed on the stated direction and name assumptions |
+| Clarifying questions | Only when the answer changes scope, validity, cost, or policy, plus the overlapping-skill question from SKILL.md | Fewer still; proceed on the stated direction and name assumptions, but still ask the overlapping-skill question |
 | Delegation to subagents | When the host and scope permit | Only when asked; the human is the coordinator |
 | Report format | Full gate block from quality-gates.md | One-line verdict plus open advisories; the full block on request |
 
