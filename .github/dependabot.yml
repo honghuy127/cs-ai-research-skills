@@ -1,17 +1,17 @@
 version: 2
 updates:
-  # One grouped PR per ecosystem per month, instead of one PR per release.
+  # One grouped PR per ecosystem every three months, instead of one PR per release.
   - package-ecosystem: pip
     directory: /
     schedule:
-      interval: monthly
+      interval: quarterly
     groups:
       dev-dependencies:
         patterns: ["*"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: monthly
+      interval: quarterly
     groups:
       github-actions:
         patterns: ["*"]
