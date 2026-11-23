@@ -1,0 +1,3 @@
+# Match the minimum supported Python (README, CI). Without this, ruff picks its
+# own default target, and new ruff releases then suggest 3.11+-only rewrites.
+target-version = "py310"
