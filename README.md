@@ -22,6 +22,8 @@ The figure's editable source is [figures/fig-001-skill-architecture.drawio](figu
 - **No silent skill choice.** When a host's own skill or built-in command covers the same task as this skill (Office files, PDFs, slides, figures, code review), the agent asks the user which to use, or whether to combine them, instead of choosing on its own. It asks even when the user invoked this skill by name, because invoking it for one request is not a choice against the host's skill; the answer holds for the current session only.
 - **Two operating modes.** In `agent-led` mode the agent drives a phase or project and gates block. In `human-led` mode the researcher directs each step; the agent raises an advisory whenever a step would fail a gate, then follows the human's decision and records the override. The floor (no fabrication, no hidden overrides, no relabeled evidence, no unauthorized external action) holds in both.
 
+For research integrity reviews, an auditor can supply a frozen JSON contract to `scripts/audit_research.py --integrity-contract PATH --json`. It checks protected file digests, split IDs, and numeric observables alongside dossier traceability. Version-2 contracts also map requirements to artifacts, checks, and current claims, with explicit manual and unassessed coverage. The auditor controls the reference values and can run the check offline from a separate checkout. See the [integrity playbook and worked contract](references/research-integrity.md).
+
 ## To Burn, or Not to Burn
 
 *A soliloquy for evidence-grounded agents, after Shakespeare’s Hamlet.*
@@ -55,8 +57,8 @@ The figure's editable source is [figures/fig-001-skill-architecture.drawio](figu
 | Path | Contents |
 |---|---|
 | `SKILL.md` | Entry point and router; loads references per task intent |
-| `references/` | Twenty-one reference playbooks: phase workflows (literature, design, evaluation, analysis, writing, manuscript revision, figures and diagrams, formatting, office documents, Markdown documents, presentation slides, GitHub collaboration, review, ethics) plus cross-cutting gate, contract-and-state, operating-mode, methodology-sources, and orchestration references |
-| `scripts/` | Dossier tooling: `research_state.py`, `capture_run.py`, `audit_research.py`, plus the `validate_drawio.py` figure lint, the `render_drawio.py` headless drawio renderer, the `check_latex_log.py` build-log checker, the `check_office.py` Office package checker, and the `check_markdown.py` Markdown checker; `research_contract.py` holds the shared controlled vocabularies the tools import |
+| `references/` | Reference playbooks: phase workflows (literature, design, evaluation, analysis, writing, manuscript revision, figures and diagrams, formatting, office documents, Markdown documents, presentation slides, GitHub collaboration, review, ethics) plus cross-cutting gate, contract-and-state, operating-mode, methodology-sources, research integrity, and orchestration references |
+| `scripts/` | Dossier tooling: `research_state.py`, `capture_run.py`, `audit_research.py`, plus the `validate_drawio.py` figure lint, the `render_drawio.py` headless drawio renderer, the `check_latex_log.py` build-log checker, the `check_office.py` Office package checker, and the `check_markdown.py` Markdown checker; `research_contract.py` holds the shared controlled vocabularies, and `research_integrity.py` implements the optional protected-contract checks |
 | `assets/` | Copy-and-adapt templates: research brief, experiment plan, paper and proposal outlines, figure plan, format checklist, slide deck plan, review template, rebuttal matrix |
 | `agents/openai.yaml` | Interface metadata for runtimes that read the OpenAI agent format |
 | `tests/` | End-to-end tests for the scripts |
@@ -131,7 +133,7 @@ For substantial projects, the skill keeps canonical state in a `.research/` dire
 ├── evidence.jsonl      # sources with verification depth and claim relations
 ├── claims.jsonl        # claims with lifecycle state and evidential status
 ├── experiments.jsonl   # run ledger
-└── runs/<run-id>/manifest.json   # immutable per-run provenance
+└── runs/<run-id>/manifest.json   # per-run provenance
 ```
 
 All scripts require only Python 3.10+ and the standard library, except `render_drawio.py`, which additionally needs `playwright` and a Playwright-installed browser (`python3 -m pip install playwright && python3 -m playwright install chromium`):
@@ -193,10 +195,10 @@ python3 scripts/check_markdown.py README.md docs/guide.md --strict
 
 Notes on the audit:
 
-- It certifies structure only, never novelty, statistics, ethics, or scientific validity.
+- It reports structural traceability plus any declared integrity checks. Neither mode certifies novelty, statistics, ethics, or scientific validity.
 - Records corrected via a `supersedes` field are excluded from auditing; only the head of each supersession chain is checked. A claim that still links superseded evidence gets a warning.
 - Deliverables referenced by `reported` claims are automatically scanned for unresolved `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, and `[RESULT PENDING]` markers; pass additional files with `--scan`.
-- Files over 64 MiB are not hashed and must carry an immutable external version (`--file-version PATH=ID` at capture time).
+- During run capture, files over 64 MiB are not hashed and must carry an immutable external version (`--file-version PATH=ID` at capture time).
 - The manifest's `capture_environment` records where it was written, not where the run executed; pass the run's own hardware and service facts via `--resource`.
 - `research_state.py validate` and `status` inspect an existing dossier, `audit_research.py --json` emits a machine report, and every script documents its full flags under `--help`.
 

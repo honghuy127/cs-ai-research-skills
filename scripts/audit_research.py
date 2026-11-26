@@ -8,7 +8,6 @@ correctness, statistical validity, ethics compliance, or reproducibility.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import sys
@@ -32,7 +31,9 @@ from research_contract import (
     VALID_RESULT_KINDS,
     VALID_RUN_PHASES,
     VALID_RUN_STATUSES,
+    hash_file,
 )
+from research_integrity import check_contract
 from research_state import (
     validate as validate_dossier,
 )
@@ -125,14 +126,6 @@ def superseded_ids(records: list[dict]) -> set[str]:
         for record in records
         if isinstance(record.get("supersedes"), str) and record["supersedes"].strip()
     }
-
-
-def hash_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def artifact_path(raw_path: str, root: Path) -> Path:
@@ -231,6 +224,7 @@ def main() -> int:
         "--scan", action="append", default=[], help="manuscript or proposal text file to scan"
     )
     parser.add_argument("--json", action="store_true", dest="as_json")
+    parser.add_argument("--integrity-contract", type=Path, help="auditor-supplied JSON checks (path relative to cwd)")
     args = parser.parse_args()
 
     root = Path(args.root).resolve()
@@ -707,6 +701,13 @@ def main() -> int:
             continue
         scan_file(resolved, findings)
 
+    integrity = None
+    if args.integrity_contract is not None:
+        integrity, integrity_findings = check_contract(
+            root, args.integrity_contract, claim_ids - superseded_claims
+        )
+        findings.extend(integrity_findings)
+
     counts = {
         severity: sum(1 for item in findings if item["severity"] == severity)
         for severity in ("error", "warning")
@@ -718,6 +719,20 @@ def main() -> int:
         "findings": findings,
         "certifies_scientific_validity": False,
     }
+    if integrity is not None:
+        report["integrity"] = integrity
+        report["scope"] = "structural traceability and declared integrity checks"
+        if not args.as_json:
+            print(f"integrity checks passed={len(integrity['passed'])}")
+            if "coverage" in integrity:
+                coverage = integrity["coverage"]
+                print(
+                    "integrity coverage "
+                    + " ".join(
+                        f"{state}={len(coverage[state])}"
+                        for state in ("passed", "failed", "manual", "not_assessed")
+                    )
+                )
     if args.as_json:
         print(json.dumps(report, indent=2, ensure_ascii=False))
     else:
