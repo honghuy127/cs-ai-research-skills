@@ -182,6 +182,21 @@ def test_pre_commit_checks_staged_markdown_and_link_targets(tmp_path: Path) -> N
     subprocess.run([hook], cwd=tmp_path, check=True)
 
 
+def test_synthetic_evidence_guidance_distinguishes_inputs_from_plumbing() -> None:
+    for relative, plumbing in (
+        ("SKILL.md", "synthetic plumbing"),
+        ("references/analysis-and-statistics.md", "analysis plumbing"),
+        ("references/ethics-integrity-and-policy.md", "synthetic plumbing"),
+    ):
+        text = (ROOT / relative).read_text(encoding="utf-8").casefold()
+        assert plumbing in text, relative
+        assert "synthetic input" in text, relative
+    ethics = (ROOT / "references" / "ethics-integrity-and-policy.md").read_text(
+        encoding="utf-8"
+    )
+    assert "Keep synthetic or mock data visibly ineligible" not in ethics
+
+
 def test_truth_state_chain_is_synchronized(monkeypatch: pytest.MonkeyPatch) -> None:
     skill_text = SKILL.read_text(encoding="utf-8")
     match = re.search(r"NOT_ASSESSED(?: → [A-Z_]+)+", skill_text)
