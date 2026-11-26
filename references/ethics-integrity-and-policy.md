@@ -162,7 +162,7 @@ Choose proportionate controls:
 - Release aggregate findings, mitigations, or defensive artifacts instead of enabling instructions.
 - Monitor and document residual risk.
 
-Do not expand dangerous capability, perform unauthorized intrusion, acquire restricted targets, or publish high-risk operational details merely because they are scientifically interesting. Obtain explicit authority and specialist review when risk is material.
+Do not expand dangerous capability, perform unauthorized intrusion, acquire restricted targets, or publish high-risk operational details merely because they are scientifically interesting. Obtain explicit authority and specialist review when risk is material. For AI model research involving authorized adversarial experiments, the user may select the [companion's controlled-experiment protocol](../skills/scope-ai-model-research/references/controlled-experiments.md) to preserve faithful attack and benign conditions under documented technical containment. It supplements this preflight rather than waiving it.
 
 ## 8. Resolve current institutional and venue policy
 

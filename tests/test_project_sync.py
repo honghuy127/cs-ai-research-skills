@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -149,6 +150,36 @@ def test_installer_refuses_a_project_dir_inside_the_checkout() -> None:
     assert result.returncode == 2
     assert "inside itself" in result.stderr
     assert not (ROOT / "figures" / ".claude").exists()
+
+
+def test_pre_commit_checks_staged_markdown_and_link_targets(tmp_path: Path) -> None:
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    for name in ("check_markdown.py", "research_contract.py"):
+        shutil.copy(ROOT / "scripts" / name, scripts / name)
+    subprocess.run(["git", "add", "scripts"], cwd=tmp_path, check=True)
+    subprocess.run(
+        ["git", "-c", "user.name=Test", "-c", "user.email=test@example.org",
+         "-c", "core.hooksPath=/dev/null", "-c", "commit.gpgSign=false", "commit", "-qm", "Add checker"],
+        cwd=tmp_path, check=True,
+    )
+
+    guide = tmp_path / "user guide.md"
+    target = tmp_path / "target.md"
+    guide.write_text("# Guide\n\n[Target](target.md)\n", encoding="utf-8")
+    subprocess.run(["git", "add", guide.name], cwd=tmp_path, check=True)
+    guide.write_text("# Guide\n", encoding="utf-8")
+    target.write_text("# Target\n", encoding="utf-8")
+
+    hook = ROOT / "hooks" / "pre-commit"
+    failed = subprocess.run([hook], cwd=tmp_path, capture_output=True, text=True, check=False)
+    assert failed.returncode == 1
+    assert "broken-link" in failed.stdout
+
+    subprocess.run(["git", "add", target.name], cwd=tmp_path, check=True)
+    target.unlink()
+    subprocess.run([hook], cwd=tmp_path, check=True)
 
 
 def test_truth_state_chain_is_synchronized(monkeypatch: pytest.MonkeyPatch) -> None:

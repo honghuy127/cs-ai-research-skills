@@ -83,6 +83,7 @@ Load every additional reference listed for the selected route before acting. Add
 | Review a paper or artifact | [paper-review-and-rebuttal.md](references/paper-review-and-rebuttal.md), [ethics-integrity-and-policy.md](references/ethics-integrity-and-policy.md) |
 | Prepare a rebuttal or revision plan | [paper-review-and-rebuttal.md](references/paper-review-and-rebuttal.md), [paper-writing.md](references/paper-writing.md) |
 | Resume, audit, or reconcile an existing project or its dossier | [research-contract-and-state.md](references/research-contract-and-state.md), plus the phase reference for the work being resumed |
+| Define factual scope for AI safety, model capability or reliability, or controlled adversarial research | Offer the independently installable [Scope AI Model Research skill](skills/scope-ai-model-research/SKILL.md) under the overlap rules; when selected, that companion handles scoping and current authority while this workflow retains the applicable phase gates |
 | Audit research integrity, investigate unexplained omissions, or protect a high-impact claim | [research-integrity.md](references/research-integrity.md) plus the affected phase reference |
 | Coordinate an end-to-end project or parallel agents | All phase references, loaded as each phase is reached, plus [agent-orchestration.md](references/agent-orchestration.md) |
 
@@ -186,7 +187,7 @@ Copy and adapt only the needed templates from `assets/`:
 ## Keep execution honest
 
 - Obtain current venue, funder, page-limit, disclosure, anonymity, artifact, and AI-use rules from official sources. Record the URL and access date; do not rely on bundled static rules.
-- Do not invent, interpolate, or simulate scientific results. Synthetic values may test software plumbing only and must remain visibly ineligible as scientific evidence.
+- Never present fabricated outcomes or synthetic plumbing output as scientific evidence. Measurements of actual system behavior on synthetic inputs can support claims scoped to those inputs under the same evidence and independent verification requirements as other measured runs.
 - Do not tune on a test set, conceal search budgets, select only favorable seeds, silently rerun failures, or compare against weak or unfair baselines.
 - Preserve raw outputs and failed runs. Generate tables and figures from traceable analysis code, not manual transcription when avoidable.
 - Do not launch costly experiments, acquire restricted data, recruit participants, or expand dual-use capability without the necessary user authority and approvals.

@@ -50,7 +50,7 @@ Analyze immutable raw outputs through versioned transformations.
 
 Do not silently drop failed runs, outliers, inconvenient subgroups, ambiguous items, or incomplete participants. Run any post-outcome exclusion as a labeled sensitivity analysis unless the frozen rule clearly applies.
 
-Use synthetic values only to test analysis plumbing. Keep them marked ineligible as scientific evidence.
+Mark outputs generated to test analysis plumbing as ineligible for scientific evidence. When a study measures behavior on synthetic inputs, preserve the input-generation procedure and raw observations, apply the usual verification checks, and limit conclusions to the tested conditions.
 
 ## 3. Identify the estimand and dependence
 

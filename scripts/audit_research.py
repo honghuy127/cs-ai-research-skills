@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -18,6 +17,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
+from check_markdown import MARKDOWN_SUFFIXES, split_outside_fences, strip_inline_code
 from research_contract import (
     EMPIRICAL_TYPES,
     EVIDENCE_BEARING_STATUSES,
@@ -82,13 +82,6 @@ def add(findings: list[dict], severity: str, code: str, message: str, record_id:
     findings.append(item)
 
 
-INLINE_CODE_RE = re.compile(r"(`+)([^`]*)\1")
-
-
-def strip_inline_code(line: str) -> str:
-    return INLINE_CODE_RE.sub(lambda match: " " * len(match.group(0)), line)
-
-
 def scan_file(path: Path, findings: list[dict], warn_non_text: bool = True) -> None:
     if not path.is_file():
         add(findings, "error", "missing-scan-target", str(path))
@@ -104,17 +97,13 @@ def scan_file(path: Path, findings: list[dict], warn_non_text: bool = True) -> N
         return
     # In Markdown deliverables, a marker quoted inside a code fence or inline
     # code span documents the convention rather than leaving a gap.
-    markdown = path.suffix.lower() in {".md", ".markdown", ".mdown", ".mkd"}
-    in_fence = False
-    for line_number, line in enumerate(text.splitlines(), start=1):
-        if markdown:
-            stripped = line.lstrip()
-            if stripped.startswith(("```", "~~~")):
-                in_fence = not in_fence
-                continue
-            if in_fence:
-                continue
-            line = strip_inline_code(line)
+    lines = text.splitlines()
+    if path.suffix.lower() in MARKDOWN_SUFFIXES:
+        outside, _ = split_outside_fences(lines)
+        numbered_lines = ((number, strip_inline_code(line)) for number, line in outside)
+    else:
+        numbered_lines = enumerate(lines, start=1)
+    for line_number, line in numbered_lines:
         for token in PLACEHOLDERS:
             if token in line:
                 add(findings, "error", "unresolved-placeholder", f"{path}:{line_number}: {token}")

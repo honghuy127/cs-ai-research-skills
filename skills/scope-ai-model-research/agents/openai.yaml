@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scope AI Model Research"
+  short_description: "Evidence-backed scoping for AI model research"
+  default_prompt: "Use $scope-ai-model-research to document the actual research scope, applicable safeguards, and unresolved authorization questions before proceeding."

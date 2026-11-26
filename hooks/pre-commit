@@ -1,19 +1,41 @@
-#!/bin/sh
-# Fast checks on staged changes. Enable once per checkout:
-#   git config core.hooksPath hooks
-# The full suite runs in the pre-push hook. Skip with: git commit --no-verify
-set -e
+#!/usr/bin/env python3
+"""Check the proposed commit using a temporary checkout of the Git index."""
 
-staged_py=$(git diff --cached --name-only --diff-filter=ACM -- '*.py')
-if [ -n "$staged_py" ]; then
-    if ! command -v ruff >/dev/null 2>&1; then
-        echo "pre-commit: ruff not found; run: python3 -m pip install -r requirements-dev.txt" >&2
-        exit 1
-    fi
-    ruff check scripts tools tests
-fi
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
-staged_md=$(git diff --cached --name-only --diff-filter=ACM -- '*.md')
-if [ -n "$staged_md" ]; then
-    python3 scripts/check_markdown.py $staged_md --strict
-fi
+
+def main() -> int:
+    diff = subprocess.check_output([
+        "git", "diff", "--cached", "--name-only", "-z", "--diff-filter=ACMRT",
+        "--", "*.md", "*.py",
+    ])
+    paths = [os.fsdecode(path) for path in diff.split(b"\0") if path]
+    if not paths:
+        return 0
+
+    with TemporaryDirectory() as snapshot:
+        subprocess.run(["git", "checkout-index", "--all", f"--prefix={snapshot}/"], check=True)
+        if any(path.endswith(".py") for path in paths):
+            if not shutil.which("ruff"):
+                print("pre-commit: install Ruff from requirements-dev.txt", file=sys.stderr)
+                return 1
+            result = subprocess.run(["ruff", "check", "scripts", "tools", "tests"], cwd=snapshot, check=False)
+            if result.returncode:
+                return result.returncode
+
+        markdown = [path for path in paths if path.endswith(".md")]
+        if markdown:
+            checker = Path("scripts") / "check_markdown.py"
+            return subprocess.run(
+                [sys.executable, checker, "--strict", "--", *markdown], cwd=snapshot, check=False
+            ).returncode
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
