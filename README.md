@@ -237,7 +237,7 @@ git config core.hooksPath hooks
 
 The `pre-commit` hook lints when Python files are staged and checks staged Markdown; the `pre-push` hook runs the full suite above. Skip either with `git commit --no-verify` or `git push --no-verify`.
 
-CI re-runs the same suite in a single job on the current feature series 3.14 and the minimum supported Python 3.10, so pushes that pass the hooks rarely fail. A separate weekly workflow checks external documentation links. Actions are pinned to immutable release commits, and Dependabot proposes controlled updates for both development dependencies and workflow actions.
+CI runs Ruff, strict Markdown checks, and pytest on Python 3.14, then repeats pytest on the minimum supported Python 3.10. A separate weekly workflow checks external documentation links. Actions are pinned to immutable release commits, and Dependabot proposes controlled updates for both development dependencies and workflow actions.
 
 ## License
 

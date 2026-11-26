@@ -761,6 +761,16 @@ class TestAudit:
         assert code == 1
         assert "unresolved-placeholder" in finding_codes(report)
 
+    def test_scan_distinguishes_nested_fence_examples_from_prose(self, project: Path) -> None:
+        (project / "draft.md").write_text(
+            "````markdown\n```\n[CITATION NEEDED]\n````\n[RESULT PENDING]\n",
+            encoding="utf-8",
+        )
+        code, report = audit_report(project, "--scan", "draft.md")
+        assert code == 1
+        markers = [item["message"] for item in report["findings"] if item["code"] == "unresolved-placeholder"]
+        assert markers == [f"{project / 'draft.md'}:5: [RESULT PENDING]"]
+
     def test_explicit_scan_still_reports_placeholders(self, project: Path) -> None:
         (project / "draft.md").write_text("[CITATION NEEDED]\n", encoding="utf-8")
         code, report = audit_report(project, "--scan", "draft.md")

@@ -187,7 +187,7 @@ Copy and adapt only the needed templates from `assets/`:
 ## Keep execution honest
 
 - Obtain current venue, funder, page-limit, disclosure, anonymity, artifact, and AI-use rules from official sources. Record the URL and access date; do not rely on bundled static rules.
-- Do not invent, interpolate, or simulate scientific results. Synthetic values may test software plumbing only and must remain visibly ineligible as scientific evidence.
+- Never present fabricated outcomes or synthetic plumbing output as scientific evidence. Measurements of actual system behavior on synthetic inputs can support claims scoped to those inputs under the same evidence and independent verification requirements as other measured runs.
 - Do not tune on a test set, conceal search budgets, select only favorable seeds, silently rerun failures, or compare against weak or unfair baselines.
 - Preserve raw outputs and failed runs. Generate tables and figures from traceable analysis code, not manual transcription when avoidable.
 - Do not launch costly experiments, acquire restricted data, recruit participants, or expand dual-use capability without the necessary user authority and approvals.

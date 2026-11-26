@@ -7,6 +7,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parent.parent
 SKILL_ROOTS = sorted(path.parent for path in (ROOT / "skills").glob("*/SKILL.md"))
 
@@ -36,7 +38,8 @@ def test_companion_resources_are_discoverable() -> None:
                     assert relative in entrypoint, f"undiscoverable resource: {relative}"
 
 
-def test_companion_installer_links_the_independent_skill(tmp_path: Path) -> None:
+@pytest.mark.parametrize("skill_root", SKILL_ROOTS, ids=lambda path: path.name)
+def test_companion_installer_links_the_independent_skill(tmp_path: Path, skill_root: Path) -> None:
     command = [
         sys.executable,
         str(ROOT / "tools" / "install_skill.py"),
@@ -47,14 +50,13 @@ def test_companion_installer_links_the_independent_skill(tmp_path: Path) -> None
         "--agents",
         "all",
         "--source",
-        str(SKILL_ROOTS[0]),
+        str(skill_root),
         "--apply",
     ]
     result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
     assert result.returncode == 0, result.stderr
-    name = SKILL_ROOTS[0].name
-    assert (tmp_path / ".agents" / "skills" / name).resolve() == SKILL_ROOTS[0]
-    assert (tmp_path / ".claude" / "skills" / name).resolve() == SKILL_ROOTS[0]
+    assert (tmp_path / ".agents" / "skills" / skill_root.name).resolve() == skill_root
+    assert (tmp_path / ".claude" / "skills" / skill_root.name).resolve() == skill_root
 
 
 def test_companion_markdown_and_relative_links() -> None:
@@ -78,7 +80,8 @@ def test_controlled_experiment_route_preserves_research_fidelity() -> None:
     )
     plan = (skill_root / "assets" / "controlled-experiment.md").read_text(encoding="utf-8")
     assert "Do not refuse an experiment merely because it involves attacks" in entrypoint
-    assert "approved study-target protocol" in entrypoint
+    assert "Do not automate prompt mutations to evade the controls of the assisting provider or host." in entrypoint
+    assert "Keep approved experimental variations within the documented study target." in entrypoint
     assert "Do not silently replace an attack" in protocol
     assert "benign and attack controls" in protocol
     assert "false refusals" in plan
@@ -100,7 +103,6 @@ def test_primary_and_companion_define_explicit_handoffs() -> None:
     assert "verifiable specificity" in companion
     assert "../skills/scope-ai-model-research/references/" in ethics
 
-    for skill_root in SKILL_ROOTS:
-        scope = (skill_root / "assets" / "research-scope.md").read_text(encoding="utf-8")
-        assert "Requested action:" in scope
-        assert "Authorization:" in scope
+    scope = (companion_root / "assets" / "research-scope.md").read_text(encoding="utf-8")
+    assert "Requested action:" in scope
+    assert "Authorization:" in scope
