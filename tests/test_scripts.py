@@ -9,6 +9,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import runpy
 import shutil
 import subprocess
 import sys
@@ -1388,3 +1389,418 @@ class TestRenderDrawio:
         assert result.returncode == 0, result.stderr
         assert (tmp_path / "fig.png").is_file()
         assert (tmp_path / "fig.svg").is_file()
+
+
+class ProbeValue:
+    def __init__(self, value: float, derivative: float) -> None:
+        self.value = value
+        self.derivative = derivative
+
+    def __sub__(self, other: float) -> ProbeValue:
+        return ProbeValue(self.value - other, self.derivative)
+
+    def __pow__(self, exponent: int) -> ProbeValue:
+        return ProbeValue(
+            self.value**exponent,
+            exponent * self.value ** (exponent - 1) * self.derivative,
+        )
+
+    def __abs__(self) -> ProbeValue:
+        derivative = self.derivative if self.value >= 0 else -self.derivative
+        return ProbeValue(abs(self.value), derivative)
+
+
+class ProbeAPI:
+    def parameter(self, value: float, trainable: bool) -> ProbeValue:
+        parameter = ProbeValue(value, 1.0)
+        parameter.trainable = trainable
+        return parameter
+
+    def detach(self, value: ProbeValue) -> ProbeValue:
+        return ProbeValue(value.value, 0.0)
+
+    def update(self, parameter: ProbeValue, loss: ProbeValue, rate: float) -> float:
+        if not parameter.trainable:
+            return parameter.value
+        return parameter.value - rate * loss.derivative
+
+    def accuracy(self, predictions: list[int] | None, labels: list[int]) -> float | None:
+        if predictions is None:
+            return None
+        if len(predictions) != len(labels) or not labels:
+            raise ValueError("predictions and labels must have equal nonzero lengths")
+        return sum(pred == label for pred, label in zip(predictions, labels)) / len(labels)
+
+
+def run_candidate_probe(candidate: Path) -> dict:
+    api = ProbeAPI()
+    observed = runpy.run_path(str(candidate))["run"](api)
+    loss = observed["loss"]
+    probe = {
+        "loss": loss.value,
+        "grad": loss.derivative,
+        "weight": observed["weight"],
+        "subgroup_accuracy": api.accuracy(
+            observed["subgroup_predictions"], observed["subgroup_labels"]
+        ),
+    }
+    accuracy = api.accuracy(observed["predictions"], observed["labels"])
+    if accuracy is not None:
+        probe["accuracy"] = accuracy
+    return probe
+
+
+def integrity_fixture(project: Path, fault: str) -> Path:
+    """One scalar SGD step on L=(w-2)^2 at w=0, and two held-out subjects."""
+    import hashlib
+
+    protocol = b"evaluate both subjects under the original baseline"
+    (project / "plan").write_bytes(
+        protocol if fault != "weaker-baseline" else b"skip baseline"
+    )
+    train = ["a", "a", "b"] if fault == "repeated-training-subject" else ["a", "b"]
+    (project / "train.json").write_text(json.dumps(train))
+    holdout = ["b", "c"] if fault == "leakage" else ["c", "d"]
+    (project / "test.json").write_text(json.dumps(holdout))
+
+    loss = "abs(residual)" if fault == "wrong-loss" else "residual ** 2"
+    if fault == "detached":
+        loss = f"api.detach({loss})"
+    candidate = f'''def run(api):
+    w = api.parameter(0.0, trainable={fault != "frozen"})
+    residual = w - 2.0
+    loss = {loss}
+    weight = api.update(w, loss, rate=0.1)
+    return {{
+        "loss": loss,
+        "weight": weight,
+        "predictions": {None if fault == "omitted-result" else [0, int(fault == "inflated-score")]},
+        "labels": [0, 1],
+        "subgroup_predictions": {[0, int(fault == "inflated-subgroup-score")]},
+        "subgroup_labels": [0, 1],
+    }}
+'''
+    candidate_path = project / "candidate.py"
+    candidate_path.write_text(candidate, encoding="utf-8")
+    probe = run_candidate_probe(candidate_path)
+    if fault == "roundoff":
+        probe["weight"] += 1e-12
+    (project / "probe.json").write_text(json.dumps(probe))
+
+    checks = [
+        {
+            "id": "plan",
+            "kind": "sha256",
+            "path": "plan",
+            "digest": hashlib.sha256(protocol).hexdigest(),
+        },
+        {
+            "id": "candidate",
+            "kind": "sha256",
+            "path": "candidate.py",
+            "digest": hashlib.sha256(candidate.encode()).hexdigest(),
+        },
+        {"id": "split", "kind": "disjoint", "left": "train.json", "right": "test.json"},
+    ]
+    for key, expected in {
+        "loss": 4,
+        "grad": -4,
+        "weight": 0.4,
+        "accuracy": 0.5,
+        "subgroup_accuracy": 0.5,
+    }.items():
+        tolerance = 1e-9 if key == "weight" else 0
+        checks.append(
+            {
+                "id": key,
+                "kind": "range",
+                "path": "probe.json",
+                "key": key,
+                "min": expected - tolerance,
+                "max": expected + tolerance,
+            }
+        )
+    groups = [
+        ("REQ-protocol", ["plan"], ["plan"]),
+        ("REQ-candidate", ["candidate.py"], ["candidate"]),
+        ("REQ-split", ["train.json", "test.json"], ["split"]),
+        (
+            "REQ-one-step",
+            ["candidate.py", "probe.json"],
+            ["loss", "grad", "weight"],
+        ),
+        ("REQ-overall-metric", ["probe.json"], ["accuracy"]),
+        ("REQ-subgroup-metric", ["probe.json"], ["subgroup_accuracy"]),
+    ]
+    append_record(project, "claims.jsonl", make_claim("CLM-integrity"))
+    requirements = [
+        {
+            "id": name,
+            "artifacts": artifacts,
+            "checks": names,
+            "claims": ["CLM-integrity"],
+        }
+        for name, artifacts, names in groups
+    ]
+    contract = project.parent / (project.name + "-approved.json")
+    contract.write_text(
+        json.dumps({"version": "2", "requirements": requirements, "checks": checks})
+    )
+    return contract
+
+
+@pytest.mark.parametrize(
+    ("fault", "failures"),
+    [
+        ("clean", []),
+        ("roundoff", []),
+        ("repeated-training-subject", []),
+        ("weaker-baseline", ["plan"]),
+        ("leakage", ["split"]),
+        ("wrong-loss", ["loss", "grad", "weight"]),
+        ("detached", ["grad", "weight"]),
+        ("frozen", ["weight"]),
+        ("inflated-score", ["accuracy"]),
+        ("omitted-result", ["accuracy"]),
+        ("inflated-subgroup-score", ["subgroup_accuracy"]),
+    ],
+)
+def test_integrity_fault_matrix(project: Path, fault: str, failures: list[str]) -> None:
+    contract = integrity_fixture(project, fault)
+    result = run_script(
+        "audit_research.py",
+        "--integrity-contract",
+        str(contract),
+        "--json",
+        cwd=project,
+    )
+    report = json.loads(result.stdout)
+    assert result.returncode == int(bool(failures))
+    assert [item["record_id"] for item in report["findings"]] == failures
+    assert len(report["integrity"]["passed"]) == 8 - len(failures)
+    spec = json.loads(contract.read_text())
+    expected_failed = {
+        requirement["id"]
+        for requirement in spec["requirements"]
+        if any(check in failures for check in requirement["checks"])
+    }
+    assert set(report["integrity"]["coverage"]["failed"]) == expected_failed
+    assert report["certifies_scientific_validity"] is False
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        '{"version":"1","checks":[]}',
+        '{"version":"1","checks":[null]}',
+        '{"version":"1","checks":[],"checks":[]}',
+        '{"version":"2","checks":[{}]}',
+    ],
+)
+def test_integrity_invalid_contract(project: Path, bad: str) -> None:
+    (project / "bad.json").write_text(bad)
+    result = run_script(
+        "audit_research.py", "--json", "--integrity-contract", "bad.json", cwd=project
+    )
+    assert result.returncode == 1
+    assert (
+        json.loads(result.stdout)["findings"][0]["code"] == "invalid-integrity-contract"
+    )
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        '{"weight":true}',
+        '{"weight":NaN}',
+        '{"weight":1,"weight":0.2}',
+        '{"weight":1e99999999999999999999999}',
+        "[]",
+    ],
+)
+def test_integrity_malformed_probe(project: Path, content: str) -> None:
+    contract = integrity_fixture(project, "clean")
+    (project / "probe.json").write_text(content)
+    result = run_script(
+        "audit_research.py",
+        "--json",
+        "--integrity-contract",
+        str(contract),
+        cwd=project,
+    )
+    assert result.returncode == 1
+    assert len(json.loads(result.stdout)["findings"]) == 5
+
+
+@pytest.mark.parametrize("path", ["../outside", "/outside", "alias/probe.json"])
+def test_integrity_path_boundary(project: Path, path: str) -> None:
+    contract = integrity_fixture(project, "clean")
+    (project / "alias").symlink_to(project, target_is_directory=True)
+    spec = json.loads(contract.read_text())
+    next(rule for rule in spec["checks"] if rule["id"] == "accuracy")["path"] = path
+    contract.write_text(json.dumps(spec))
+    result = run_script(
+        "audit_research.py",
+        "--json",
+        "--integrity-contract",
+        str(contract),
+        cwd=project,
+    )
+    assert result.returncode == 1
+    assert json.loads(result.stdout)["findings"][0]["record_id"] == "accuracy"
+
+
+
+def test_integrity_version_one_remains_supported(project: Path) -> None:
+    contract = integrity_fixture(project, "clean")
+    spec = json.loads(contract.read_text())
+    spec["version"] = "1"
+    del spec["requirements"]
+    contract.write_text(json.dumps(spec))
+    result = run_script(
+        "audit_research.py",
+        "--json",
+        "--integrity-contract",
+        str(contract),
+        cwd=project,
+    )
+    report = json.loads(result.stdout)
+    assert result.returncode == 0
+    assert "coverage" not in report["integrity"]
+
+
+@pytest.mark.parametrize("status", ["manual", "not_assessed"])
+def test_integrity_requirement_coverage_states(project: Path, status: str) -> None:
+    contract = integrity_fixture(project, "clean")
+    spec = json.loads(contract.read_text())
+    spec["checks"] = [rule for rule in spec["checks"] if rule["id"] != "plan"]
+    spec["requirements"][0].update(
+        {"status": status, "checks": [], "reason": "reviewer decision required"}
+    )
+    contract.write_text(json.dumps(spec))
+    result = run_script(
+        "audit_research.py",
+        "--json",
+        "--integrity-contract",
+        str(contract),
+        cwd=project,
+    )
+    report = json.loads(result.stdout)
+    assert result.returncode == int(status == "not_assessed")
+    assert report["integrity"]["coverage"][status] == ["REQ-protocol"]
+    if status == "manual":
+        plain = run_script(
+            "audit_research.py", "--integrity-contract", str(contract), cwd=project
+        )
+        assert "coverage passed=5 failed=0 manual=1 not_assessed=0" in plain.stdout
+    if status == "not_assessed":
+        assert report["findings"][0] == {
+            "severity": "error",
+            "code": "integrity-requirement-not-assessed",
+            "record_id": "REQ-protocol",
+            "message": "reviewer decision required",
+        }
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "missing-requirements",
+        "empty-requirements",
+        "unknown-check",
+        "orphan-check",
+        "duplicate-requirement",
+        "automated-without-check",
+        "manual-with-check",
+        "unknown-status",
+    ],
+)
+def test_integrity_invalid_requirement_inventory(project: Path, mutation: str) -> None:
+    contract = integrity_fixture(project, "clean")
+    spec = json.loads(contract.read_text())
+    first = spec["requirements"][0]
+    if mutation == "missing-requirements":
+        del spec["requirements"]
+    elif mutation == "empty-requirements":
+        spec["requirements"] = []
+    elif mutation == "unknown-check":
+        first["checks"] = ["unknown"]
+    elif mutation == "orphan-check":
+        first["checks"] = []
+    elif mutation == "duplicate-requirement":
+        spec["requirements"].append(dict(first))
+    elif mutation == "automated-without-check":
+        first["checks"] = []
+    elif mutation == "manual-with-check":
+        first.update({"status": "manual", "reason": "human review"})
+    elif mutation == "unknown-status":
+        first.update({"status": "ignored", "reason": "skip"})
+    contract.write_text(json.dumps(spec))
+    result = run_script(
+        "audit_research.py",
+        "--json",
+        "--integrity-contract",
+        str(contract),
+        cwd=project,
+    )
+    report = json.loads(result.stdout)
+    assert result.returncode == 1
+    assert report["findings"][0]["code"] == "invalid-integrity-contract"
+
+
+def test_integrity_requirement_artifact_path(project: Path) -> None:
+    contract = integrity_fixture(project, "clean")
+    spec = json.loads(contract.read_text())
+    spec["requirements"][0]["artifacts"] = ["../outside"]
+    contract.write_text(json.dumps(spec))
+    result = run_script(
+        "audit_research.py",
+        "--json",
+        "--integrity-contract",
+        str(contract),
+        cwd=project,
+    )
+    report = json.loads(result.stdout)
+    assert result.returncode == 1
+    assert report["findings"] == [
+        {
+            "severity": "error",
+            "code": "integrity-check-failed",
+            "record_id": "REQ-protocol",
+            "message": "requirement artifact: expected project-relative file: '../outside'",
+        }
+    ]
+    assert report["integrity"]["coverage"]["failed"] == ["REQ-protocol"]
+    assert len(report["integrity"]["passed"]) == 8
+
+
+
+@pytest.mark.parametrize("claim_id", ["CLM-missing", "CLM-superseded"])
+def test_integrity_requirement_claim_link(project: Path, claim_id: str) -> None:
+    contract = integrity_fixture(project, "clean")
+    if claim_id == "CLM-superseded":
+        append_record(
+            project,
+            "claims.jsonl",
+            make_claim("CLM-old", supersedes=claim_id),
+        )
+    spec = json.loads(contract.read_text())
+    spec["requirements"][0]["claims"] = [claim_id]
+    contract.write_text(json.dumps(spec))
+    result = run_script(
+        "audit_research.py",
+        "--json",
+        "--integrity-contract",
+        str(contract),
+        cwd=project,
+    )
+    report = json.loads(result.stdout)
+    assert result.returncode == 1
+    expected = {
+        "severity": "error",
+        "code": "integrity-unknown-claim",
+        "record_id": "REQ-protocol",
+        "message": f"unknown current claims: {claim_id}",
+    }
+    assert expected in report["findings"]
+    assert "REQ-protocol" in report["integrity"]["coverage"]["failed"]

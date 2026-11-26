@@ -180,7 +180,7 @@ Capture at minimum:
 | Outputs | Raw output paths, checksums or persistent IDs, log paths, and schema versions |
 | Outcome | Completed, failed, or aborted; record an attempt that never qualified as a run under failed with the reason |
 
-Assign the run ID in the frozen plan before execution, then use `scripts/capture_run.py` immediately after the attempt when the project uses the bundled dossier. It records an immutable run manifest and ledger entry; it neither executes the command nor represents a merely planned run. Supply the experiment ID, operator, timezone-aware start and end timestamps, actual status, resource facts, and a reason for a failed or aborted attempt. A completed full measured run is only `candidate_pending_verification` until outputs and analysis are checked.
+Assign the run ID in the frozen plan before execution, then use `scripts/capture_run.py` immediately after the attempt when the project uses the bundled dossier. It writes the run manifest and ledger entry from supplied facts. Its refusal to reuse a run ID applies to capture through the helper. Protect an independent copy when later modifications matter. See the [research integrity playbook](research-integrity.md). Supply the experiment ID, operator, timezone-aware start and end timestamps, actual status, resource facts, and a reason for a failed or aborted attempt. A completed full measured run is only `candidate_pending_verification` until outputs and analysis are checked.
 
 The manifest's `capture_environment` field records where the manifest was captured, not where the run executed. Record the run's own hardware, runtime, driver, and service facts through `--resource` entries so the environment row above is satisfied for the actual execution.
 

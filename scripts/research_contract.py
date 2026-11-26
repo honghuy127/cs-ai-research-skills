@@ -7,6 +7,18 @@ the executable scripts that import it.
 
 from __future__ import annotations
 
+import hashlib
+from pathlib import Path
+
+
+def hash_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 DOSSIER_SCHEMA_VERSION = "1.0"
 MANIFEST_SCHEMA_VERSION = "1.1"
 SUPPORTED_MANIFEST_SCHEMAS = frozenset({"1.0", MANIFEST_SCHEMA_VERSION})

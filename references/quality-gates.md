@@ -81,6 +81,8 @@ Do not require:
 
 Require an equivalent burden of proof rather than deleting an inapplicable criterion. For example, replace benchmark accuracy with proof completeness for theory or credibility and reflexivity checks for qualitative work.
 
+For a frozen requirement, unexplained substitution, or disputed result, apply the [integrity protocol](research-integrity.md) inside the affected gate. Record the check ID, observed discrepancy, evidence location, and impact on the claim.
+
 Treat automated audits as structural evidence only. Do not let a passing script determine novelty, construct validity, ethics, policy compliance, or scientific soundness.
 
 ## 4. Route phase-specific gates to their references

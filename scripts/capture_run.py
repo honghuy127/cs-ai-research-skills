@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create an immutable provenance manifest for a research run.
+"""Capture the provenance of a research run under a fresh run ID.
 
 The script records a run; it never executes the supplied command. A completed
 full measured run remains only candidate evidence until its outputs and analysis
@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import argparse
 import contextlib
-import hashlib
 import json
 import os
 import platform
@@ -24,7 +23,12 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from research_contract import MANIFEST_SCHEMA_VERSION, MAX_HASH_BYTES, OS_JUNK_FILES
+from research_contract import (
+    MANIFEST_SCHEMA_VERSION,
+    MAX_HASH_BYTES,
+    OS_JUNK_FILES,
+    hash_file,
+)
 from research_state import validate as validate_dossier
 
 RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
@@ -50,14 +54,6 @@ def resolve_file(raw_path: str, root: Path) -> Path:
     if not path.is_absolute():
         path = root / path
     return path.resolve()
-
-
-def hash_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def file_record(raw_path: str, root: Path, external_version: str | None = None) -> dict:
