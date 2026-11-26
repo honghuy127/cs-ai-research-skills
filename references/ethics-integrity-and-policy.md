@@ -70,7 +70,7 @@ For results, record:
 - Raw output, analysis script, derived table or figure, and verification status.
 - Deviations, failed runs, exclusions, uncertainty, and known caveats.
 
-Keep synthetic or mock data visibly ineligible for scientific claims. Do not promote an implemented pipeline, smoke test, or pilot to completed evidence through prose.
+Never fabricate observations or present synthetic plumbing output as scientific evidence. Measurements of actual behavior on controlled synthetic inputs may support claims scoped to those inputs when the input-generation procedure, raw observations, controls, and independent verification are traceable. Do not promote an implemented pipeline, smoke test, or pilot to completed evidence through prose.
 
 Use `[CITATION NEEDED]`, `[EVIDENCE NEEDED]`, or `[RESULT PENDING]` when provenance is incomplete.
 
