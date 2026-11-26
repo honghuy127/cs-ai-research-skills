@@ -83,6 +83,7 @@ Load every additional reference listed for the selected route before acting. Add
 | Review a paper or artifact | [paper-review-and-rebuttal.md](references/paper-review-and-rebuttal.md), [ethics-integrity-and-policy.md](references/ethics-integrity-and-policy.md) |
 | Prepare a rebuttal or revision plan | [paper-review-and-rebuttal.md](references/paper-review-and-rebuttal.md), [paper-writing.md](references/paper-writing.md) |
 | Resume, audit, or reconcile an existing project or its dossier | [research-contract-and-state.md](references/research-contract-and-state.md), plus the phase reference for the work being resumed |
+| Define factual scope for AI safety, model capability or reliability, or controlled adversarial research | Offer the independently installable [Scope AI Model Research skill](skills/scope-ai-model-research/SKILL.md) under the overlap rules; when selected, that companion handles scoping and current authority while this workflow retains the applicable phase gates |
 | Audit research integrity, investigate unexplained omissions, or protect a high-impact claim | [research-integrity.md](references/research-integrity.md) plus the affected phase reference |
 | Coordinate an end-to-end project or parallel agents | All phase references, loaded as each phase is reached, plus [agent-orchestration.md](references/agent-orchestration.md) |
 

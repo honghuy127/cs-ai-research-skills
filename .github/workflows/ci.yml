@@ -28,7 +28,7 @@ jobs:
       - name: Check project Markdown and local links
         run: >-
           python scripts/check_markdown.py *.md
-          references/*.md assets/*.md figures/*.md --strict
+          references/*.md assets/*.md figures/*.md skills/*/*.md skills/*/*/*.md --strict
       - run: python -m pytest tests/ -v
       - name: Re-test on the minimum supported Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0

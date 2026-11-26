@@ -15,4 +15,4 @@ fi
 
 ruff check scripts tools tests
 python3 -m pytest tests/ -q
-python3 scripts/check_markdown.py *.md references/*.md assets/*.md figures/*.md --strict
+python3 scripts/check_markdown.py *.md references/*.md assets/*.md figures/*.md skills/*/*.md skills/*/*/*.md --strict

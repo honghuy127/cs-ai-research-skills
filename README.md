@@ -6,7 +6,7 @@
 
 An Agent Skills-compatible package for rigorous computer science and AI research, tested for OpenCode, Codex, and Claude Code. It guides an AI agent through idea construction, literature synthesis, novelty and feasibility checks, proposals, experimental design, implementation, evaluation, statistical analysis, reproducibility, paper writing, figure and diagram preparation, formatting checks, office document analysis and authoring, presentation slides, peer review, and rebuttals, with evidence discipline enforced at every step.
 
-The skill follows the [Agent Skills specification](https://agentskills.io/specification): a lean `SKILL.md` router loads focused reference playbooks on demand, so an agent only reads the guidance relevant to the current task.
+The primary skill follows the [Agent Skills specification](https://agentskills.io/specification): a lean `SKILL.md` router loads focused reference playbooks on demand, so an agent only reads the guidance relevant to the current task.
 
 ![Skill architecture: SKILL.md routes a task to the smallest complete workflow of phase playbooks; every phase closes at a decisive gate, and provenance lives in the project .research/ dossier maintained with scripts/.](figures/fig-001-skill-architecture.svg)
 
@@ -61,6 +61,7 @@ For research integrity reviews, an auditor can supply a frozen JSON contract to 
 | `scripts/` | Dossier tooling: `research_state.py`, `capture_run.py`, `audit_research.py`, plus the `validate_drawio.py` figure lint, the `render_drawio.py` headless drawio renderer, the `check_latex_log.py` build-log checker, the `check_office.py` Office package checker, and the `check_markdown.py` Markdown checker; `research_contract.py` holds the shared controlled vocabularies, and `research_integrity.py` implements the optional protected-contract checks |
 | `assets/` | Copy-and-adapt templates: research brief, experiment plan, paper and proposal outlines, figure plan, format checklist, slide deck plan, review template, rebuttal matrix |
 | `agents/openai.yaml` | Interface metadata for runtimes that read the OpenAI agent format |
+| `skills/` | Independently installable companion skills, including factual scoping for AI safety, capability, and reliability research |
 | `tests/` | End-to-end tests for the scripts |
 | `requirements-dev.txt` | Pinned test and lint dependencies used locally and in CI |
 | `tools/install_skill.py` | Safe dry-run-first installer for OpenCode, Codex, Claude Code, or a shared multi-agent setup |
@@ -121,6 +122,23 @@ Claude Code then triggers the skill automatically for research-shaped tasks; use
 ### Other Agent Skills runtimes
 
 Any runtime implementing the Agent Skills specification can load `SKILL.md` directly. Install the complete directory so relative `references/`, `scripts/`, and `assets/` remain available. `agents/openai.yaml` supplies optional display metadata for ChatGPT and Codex hosts that read that format.
+
+## Companion skill: Scope AI Model Research
+
+`skills/scope-ai-model-research` is an independently installable skill for factual scoping of AI safety, capability, and reliability work on small or otherwise bounded models. It distinguishes study models from assisting services, checks current policy and downstream training uses, and produces research packets with explicit evidence and unresolved questions. It supports authorized adversarial experiments through [bounded experiment protocols](skills/scope-ai-model-research/references/controlled-experiments.md), without treating attack terminology as an automatic prohibition, and provides event-based review of refusals, omissions, and disclosed model changes.
+
+The companion does not provide an exemption from frontier-development or other safeguards, promise a classifier outcome, or help disguise restricted work. Size alone does not establish authorization or low risk. See its [entry point](skills/scope-ai-model-research/SKILL.md), [source-backed protocol](skills/scope-ai-model-research/references/scope-protocol.md), and [research packet](skills/scope-ai-model-research/assets/research-scope.md).
+
+When both skills are selected, the companion establishes the factual research scope and current authority, while the primary workflow handles experimental design, lifecycle evidence, provenance, and quality gates. Neither skill invokes or substitutes for the other silently. The primary [routing table](SKILL.md) offers the companion for AI model scoping, and the ethics preflight links its controlled-experiment protocol for authorized adversarial work.
+
+Preview and apply its installation separately from the primary skill:
+
+```bash
+python3 tools/install_skill.py --scope user --agents all --source skills/scope-ai-model-research
+python3 tools/install_skill.py --scope user --agents all --source skills/scope-ai-model-research --apply
+```
+
+The same `--source` option works with `--scope project --project-dir /path/to/project`. Install or copy the companion's complete directory when performing a manual installation so its relative references and assets remain available.
 
 ## The project dossier
 
@@ -208,7 +226,7 @@ Notes on the audit:
 python3 -m pip install -r requirements-dev.txt
 ruff check scripts tools tests
 python3 -m pytest tests/ -v
-python3 scripts/check_markdown.py *.md references/*.md assets/*.md figures/*.md --strict
+python3 scripts/check_markdown.py *.md references/*.md assets/*.md figures/*.md skills/*/*.md skills/*/*/*.md --strict
 ```
 
 To catch problems offline before they reach CI, enable the tracked hooks once per checkout:
